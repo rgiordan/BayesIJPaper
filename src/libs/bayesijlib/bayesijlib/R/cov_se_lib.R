@@ -1,0 +1,232 @@
+library(mcmcse)
+library(reshape2)
+
+#################################################
+# Everything in here should be incorporated into the library.
+
+# This function should be in the library, maybe with an optional
+# specification for the exchangeable column.
+# ComputeIJCovariance <- function(lp_mat, draws_mat) {
+#     # TODO: This needs a factor of N to be the ij covariance estimate.
+#     lp_draw_infl <- cov(lp_mat, draws_mat)
+#     colnames(lp_draw_infl) <- colnames(draws_mat)
+#     draw_ij_cov <- cov(lp_draw_infl, lp_draw_infl)
+#     return(draw_ij_cov)
+# }
+#
+
+# TODO: many of these functions are already in rstansensitivity.
+# extract() returns an array of samples x chain x parameter.  Stack them
+# by chain into a single matrix of (samples * chains) x parameter.
+#
+# #' @export
+StackChainArray <- function(draws_array) {
+    num_chains <- dim(draws_array)[2]
+    draws_mat <- do.call(
+        rbind, lapply(1:num_chains,
+                      function(chain) {
+                            # Drop the chain dimension but not the parameter
+                            # dimension in case the parmeters are one-dimensional.
+                            return(array(
+                                draws_array[, chain, ],
+                                dim=dim(draws_array)[c(1, 3)]))
+                          }))
+    return(draws_mat)
+}
+
+
+#' @export
+OrderedExtract <- function(modelfit, pars) {
+    return(StackChainArray(rstan::extract(modelfit, pars, permute=FALSE)))
+}
+
+
+mcse.multi_safe <- function(arg_draws) {
+    # Set a default to return if the method fails.
+    output_list <- list(cov=matrix(NA, ncol(arg_draws), ncol(arg_draws)))
+    tryCatch(output_list <- mcmcse::mcse.multi(arg_draws),
+             error=function(e) { print(e) },
+             warning=function(w) { print(w) }) # Should we suppress the warning?
+    return(output_list$cov)
+}
+
+GetCovarianceSE <- function(x_draws, y_draws, correlated_samples) {
+    # Get standard errors for a single scalar covariance.   x_draws and y_draws should
+    # be vectors, not matrices.
+    x_mean <- mean(x_draws)
+    y_mean <- mean(y_draws)
+
+    arg_draws <- cbind(x_draws * y_draws, x_draws, y_draws)
+    if (correlated_samples) {
+        # mcse may throw a warning about the covariance not being full rank, which is fine (I think)
+        arg_cov_mat <- mcse.multi_safe(arg_draws)
+        #suppressWarnings(arg_cov_mat <- mcmcse::mcse.multi(arg_draws)$cov)
+    } else {
+        arg_cov_mat <- cov(arg_draws, arg_draws)
+    }
+    grad_g <- c(1, -1 * y_mean, -1 * x_mean)
+    g_se <- as.numeric(sqrt(t(grad_g) %*% arg_cov_mat %*% grad_g / nrow(arg_draws)))
+
+    return(g_se)
+}
+
+
+GetCovarianceMatrixSE <- function(x_draws, y_draws, correlated_samples) {
+    # Get standard errors for a covariance matrix.  x_draws and y_draws should
+    # be matrices.
+    stopifnot(nrow(x_draws) == nrow(y_draws))
+    num_x_pars <- ncol(x_draws)
+    num_y_pars <- ncol(y_draws)
+    cov_se_mat <- matrix(NA, num_x_pars, num_y_pars)
+    for (ix in 1:num_x_pars) {
+        for (iy in 1:ix) {
+            cov_se_mat[ix, iy] <- GetCovarianceSE(
+                x_draws[, ix], y_draws[, iy],
+                correlated_samples=correlated_samples)
+            cov_se_mat[iy, ix] <- cov_se_mat[ix, iy]
+        }
+    }
+    return(cov_se_mat)
+}
+
+
+#' Estimate Monte Carlo standard errors of sample covariances or
+#' by block bootstrapping draws from an MCMC chain.
+#'
+#' @param draws1_mat One set of parameter draws.
+#' @param draws2_mat Another set of parameter draws.
+#' @param num_blocks The number of blocks in the block bootstrap.
+#' @param num_draws The number of bootstrap draws.
+#' @param show_progress_par.  Optional.  If TRUE, show a progress bar.
+#' By default, FALSE.
+#' @return A list containing the draws of the covariance cov_samples
+#' and the estimated Monte Carlo sample errors in cov_se.
+#' @export
+GetBlockBootstrapCovarianceDraws <- function(draws1_mat, draws2_mat,
+                                             num_blocks, num_draws,
+                                             show_progress_bar=FALSE) {
+
+  if (nrow(draws1_mat) != nrow(draws2_mat)) {
+    stop("draws1_mat and draws2_mat must have the same number of rows.")
+  }
+
+  num_samples <- nrow(draws1_mat)
+
+  block_size <- floor(num_samples / num_blocks)
+
+  # Correction factor if the number of blocked observations is not the same
+  # as the original.
+  n_factor <- (block_size * num_blocks) / num_samples
+
+  # The indices of each block into the MCMC samples.
+  block_inds <- lapply(
+    1:num_blocks,
+    function(ind) { (ind - 1) * block_size + 1:block_size })
+
+  base_cov <- cov(draws1_mat, draws2_mat)
+  cov_samples <- array(NA, c(num_draws, ncol(draws1_mat), ncol(draws2_mat)))
+  if (show_progress_bar) {
+    pb <- txtProgressBar(min=1, max=num_draws, style=3)
+  }
+
+  # Pre-aggregate the sums required within each block.
+  ComputeSums <- function(draws_mat) {
+    lapply(block_inds, \(inds) colSums(draws_mat[inds, , drop=FALSE ]))
+  }
+  sums1 <- ComputeSums(draws1_mat)
+  sums2 <- ComputeSums(draws2_mat)
+
+  outers12 <- lapply(
+    block_inds,
+    \(inds) t(draws1_mat[inds, , drop=FALSE ]) %*% draws2_mat[inds, , drop=FALSE])
+
+  ComputeCovariance <- function(block_ind_draws) {
+    n_ind_draws <- length(block_ind_draws) * block_size
+    AverageOverInds <- function(sim_list) {
+      reduce(sim_list[block_ind_draws], \(x, y) x + y) / n_ind_draws
+    }
+    d1_bar <- AverageOverInds(sums1)
+    d2_bar <- AverageOverInds(sums2)
+    outer_bar <- AverageOverInds(outers12)
+    return(outer_bar - d1_bar %*% t(d2_bar))
+  }
+
+#   if (FALSE) {
+#     # TODO: make this into a unit test
+#     # Fast sanity check.  Both methods should give the same answer.
+#     all_block_inds <- do.call(c, block_inds)
+#     n_samples <- nrow(draws1_mat)
+#     cov(draws1_mat[all_block_inds, , drop=FALSE],
+#         draws2_mat[all_block_inds, , drop=FALSE]) * (n_samples - 1) / n_samples -
+#       ComputeCovariance(1:num_blocks)
+#   }
+
+  # TODO: allow the user to set the block_ind_draws so you can bootstrap differences.
+  for (draw in 1:num_draws) {
+    if (show_progress_bar) {
+      setTxtProgressBar(pb, draw)
+    }
+    block_ind_draws <- sample(1:num_blocks, num_blocks, replace=TRUE)
+    cov_samples[draw, , ] <- ComputeCovariance(block_ind_draws)
+  }
+  if (show_progress_bar) {
+    close(pb)
+  }
+
+  cov_se <- sqrt(n_factor) * apply(cov_samples, MARGIN=c(2, 3), sd)
+  rownames(cov_se) <- colnames(draws1_mat)
+  colnames(cov_se) <- colnames(draws2_mat)
+
+  return(list(cov_samples=cov_samples, cov_se=cov_se))
+}
+
+
+ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks, num_draws) {
+  # This covariance attempts to compute the effective sample size using
+  # autocorrelation and compute the Monte Carlo error that way.
+
+  ij_se_list <- GetBlockBootstrapCovarianceDraws(
+      lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
+  ij_cov_se <- ij_se_list$cov_se
+
+  num_obs <- ncol(lp_draws)
+  bayes_se_list <- GetBlockBootstrapCovarianceDraws(
+      par_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
+  bayes_cov_se <- bayes_se_list$cov_se
+
+  # The Bayesian and IJ covariances are correlated by using the same MCMC draws.
+#   GetIJBayesDiff <- function(lp_draws, par_draws) {
+#       num_obs <- ncol(lp_draws)
+#       bayes_cov <- cov(par_draws, par_draws)
+#       ij_cov <- ComputeIJCovariance(lp_draws, par_draws)
+#       return(num_obs * bayes_cov - ij_cov)
+#   }
+
+  # This requires setting the bootstrap indices, or giving custom functions to
+  # the sampler
+#   ij_bayes_diff_se_list <- GetBlockBootstrapCovarianceDraws(
+#       lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws,
+#       cov_fun=GetIJBayesDiff,
+#       show_progress_bar=TRUE)
+#   bayes_ij_diff_se <- ij_bayes_diff_se_list$cov_se
+
+  # Sanity check that the Bayes covariance SEs match mcmcse and the delta method
+  bayes_cov_se_delta_method <-
+    GetCovarianceMatrixSE(par_draws, par_draws, correlated_samples=TRUE)
+
+  return(environment())
+}
+
+
+
+
+# Convert the standard deviation of X to the standard deviation of
+# sqrt(X / num_obs)
+# using the delta method.  This is useful for converting standard errors
+# of the covariance of sqrt{N} E[mu] (e.g. as computed by the IJ
+# estimator) to standard errors for the
+# standard deviation of E[mu].
+#' @export
+ConvertCovSEToSESE <- function(x_cov, x_cov_se, num_obs) {
+    return(x_cov_se / (2 * sqrt(x_cov * num_obs)))
+}
