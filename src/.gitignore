@@ -55,4 +55,4 @@ rsconnect/
 **/*.rdata
 **/*.rds
 **/*.json
-**/*.npz
+**git /*.npz
