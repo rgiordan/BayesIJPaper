@@ -134,6 +134,7 @@ if (ShouldRerun(output_filename, force=args$force)) {
   mcmc_time <- Sys.time() - mcmc_time
   print(mcmc_time)
 
+  print("processing")
   par_draws <- as.matrix(rstanarm_result)
   par_draws <- par_draws[, pars]
   par_draws <-
@@ -151,6 +152,7 @@ if (ShouldRerun(output_filename, force=args$force)) {
     lp_draws <- c()
   }
 
+  print("saving")
   save(df_base, mcmc_time, rstanarm_result, par_draws,
        lmer_result, is_singular,
        ij_cov, bayes_cov, lp_draws,
@@ -159,3 +161,5 @@ if (ShouldRerun(output_filename, force=args$force)) {
 } else {
   print("Output exists, skipping the rerun.")
 }
+
+  print("Done!  ₊✩‧₊˚౨ৎ˚₊✩‧₊")
