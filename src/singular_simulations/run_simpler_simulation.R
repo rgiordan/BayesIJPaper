@@ -5,9 +5,7 @@ library(rstanarm)
 library(rstan)
 library(tidyverse)
 library(lme4)
-
-# library(bayesijlib)
-# library(rstanarmijlib)
+library(bayesijlib)
 
 suppressPackageStartupMessages(library("argparse"))
 
