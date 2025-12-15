@@ -5,12 +5,9 @@ library(rstanarm)
 library(rstan)
 library(tidyverse)
 library(lme4)
-#library(gridExtra)
-#library(broom)
-#library(doParallel)
 
-library(bayesijlib)
-library(rstanarmijlib)
+# library(bayesijlib)
+# library(rstanarmijlib)
 
 suppressPackageStartupMessages(library("argparse"))
 
