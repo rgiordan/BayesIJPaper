@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# ./run_simpler_simulation.R --seed=1 --output_description=TEST --num_draws=10 --force
+# ./run_simpler_simulation.R --seed=1 --output_description=TEST --num_draws=10 --chains=1 --force
 
 library(rstanarm)
 library(rstan)
@@ -127,7 +127,7 @@ if (ShouldRerun(output_filename, force=args$force)) {
     rstanarm::stan_glmer(model_formula,
                          df_base,
                          family=gaussian(),
-                         chains=args$chains,
+                         chains=int(args$chains),
                          iter=args$num_draws)
   mcmc_time <- Sys.time() - mcmc_time
   print(mcmc_time)
