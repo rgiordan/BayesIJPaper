@@ -32,10 +32,10 @@ parser$add_argument(
     "--seed", type="integer",
     help = "Random seed (use system seed if unset)")
 parser$add_argument(
-    "--cores", default=1,
+    "--cores", default=1, type="integer",
     help=paste0("Number of course for MCMC [default %(default)] "))
 parser$add_argument(
-    "--chains", default=4,
+    "--chains", default=4, type="integer",
     help=paste0("Number of chains for MCMC [default %(default)] "))
 
 
@@ -127,7 +127,7 @@ if (ShouldRerun(output_filename, force=args$force)) {
     rstanarm::stan_glmer(model_formula,
                          df_base,
                          family=gaussian(),
-                         chains=int(args$chains),
+                         chains=args$chains,
                          iter=args$num_draws)
   mcmc_time <- Sys.time() - mcmc_time
   print(mcmc_time)
