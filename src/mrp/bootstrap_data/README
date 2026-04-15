@@ -1,6 +1,0 @@
-Run things like
-
-scp \
-    rgiordano@shelob.berkeley.edu:\
-/accounts/fac/rgiordano/Documents/git_repos/InfinitesimalJackknifeWorkbench\
-/src/bayes/mrp/bootstrap_data/mrp_combined_mrp_20240724_1324.Rdata .

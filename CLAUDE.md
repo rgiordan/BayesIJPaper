@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This repository contains code to reproduce experiments for the paper "The Bayesian Infinitesimal Jackknife for Variance" (Giordano, Broderick). It implements the Bayesian IJ (BayesIJ) method for variance estimation on Bayesian posterior draws.
+This repository contains code to reproduce experiments for the paper "The Bayesian Infinitesimal Jackknife for Variance" (ANONYMOUS). It implements the Bayesian IJ (BayesIJ) method for variance estimation on Bayesian posterior draws.
 
 ## Setup
 

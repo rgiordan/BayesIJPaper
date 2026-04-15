@@ -3,25 +3,14 @@
 # https://unix.stackexchange.com/questions/2161/rsync-filter-copying-one-pattern-only
 # Note that if you want to include a file, you must also include its parent directory.
 
-SERVER=gandalf
+REMOTE_GIT="REMOTE_USER@REMOTE_HOST:REMOTE_DIRECTORY"
+LOCAL_GIT=$(git rev-parse --show-toplevel)
 
-REMOTE_GIT=/accounts/grad/rgiordano/Documents/git_repos/InfinitesimalJackknifeWorkbench
-LOCAL_GIT=/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench
-
-# Peace password
 rsync -rmv -v \
-rgiordano@${SERVER}.berkeley.edu:\
-$REMOTE_GIT/src/bayes/rstanarm/cluster/output/* \
-$LOCAL_GIT/src/bayes/rstanarm/cluster/output/ \
+$REMOTE_GIT/src/rstanarm/cluster/output/* \
+$LOCAL_GIT/src/rstanarm/cluster/output/ \
 --include='output' \
 --include='*.Rdata' \
 --exclude='*' \
 --exclude='**/*'
 
-
-
-
-#--include='output' \
-# /accounts/grad/rgiordano/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/example-models/example-models \
-
-# --dry-run --verbose

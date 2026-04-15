@@ -2,10 +2,10 @@ Package: bayesijmrp
 Title: BayesIJ tools for MrP analyses
 Version: 0.0.0.1
 Authors@R:
-    person(given = "Ryan",
-           family = "Giordano",
+    person(given = "Anonymous",
+           family = "Anonymous",
            role = c("aut", "cre"),
-           email = "rgiordano@berkeley.edu",
+           email = "Anonymous",
            comment = c(ORCID = "0000-0002-5686-9210"))
 Description: MCMC weights and influence functions for Bayesian MrP analyses
 Depends: R (>= 4.1.0), dplyr

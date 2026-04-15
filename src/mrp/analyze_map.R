@@ -36,8 +36,8 @@ GetMatches <- function(re, strvec) {
   strvec[grepl(re, strvec)]
 }
 
-repo_dir <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/"
-mrp_dir <- file.path(repo_dir, "src/bayes/mrp")
+repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
+mrp_dir <- file.path(repo_dir, "src/mrp")
 
 # Created with compile_postprocessing.R
 data_env <- LoadIntoEnv(file.path(mrp_dir, "datasets/cces18_subset.Rdata"))

@@ -18,9 +18,8 @@ _SIM = 'simulation'
 _LME4 = 'lme4'
 _VALID_ANALYSES = [ _BASE, _BOOT, _SIM, _LME4 ]
 
-# On the SCF cluster
-default_base_dir = ('/accounts/grad/rgiordano/Documents/git_repos/' +
-                    'InfinitesimalJackknifeWorkbench/src/bayes')
+# Optionally set this to a default remote folder
+default_base_dir = None
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--submit', dest='submit', action='store_true')

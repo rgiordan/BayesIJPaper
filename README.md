@@ -2,7 +2,7 @@
 
 This is a public repository containing the code to reproduce
 the experiments for our paper,
-"The Bayesian Infinitesimal Jackknife for Variance" (Giordano, Broderick).
+"The Bayesian Infinitesimal Jackknife for Variance" (ANONYMOUS).
 
 # Steps to reproduce
 

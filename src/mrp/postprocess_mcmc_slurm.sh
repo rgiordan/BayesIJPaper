@@ -11,10 +11,8 @@
 ## https://blog.ronin.cloud/slurm-job-arrays/
 
 
-## SLURM_ARRAY_TASK_ID=4 # For testing
-
 CONFIG_FILE=mcmc_files.txt
-BASE_DIR=/accounts/fac/rgiordano/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/mrp
+BASE_DIR=$(git rev-parse --show-toplevel)/src/mrp
 MCMC_FILE=$(awk -v ID=${SLURM_ARRAY_TASK_ID} 'NR==ID' ${CONFIG_FILE})
 
 ./postprocess_mcmc.R --base_dir=${BASE_DIR} --mcmc_file=${MCMC_FILE}

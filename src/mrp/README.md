@@ -8,11 +8,12 @@ Steps to reproduce.  All run in the mrp directory.
     - Run `./run_mcmc.R --base_dir=$(pwd) --original` to get the original MCMC
     - Run `./run_mcmc.R --base_dir=$(pwd) --original --lmer` to get the lme4 fit
     - Run `./run_mcmc.R --base_dir=$(pwd) --original --map` to get the MAP fit
-    - Run `sbatch run_mcmc_slurm.sh` to 
+    - Set the directory in `run_mcmc_slurm.sh`, and then run `sbatch run_mcmc_slurm.sh` to
       run MCMC on a bunch of subsamples, and bootstraps of the pseudo dataset.
-    - Run `ls -1a bootstrap_data/mrp_*_seed[0-9]*_samples5000.Rdata > mcmc_files.txt` to make a list of MCMC runs.  Note that this list should include
+    - Run `ls -1a bootstrap_data/mrp_*_seed[0-9]*_samples5000.Rdata > mcmc_files.txt` to make a list of
+      MCMC runs.  Note that this list should include
       the original, the sumsampled runs, and the bootstrap runs.  
-    - Make sure the array size is correct in `postprocess_mcmc_slurm.sh`, then run
+    - Make sure the array size and target directories are correct in `postprocess_mcmc_slurm.sh`, then run
       `sbatch postprocess_mcmc_slurm.sh` it.  This computes MrP and the influence functions for
       each MCMC run.
     - Run `./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/mrp_*_samples5000_mrp_postprocessed.Rdata --description=mrp`.

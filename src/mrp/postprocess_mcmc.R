@@ -11,12 +11,11 @@ library(brms)
 library(bayesijmrp)
 library(optparse)
 
-source("mrp_lib.R")
-
+git_repo <- system("git rev-parse --show-toplevel", intern=TRUE)
 
 option_list <- list(
   make_option(c("--base_dir"),
-              default="/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/mrp",
+              default=file.path(git_repo, "src/mrp"),
               help="The base directory"),
   make_option(c("--mcmc_file"),
               default="",
@@ -63,7 +62,9 @@ weight_time <- Sys.time() - weight_time
 mrp <- mean(mrp_list$mrp_draws)
 mrp_var <- var(mrp_list$mrp_draws)
 
-infl <- bayesijmrp::EvalInfluenceFunction(mrp_list, load_env$logit_post, load_env$survey_boot_df)
+infl <- bayesijmrp::EvalInfluenceFunction(mrp_list, 
+                                          load_env$logit_post, 
+                                          load_env$survey_boot_df)
 
 # For fairness, time the IJ computation on its own rather than through MrPaw
 post <- load_env$logit_post
@@ -81,6 +82,7 @@ n_obs <- length(y)
 ij_var <- n_obs * var(infl_vec)
 ij_time <- Sys.time() - ij_time
 
+# Make sure we got the same answer with the manual computation.
 stopifnot(ij_var == infl$ij_var)
 
 stan_time <- ifelse(is.null(load_env$stan_time), NA, load_env$stan_time)

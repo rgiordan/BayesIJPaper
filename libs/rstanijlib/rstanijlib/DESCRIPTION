@@ -2,10 +2,10 @@ Package: rstanijlib
 Title: Tools for computing BayesIJ on Stan models.
 Version: 0.0.0.9000
 Authors@R:
-    person(given = "Ryan",
-           family = "Giordano",
+    person(given = "ANONYMOOUS",
+           family = "ANONYMOOUS",
            role = c("aut", "cre"),
-           email = "rgiordan@mit.edu")
+           email = "ANONYMOOUS")
 Description: Tools for computing BayesIJ on Stan models.
 Depends: R (>= 3.2.3), rstan, jsonlite, doParallel, mvtnorm, numDeriv
 License: Apache 2.0

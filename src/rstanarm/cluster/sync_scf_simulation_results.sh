@@ -7,20 +7,14 @@ SERVER=snape
 MODEL_TYPE="reg_misspecified"
 
 
-# Peace password
-rsync -rmv -v \
-rgiordano@${SERVER}.berkeley.edu:\
-/accounts/grad/rgiordano/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/output/simulations*${MODEL_TYPE}* \
-/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/output/ \
+
+REMOTE_GIT="REMOTE_USER@REMOTE_HOST:REMOTE_DIRECTORY"
+LOCAL_GIT=$(git rev-parse --show-toplevel)
+
+rsync -rmv -v ${REMOTE_GIT}"/bayes/output/simulations*"${MODEL_TYPE}* \
+${LOCAL_GIT}/src/bayes/output/ \
 --include='output' \
 --include='*.Rdata' \
 --exclude='*' \
 --exclude='**/*'
 
-
-
-
-#--include='output' \
-# /accounts/grad/rgiordano/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/example-models/example-models \
-
-# --dry-run --verbose
