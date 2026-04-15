@@ -6,12 +6,10 @@ library(rstansensitivity)
 library(gridExtra)
 
 library(broom)
-#library(broom.mixed)
 
 library(bayesijlib)
 library(rstanarmijlib)
 
-base_dir <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes"
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(repo_dir, "src/rstanarm")
 output_dir <- file.path(base_dir, "cluster/output")

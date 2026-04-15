@@ -53,7 +53,7 @@ base_dir <- opt$base_dir
 stopifnot(!is.null(opt$model_list_ind))
 
 model_list_ind <- opt$model_list_ind
-stan_examples_dir <- file.path(base_dir, "example-models")
+stan_examples_dir <- file.path(base_dir, "rstanarm/example-models")
 
 model_list_file <- file(file.path(
   base_dir, "rstanarm/configs", opt$model_list_filename), "rb")

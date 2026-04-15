@@ -14,7 +14,7 @@ rstan_options(auto_write=TRUE)
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(repo_dir, "src/rstanarm")
 
-output_dir <- file.path(base_dir, "rstanarm/cluster/output")
+output_dir <- file.path(base_dir, "cluster/output")
 writing_dir <- file.path(repo_dir, "paper/experiment_data/arm")
 stopifnot(dir.exists(writing_dir))
 
