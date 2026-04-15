@@ -1,24 +1,7 @@
 library(mcmcse)
 library(reshape2)
 
-#################################################
-# Everything in here should be incorporated into the library.
 
-# This function should be in the library, maybe with an optional
-# specification for the exchangeable column.
-# ComputeIJCovariance <- function(lp_mat, draws_mat) {
-#     # TODO: This needs a factor of N to be the ij covariance estimate.
-#     lp_draw_infl <- cov(lp_mat, draws_mat)
-#     colnames(lp_draw_infl) <- colnames(draws_mat)
-#     draw_ij_cov <- cov(lp_draw_infl, lp_draw_infl)
-#     return(draw_ij_cov)
-# }
-#
-
-# TODO: many of these functions are already in rstansensitivity.
-# extract() returns an array of samples x chain x parameter.  Stack them
-# by chain into a single matrix of (samples * chains) x parameter.
-#
 # #' @export
 StackChainArray <- function(draws_array) {
     num_chains <- dim(draws_array)[2]
@@ -151,17 +134,6 @@ GetBlockBootstrapCovarianceDraws <- function(draws1_mat, draws2_mat,
     return(outer_bar - d1_bar %*% t(d2_bar))
   }
 
-#   if (FALSE) {
-#     # TODO: make this into a unit test
-#     # Fast sanity check.  Both methods should give the same answer.
-#     all_block_inds <- do.call(c, block_inds)
-#     n_samples <- nrow(draws1_mat)
-#     cov(draws1_mat[all_block_inds, , drop=FALSE],
-#         draws2_mat[all_block_inds, , drop=FALSE]) * (n_samples - 1) / n_samples -
-#       ComputeCovariance(1:num_blocks)
-#   }
-
-  # TODO: allow the user to set the block_ind_draws so you can bootstrap differences.
   for (draw in 1:num_draws) {
     if (show_progress_bar) {
       setTxtProgressBar(pb, draw)
@@ -193,22 +165,6 @@ ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks, num_draws) 
   bayes_se_list <- GetBlockBootstrapCovarianceDraws(
       par_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
   bayes_cov_se <- bayes_se_list$cov_se
-
-  # The Bayesian and IJ covariances are correlated by using the same MCMC draws.
-#   GetIJBayesDiff <- function(lp_draws, par_draws) {
-#       num_obs <- ncol(lp_draws)
-#       bayes_cov <- cov(par_draws, par_draws)
-#       ij_cov <- ComputeIJCovariance(lp_draws, par_draws)
-#       return(num_obs * bayes_cov - ij_cov)
-#   }
-
-  # This requires setting the bootstrap indices, or giving custom functions to
-  # the sampler
-#   ij_bayes_diff_se_list <- GetBlockBootstrapCovarianceDraws(
-#       lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws,
-#       cov_fun=GetIJBayesDiff,
-#       show_progress_bar=TRUE)
-#   bayes_ij_diff_se <- ij_bayes_diff_se_list$cov_se
 
   # Sanity check that the Bayes covariance SEs match mcmcse and the delta method
   bayes_cov_se_delta_method <-
