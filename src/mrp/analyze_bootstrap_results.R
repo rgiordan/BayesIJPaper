@@ -5,8 +5,6 @@ library(tidybayes)
 library(broom)
 library(mcmcse)
 
-library(mrpaw)
-
 
 LoadIntoEnv <- function(filename) {
   this_env <- new.env()

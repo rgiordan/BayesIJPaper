@@ -9,8 +9,10 @@
 library(tidyverse)
 library(brms)
 library(mrpaw)
-
 library(optparse)
+
+source("mrp_lib.R")
+
 
 option_list <- list(
   make_option(c("--base_dir"),

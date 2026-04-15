@@ -1,10 +1,19 @@
-The data can be downloaded here:
+This analysis is based on Chapter One of the MrP tutorial,
+
+https://bookdown.org/jl5522/MRP-case-studies/
+
+The github repo is here:
+https://github.com/JuanLopezMartin/MRPCaseStudy
+
+The needed data for the present analysis can be downloaded here:
 https://github.com/JuanLopezMartin/MRPCaseStudy/tree/master/data_public/chapter1/data
 
 
-You need to download
+You need to download the files
 
-cces18_common_vv.csv
-statelevel_predictors.csv
-poststrat_df.csv
+`cces18_common_vv.csv`
+`statelevel_predictors.csv`
+`poststrat_df.csv`
+
+...and save them in the current directory.
 
