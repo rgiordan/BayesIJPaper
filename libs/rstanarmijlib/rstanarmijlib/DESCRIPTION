@@ -2,10 +2,10 @@ Package: rstanarmijlib
 Title: Tools for computing BayesIJ on Rstanarm models.
 Version: 0.0.0.9000
 Authors@R:
-    person(given = "ANONYMOOUS",
-           family = "ANONYMOOUS",
+    person(given = "ANONYMOUS",
+           family = "ANONYMOUS",
            role = c("aut", "cre"),
-           email = "ANONYMOOUS")
+           email = "ANONYMOUS")
 Description: Tools for computing BayesIJ on Stan models.
 Depends: R (>= 3.2.3), mcmcse, reshape2, rstanarm, jsonlite, doParallel, lme4, mvtnorm, numDeriv, broom, broom.mixed
 License: Apache 2.0

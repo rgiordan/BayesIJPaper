@@ -1,20 +1,15 @@
-#library(ggplot2)
-#library(rstanarm)
 library(tidyverse)
 library(bayesijlib)
 library(rstanarmijlib)
-#library(lme4)
 library(gridExtra)
 library(broom)
-#library(doParallel)
-#library(sandwich)
 
 
 options(mc.cores=4)
 rstan_options(auto_write=TRUE)
-base_dir <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/"
-results_dir <- file.path(base_dir, "src/bayes/rstanarm/cluster/output")
-output_dir <- file.path(base_dir, "writing/bayes/data/sim/")
+base_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
+results_dir <- file.path(base_dir, "src/singular_simulations")
+output_dir <- file.path(base_dir, "paper/experiment_data/simulations")
 
 
 seed_val <- 100

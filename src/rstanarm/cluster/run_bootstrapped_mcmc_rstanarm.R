@@ -13,7 +13,7 @@ library(rstanarmijlib)
 
 option_list <- list(
     make_option(c("--base_dir"),
-                default="/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes",
+                default="./",
                 help="The base directory"),
     make_option(c("--model_list_filename"),
                 default="rstanarm_ij_model_list.json",

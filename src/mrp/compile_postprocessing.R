@@ -12,7 +12,7 @@ library(optparse)
 
 option_list <- list(
   make_option(c("--base_dir"),
-              default="/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes/mrp",
+              default="./",
               help="The base directory"),
   make_option(c("--file_pattern"),
               default="",
