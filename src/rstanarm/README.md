@@ -97,5 +97,4 @@ The following scripts exist in `src/rstanarm/` but are **not** part of the
 |---|---|
 | `configs/rstanarm_ij_model_list.json` | Defines all ARM models; read by cluster scripts and `postprocess_ARM_results.R` |
 | `configs/rstanarm_ij_configs.csv` | Source CSV used by `generate_rstanarm_configs.R` to produce the JSON |
-| `configs/rstanarm_ij_simulation_model_list.json` | Model list for the parametric bootstrap simulation pipeline (not needed here) |
 | `cluster/output/compiled_results_1116.Rdata` | Compiled results loaded by `postprocess_ARM_results.R` |
