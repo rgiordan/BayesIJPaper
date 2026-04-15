@@ -29,7 +29,6 @@ load(sim_filename)
 
 lp_draws <- log_lik(rstanarm_result)
 num_exch_obs <- ncol(lp_draws)
-#pars <- colnames(par_draws)[!grepl("^b\\[", colnames(par_draws))]
 
 ij_cov <- ComputeIJCovariance(lp_draws, par_draws)
 bayes_cov <- cov(par_draws, par_draws)
@@ -125,20 +124,18 @@ cov_wide2_df <-
 levels(cov_wide2_df$variable_label) <-
     TeX(sprintf("$%s$", levels(cov_wide2_df$variable_label)))
 
-# ggplot(cov_wide2_df %>% filter(variable %in% plot_vars)) +
-#     geom_bar(aes(y=mean, fill=method, x=method),
-#              position="dodge", stat="Identity") +
-#     geom_errorbar(aes(ymin=mean - 2 * se, ymax=mean + 2 * se, x=method)) +
-#     facet_grid(. ~ variable_label, scales="free", labeller=label_parsed) +
-#     ylab("Covariance") +
-#     theme(legend.position="None")
-#
+if (FALSE) {
+    ggplot(cov_wide2_df %>% filter(variable %in% plot_vars)) +
+        geom_bar(aes(y=mean, fill=method, x=method),
+                position="dodge", stat="Identity") +
+        geom_errorbar(aes(ymin=mean - 2 * se, ymax=mean + 2 * se, x=method)) +
+        facet_grid(. ~ variable_label, scales="free", labeller=label_parsed) +
+        ylab("Covariance") +
+        theme(legend.position="None")
+}
 
 num_mcmc_draws <- nrow(par_draws)
 num_sims <- nrow(sim_draws)
 save(cov_long_df, cov_wide_df, cov_wide2_df,
      re_dim, obs_per_re, num_exch_obs, seed_val, num_mcmc_draws, num_sims,
      file=file.path(output_dir, "simpler_sim_results.Rdata"))
-
-
-stop()
