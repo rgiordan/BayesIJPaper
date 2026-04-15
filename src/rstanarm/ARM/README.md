@@ -1,0 +1,1 @@
+This subfolder was downloaded from https://github.com/stan-dev/example-models March 2020

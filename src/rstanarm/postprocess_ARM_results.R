@@ -11,13 +11,15 @@ library(rstanarmijlib)
 rstan_options(auto_write=TRUE)
 
 # If TRUE do not run all the bootstraps and do not save.
-repo_dir <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/"
-base_dir <- file.path(repo_dir, "src/bayes")
+repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
+base_dir <- file.path(repo_dir, "src/")
 stan_examples_dir <- file.path(base_dir, "example-models")
 
 # TODO: this should now be BayesIJPaper/src/rstanarm
 output_dir <- file.path(base_dir, "rstanarm/cluster/output")
-writing_dir <- file.path(repo_dir, "writing/bayes/")
+writing_dir <- file.path(repo_dir, "paper/experiment_data/rstanarm")
+stopifnot(dir.exists(writing_dir))
+#writing_dir <- file.path(repo_dir, "writing/bayes/")
 
 
 model_list_filename <- "rstanarm_ij_model_list.json"
@@ -25,8 +27,7 @@ model_list_file <- file(file.path(base_dir, "rstanarm/configs/", model_list_file
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
-#output_filename <- sprintf("compiled_results_%s.Rdata", "0924")
-#output_filename <- sprintf("compiled_results_%s.Rdata", "1104")
+# Load the compiled results produced by postprocess_ARM_results.R
 output_filename <- sprintf("compiled_results_%s.Rdata", "1116")
 load(file=file.path(output_dir, output_filename))
 
