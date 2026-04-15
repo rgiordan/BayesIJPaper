@@ -20,4 +20,7 @@ There are three analyses in the paper, each in its own directory:
 - MrP (`src/mrp`)
 - Singular simulations (`src/singular_simulations`)
 
-Each folder has its own README.md describing the steps to reproduction.
+Each folder has its own README.md describing the steps to reproduction.  In each
+case, the final script to run, which produces output that can be processed
+to produce the final paper, is called `postprocess_for_paper.R`.  The analysis
+pipeline runs backwards from that point.
