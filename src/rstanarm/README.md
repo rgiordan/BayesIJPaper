@@ -34,9 +34,6 @@ Each job calls `cluster/run_base_mcmc_rstanarm.R` or
 - `<desc>_base_mcmc_<date_tag>_cluster.Rdata`
 - `<desc>_boot_mcmc_<date_tag>_cluster.Rdata`
 
-**Note:** the output files for `date_tag=0924_cluster` and `1107_cluster`
-are already committed to `cluster/output/`.  Skip this step if you are not
-regenerating the MCMC from scratch.
 
 ### Step 3 — Compile results with `load_rstanarm_results.R`
 
@@ -48,27 +45,6 @@ files from `cluster/output/`, and writes a single compiled file:
 cluster/output/compiled_results_<file_date>.Rdata
 ```
 
-Before running, update the two hardcoded variables near the bottom of the
-script:
-
-```r
-base_dir <- "<path_to_repo>/src"   # currently set to old repo path
-file_date <- "1116"                 # currently set to "0904"; must match
-                                    # what postprocess_ARM_results.R loads
-```
-
-`compiled_results_1116.Rdata` is already present in `cluster/output/`.
-**Skip this step** unless you need to regenerate it.
-
-### Step 4 — Create the output directory
-
-`postprocess_ARM_results.R` saves its output to
-`paper/experiment_data/rstanarm/data/ARM/`, which **does not exist** in the
-repository.  Create it before running:
-
-```bash
-mkdir -p paper/experiment_data/rstanarm/data/ARM
-```
 
 ### Step 5 — Run `postprocess_ARM_results.R`
 
@@ -84,9 +60,6 @@ The script:
    `combined_df_nore` and `timing_df` produced by `load_rstanarm_results.R`).
 3. Applies filtering and labeling.
 4. Saves `paper/experiment_data/rstanarm/data/ARM/arm_results_original_data_061721.Rdata`.
-
-The script ends with `stop()`, which is an interactive sentinel — everything
-above it is intended to be executed.
 
 ---
 

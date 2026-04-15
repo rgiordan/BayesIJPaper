@@ -12,11 +12,12 @@ library(bayesijlib)
 library(rstanarmijlib)
 
 base_dir <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/src/bayes"
-stan_examples_dir <- file.path(base_dir, "example-models")
-output_dir <- file.path(base_dir, "rstanarm/cluster/output")
+repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
+base_dir <- file.path(repo_dir, "src/rstanarm")
+output_dir <- file.path(base_dir, "cluster/output")
 
 model_list_filename <- "rstanarm_ij_model_list.json"
-model_list_file <- file(file.path(base_dir, "rstanarm/configs/", model_list_filename), "rb")
+model_list_file <- file(file.path(base_dir, "configs/", model_list_filename), "rb")
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
@@ -45,11 +46,10 @@ model_df <- do.call(rbind, lapply(1:length(model_list), GetModelDf))
 #####################################
 # Compare IJ, Bayes, and bootstrap.
 
+# Load the files with this suffix.
 file_suffix <- "0924_cluster"
 boot_file_suffix <- NULL
 
-# file_suffix <- "0924_cluster"
-# boot_file_suffix <- "1107_cluster"
 
 tidy_results <- tibble()
 for (i in 1:length(model_list)) { 
@@ -129,7 +129,6 @@ for (i in 1:length(model_list)) {
             inner_join(bayes_df, by=join_cols) %>%
             inner_join(diff_df, by=join_cols) %>%
             inner_join(ij_full_se_df, by=join_cols) %>%
-            #inner_join(ij_boot_se_df, by=join_cols) %>%
             inner_join(ij_freq_se_df, by=join_cols)
      
         boot_cov <- num_exch_obs * boot_results$boot_cov
@@ -191,7 +190,6 @@ combined_df <-
     tidy_results %>%
     ComputeRelativeError("ij", "bootstrap") %>%
     ComputeRelativeError("ij", "bootstrap", se1="full_se", diffname="freqdiff") %>%
-    #ComputeRelativeError("ij", "bootstrap", se1="boot_se", diffname="bootdiff") %>%
     mutate("ij_bootstrap_ijdiff_z"=ij_bootstrap_diff / ij_full_se) %>%
     ComputeRelativeError("bayes", "bootstrap") %>%
     mutate(cov_scale=abs(bootstrap_cov) + bootstrap_se) %>%  
@@ -215,8 +213,6 @@ combined_df_nore <-
 #####################################
 # Compare IJ, Bayes, and bootstrap timings.
 
-# file_suffix <- "0924_cluster"
-# boot_file_suffix <- NULL
 
 timing_df <- data.frame()
 for (i in 1:length(model_list)) { 
@@ -284,50 +280,9 @@ if (FALSE) {
 ###########################################
 # Save a file for fast subsequent analysis
 
-#file_date <- Sys.Date()
-#file_date <- "2020-09-27"
-#file_date <- "1104"
-#file_date <- "1107_incomplete"
-#file_date <- "1116"
-file_date <- "0904" # Is this right?
+file_date <- "1116"
 output_filename <- sprintf("compiled_results_%s.Rdata", file_date)
 print(sprintf("Saving to %s", file.path(output_dir, output_filename)))
 save(file_suffix, combined_df, combined_df_nore, timing_df, 
      file=file.path(output_dir, output_filename))
 
-
-# I don't think point_estimate_results is used anymore.
-
-# #####################################
-# #####################################
-# #####################################
-# # Compare IJ, Bayes, bootstrap, and lme4.
-# 
-# file_suffix <- "0924_cluster"
-# 
-# point_estimate_df <- tibble()
-# for (i in 1:length(model_list)) { 
-#     model_config <- model_list[[i]]
-#     cat("===================\n", "Loading", model_config$desc, "\n")
-#     
-#     res_list <- LoadModelResults(model_config, file_suffix)
-#     
-#     if (res_list$all_found) {
-#         this_point_estimate_df <- with(
-#             res_list,
-#             GetLME4Comparison(model_config, base_results, boot_results, lme4_results) %>%
-#                 mutate(desc=model_config$desc,
-#                        model_index=i))
-#         point_estimate_df <- bind_rows(
-#             point_estimate_df,
-#             this_point_estimate_df)
-#     }
-# }
-# 
-# 
-# 
-# if (FALSE) {
-#     file_date <- "0924"
-#     output_filename <- sprintf("point_estimate_results_%s.Rdata", file_date)
-#     save(point_estimate_df, file=file.path(output_dir, output_filename))
-# }

@@ -54,7 +54,6 @@ GetCovarianceSE <- function(x_draws, y_draws=NULL) {
   return(g_se)
 }
 
-#repo_dir <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/"
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 
 

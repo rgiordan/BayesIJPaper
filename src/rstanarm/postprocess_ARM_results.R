@@ -12,18 +12,16 @@ rstan_options(auto_write=TRUE)
 
 # If TRUE do not run all the bootstraps and do not save.
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
-base_dir <- file.path(repo_dir, "src/")
-stan_examples_dir <- file.path(base_dir, "example-models")
+base_dir <- file.path(repo_dir, "src/rstanarm")
 
-# TODO: this should now be BayesIJPaper/src/rstanarm
 output_dir <- file.path(base_dir, "rstanarm/cluster/output")
-writing_dir <- file.path(repo_dir, "paper/experiment_data/rstanarm")
+writing_dir <- file.path(repo_dir, "paper/experiment_data/arm")
 stopifnot(dir.exists(writing_dir))
-#writing_dir <- file.path(repo_dir, "writing/bayes/")
 
 
 model_list_filename <- "rstanarm_ij_model_list.json"
-model_list_file <- file(file.path(base_dir, "rstanarm/configs/", model_list_filename), "rb")
+model_list_file <- file(file.path(base_dir, "configs/",
+                                  model_list_filename), "rb")
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
@@ -120,9 +118,7 @@ GetMetricLabel <- function(metric, metric_label) {
 metric_label_df <- bind_rows(
     GetMetricLabel("ij_bootstrap_diff_norm", "IJ relative error"),
     GetMetricLabel("bayes_bootstrap_diff_norm", "Bayes relative error"),
-    #GetMetricLabel("ij_bootstrap_freqdiff_z", "IJ error z score"),
     GetMetricLabel("ij_bootstrap_diff_z", "IJ error z score (no IJ freq)"),
-    #GetMetricLabel("ij_full_se", "IJ standard error"),
     GetMetricLabel("ij_se", "IJ standard error"),
     GetMetricLabel("bayes_se", "Bayes standard error"),
     GetMetricLabel("bootstrap_se", "Bootstrap standard error"),
@@ -133,7 +129,6 @@ metric_label_df <- bind_rows(
 
 stopifnot(metric_label_df$metric %>% unique() %>% length() == nrow(metric_label_df))
 stopifnot(all(metric_label_df$metric %in% unique(combined_df_long$metric)))
-#metric_label_df$metric[!(metric_label_df$metric %in% unique(combined_df_long$metric))]
 
 # Join with the labels and name some factors.
 combined_df_long_labeled <-
@@ -173,10 +168,6 @@ combined_df_long_labeled %>% filter(model_index == 65) %>% nrow() /
     combined_df_nore %>% filter(model_index == 65) %>% nrow()
 
 colnames(combined_df_long_labeled)
-# combined_df_wide_labeled <-
-#     combined_df_long_labeled %>%
-#     select(-metric_label) %>%
-#     pivot_wider(id_cols=c(-value, -metric), names_from=metric, values_from=value)
 
 combined_df_wide_labeled <-
   combined_df_long_labeled %>%
@@ -225,10 +216,7 @@ save(combined_df_long_labeled,
      combined_df_wide_labeled,
      model_df,
      timing_df,
-     file=file.path(writing_dir, "data/ARM", paper_filename))
-
-
-
+     file=file.path(writing_dir, paper_filename))
 
 
 
