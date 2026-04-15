@@ -22,6 +22,11 @@ Steps to reproduce.  All run in the mrp directory.
 On a local machine, scp the result of the last command
   (e.g. `bootstrap_data/mrp_combined_mrp_20240724_1226.Rdata`), as well as the
   original run and lmer fit.
-- Run `analyze_bootstrap_results.R` to look at the results.
 
-SCF
+- Optionally, run `analyze_bootstrap_results.R` to look at the bootstrap results.
+
+- Run analyze_map.R to save the MAP estimates.
+
+
+
+Finally, run postprocess_results_for_latex.R.
