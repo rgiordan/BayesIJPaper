@@ -1,5 +1,5 @@
-Package: mrpaw
-Title: Mister P approximate weights
+Package: bayesijmrp
+Title: BayesIJ tools for MrP analyses
 Version: 0.0.0.1
 Authors@R:
     person(given = "Ryan",
@@ -7,12 +7,12 @@ Authors@R:
            role = c("aut", "cre"),
            email = "rgiordano@berkeley.edu",
            comment = c(ORCID = "0000-0002-5686-9210"))
-Description: Approximate weights for MrP analyses
-Depends: R (>= 4.1.0), dplyr, ggplot2, mvtnorm, tidybayes, einsum
+Description: MCMC weights and influence functions for Bayesian MrP analyses
+Depends: R (>= 4.1.0), dplyr
 License: Apache 2.0
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenVersion: 7.3.2
 Suggests:
     testthat, purrr, rlang

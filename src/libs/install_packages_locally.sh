@@ -12,3 +12,6 @@ install_local(file.path(
 install_local(file.path(
     lib_loc, "bayesijlib/bayesijlib"),
     force=TRUE, upgrade="never")
+install_local(file.path(
+    lib_loc, "bayesijmrp/bayesijmrp"),
+    force=TRUE, upgrade="never")

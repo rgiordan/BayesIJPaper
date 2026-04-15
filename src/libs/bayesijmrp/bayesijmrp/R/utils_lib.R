@@ -32,17 +32,6 @@ CheckLogitFamily <- function(logit_fit) {
 
 
 
-CheckOLSFamily <- function(lin_post) {
-    post_family <- family(lin_post)
-    if (post_family$family != "gaussian") {
-      warning(sprintf("Family is not gaussian (%s)", post_family$family))
-    }
-    if (post_family$link != "identity") {
-      warning(sprintf("Link is not identity (%s)", post_family$link))
-    }
-}
-
-
 
 #' Get the response variable (y) from the posterior.
 #' I don't see this use clearly documented, so I want to factor it out

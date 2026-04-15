@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PKG_NAME="mrpaw"
+PKG_NAME="bayesijmrp"
 R -e '
 library(devtools); 
 devtools::document("."); 

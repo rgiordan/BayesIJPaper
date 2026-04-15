@@ -1,10 +1,10 @@
 library(testthat)
 library(devtools)
-library(mrpaw)
+library(bayesijmrp)
 
-#setwd("/home/rgiordan/Documents/git_repos/SurveyWeighting/mrpaw/mrpaw")
+#setwd("/home/rgiordan/Documents/git_repos/SurveyWeighting/bayesijmrp/bayesijmrp")
 #source("tests/testthat/helper.R")
-setwd("~/Documents/git_repos/mrpaw/")
+setwd("~/Documents/git_repos/bayesijmrp/")
 
 devtools::load_all()
 

@@ -8,7 +8,7 @@
 
 library(tidyverse)
 library(brms)
-library(mrpaw)
+library(bayesijmrp)
 library(optparse)
 
 source("mrp_lib.R")
@@ -52,7 +52,7 @@ orig_env <- load_into_env(file.path(opt$base_dir, "datasets/cces18_subset.Rdata"
 load_env <- load_into_env(opt$mcmc_file)
 
 weight_time <- Sys.time()
-mrp_list <- mrpaw::GetLogitMCMCWeights(
+mrp_list <- bayesijmrp::GetLogitMCMCWeights(
   load_env$logit_post, 
   survey_df=load_env$survey_boot_df, 
   pop_df=orig_env$pop_agg_df, 
@@ -63,7 +63,7 @@ weight_time <- Sys.time() - weight_time
 mrp <- mean(mrp_list$mrp_draws)
 mrp_var <- var(mrp_list$mrp_draws)
 
-infl <- mrpaw::EvalInfluenceFunction(mrp_list, load_env$logit_post, load_env$survey_boot_df)
+infl <- bayesijmrp::EvalInfluenceFunction(mrp_list, load_env$logit_post, load_env$survey_boot_df)
 
 # For fairness, time the IJ computation on its own rather than through MrPaw
 post <- load_env$logit_post

@@ -4,11 +4,11 @@
 # Effectively, this tests GetIVSEDerivs and GetRegressionSEDerivs with
 # both grouped and ungrouped standard errors.
 
-library(mrpaw)
+library(bayesijmrp)
 library(testthat)
 library(tidyverse)
 
-context("mrpaw")
+context("bayesijmrp")
 
 
 ###############
