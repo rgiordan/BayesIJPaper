@@ -217,7 +217,3 @@ save(combined_df_long_labeled,
      model_df,
      timing_df,
      file=file.path(writing_dir, paper_filename))
-
-
-
-stop()
