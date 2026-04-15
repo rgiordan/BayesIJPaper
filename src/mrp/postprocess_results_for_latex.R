@@ -9,7 +9,6 @@ library(mcmcse)
 library(lme4)
 
 
-
 LoadIntoEnv <- function(filename) {
   this_env <- new.env()
   load(filename, envir=this_env)
@@ -59,9 +58,11 @@ GetCovarianceSE <- function(x_draws, y_draws=NULL) {
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 
 
-# TODO: this should now be BayesIJPaper/src/mrp
-mrp_dir <- file.path(repo_dir, "src/bayes/mrp")
+mrp_dir <- file.path(repo_dir, "src/mrp")
 output_dir <- file.path(repo_dir, "paper/experiment_data/mrp")
+
+stopifnot(dir.exists(mrp_dir))
+stopifnot(dir.exists(output_dir))
 
 # Created with compile_postprocessing.R
 comb_env <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata"))
@@ -81,15 +82,9 @@ map_fit <- LoadIntoEnv(file.path(mrp_dir, "custom_map_analysis.Rdata"))
 
 
 
-# The columns are defined in postprocess_mcmc.R.
-# Note that as of 2/4 the mrp_var was actually sd(mrp)  -_-
-incorrect_mrp_var <- TRUE
 result_df <-
   comb_env$result_df %>%
   mutate(method=GetMethod(filename), seed=GetSeed(filename))
-if (incorrect_mrp_var) {
-  result_df <- result_df %>% mutate(mrp_var=mrp_var^2)
-}
 
 # The first ten runs didn't save the mcmc time, for no systematic
 # reason, just because I hadn't implemented saving yet.
@@ -162,8 +157,8 @@ if (FALSE) {
     geom_point(aes(x="IJ", y=(ij_var_orig))) +
     geom_boxplot(aes(x="IJ", y=(ij_var))) +
     geom_errorbar(aes(x="IJ", ymin=ij_var_orig - 2 * ij_var_se, ymax=ij_var_orig + 2 * ij_var_se )) +
-    geom_point(aes(x="Bayes", y=(bayes_var_orig))) +
-    geom_boxplot(aes(x="Bayes", y=(bayes_var))) +
+    # geom_point(aes(x="Bayes", y=(bayes_var_orig))) +
+    # geom_boxplot(aes(x="Bayes", y=(bayes_var))) +
     geom_point(aes(x="Bootstrap", y=(boot_var))) +
     geom_errorbar(aes(x="Bootstrap", ymin=boot_var - 2 * boot_var_se, ymax=boot_var + 2 * boot_var_se )) +
     geom_hline(aes(yintercept=(true_var), color="Estimated true variance")) +
