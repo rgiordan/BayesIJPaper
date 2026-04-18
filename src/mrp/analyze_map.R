@@ -41,12 +41,15 @@ mrp_dir <- file.path(repo_dir, "src/mrp")
 
 # Created with compile_postprocessing.R
 data_env <- LoadIntoEnv(file.path(mrp_dir, "datasets/cces18_subset.Rdata"))
-base_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata"))
+# base_fit <- LoadIntoEnv(file.path(
+#   mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata"))
 
 # Note that due to the lack of posterior_epred for rstan draws, this is
 # just the MAP and lmer fits, so we compare to base_mcmc directly.
-base_mcmc <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"))
-map_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_originalmap_seed134432_samples5000.Rdata"))
+base_mcmc <- LoadIntoEnv(file.path(
+  mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"))
+map_fit <- LoadIntoEnv(file.path(
+  mrp_dir, "bootstrap_data/mrp_originalmap_seed134432_samples5000.Rdata"))
 
 
 

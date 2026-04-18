@@ -64,14 +64,19 @@ stopifnot(dir.exists(mrp_dir))
 stopifnot(dir.exists(output_dir))
 
 # Created with compile_postprocessing.R
-comb_env <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata"))
-data_env <- LoadIntoEnv(file.path(mrp_dir, "datasets/cces18_subset.Rdata"))
-base_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata"))
+comb_env <- LoadIntoEnv(file.path(
+  mrp_dir, "bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata"))
+data_env <- LoadIntoEnv(file.path(
+  mrp_dir, "datasets/cces18_subset.Rdata"))
+base_fit <- LoadIntoEnv(file.path(
+  mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata"))
 
 # Note that due to the lack of posterior_epred for rstan draws, this is
 # just the MAP and lmer fits, so we compare to base_mcmc directly.
-base_mcmc <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"))
-lmer_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata"))
+base_mcmc <- LoadIntoEnv(file.path(
+  mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"))
+lmer_fit <- LoadIntoEnv(file.path(
+  mrp_dir, "bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata"))
 
 # Stan's MAP fit is no good, use our own instead
 map_fit <- LoadIntoEnv(file.path(mrp_dir, "custom_map_analysis.Rdata"))
