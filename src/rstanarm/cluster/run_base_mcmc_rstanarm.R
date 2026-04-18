@@ -9,7 +9,6 @@
 library(optparse)
 library(tidyverse)
 library(rstan)
-library(rstansensitivity)
 library(bayesijlib)
 library(rstanarmijlib)
 

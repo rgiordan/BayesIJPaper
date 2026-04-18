@@ -1,14 +1,14 @@
 library(tidyverse)
 library(bayesijlib)
 library(rstanarmijlib)
+#library(rstanarm)
 library(gridExtra)
 library(broom)
 
 
 options(mc.cores=4)
-rstan_options(auto_write=TRUE)
 base_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
-results_dir <- file.path(base_dir, "src/singular_simulations")
+results_dir <- file.path(base_dir, "src/singular_simulations/output")
 output_dir <- file.path(base_dir, "paper/experiment_data/simulations")
 
 
@@ -20,10 +20,15 @@ desc <- sprintf("redim%d_obsperre%d_seed%d", re_dim, obs_per_re, seed_val)
 
 # These results should be found in
 # src/singular_simulations
-sim_filename <- file.path(results_dir, sprintf("super_simple_simulation_sim_results_%s.Rdata", desc))
-base_filename <- file.path(results_dir, sprintf("super_simple_simulation_base_results_%s.Rdata", desc))
-load(base_filename)
+sim_filename <- file.path(
+  results_dir, 
+  sprintf("super_simple_simulation_sim_results_%s.Rdata", desc))
 load(sim_filename)
+
+base_filename <- file.path(
+  results_dir, 
+  sprintf("super_simple_simulation_base_results_%s.Rdata", desc))
+load(base_filename)
 
 ############################
 

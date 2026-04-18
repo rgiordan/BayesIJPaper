@@ -353,7 +353,7 @@ RunRstanarmBootstraps <- function(rstanarm_ij_config,
         if (rstanarm_ij_config$exchangeable_col != "") {
             stopifnot(rstanarm_ij_config$exchangeable_col %in% names(df_boot))
             exch_col <- df_boot[[rstanarm_ij_config$exchangeable_col]]
-            lp_mat <- rstansensitivity::GroupLogLikelihoodDraws(lp_mat, exch_col)
+            lp_mat <- rstanarmijlib::GroupLogLikelihoodDraws(lp_mat, exch_col)
         }
 
         ij_cov <- ComputeIJCovariance(lp_mat, draws_mat_boot)

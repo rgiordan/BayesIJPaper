@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # Example invocations:
-# ./run_map.R --base_dir=$(pwd) --original --save_filename=/tmp/test.Rdata
+# ./experiment_run_map.R --base_dir=$(pwd) --original --save_filename=/tmp/test.Rdata
 
 library(tidyverse)
 library(brms)
@@ -90,7 +90,7 @@ print(sprintf("Saving to %s", save_filename))
 if (!dir.exists(dirname(save_filename))) {
   success <- dir.create(dirname(save_filename), recursive=TRUE)
   if (!success) {
-    stop(sprintf("Failed to create save directory %s", dirnamte(save_filename)))
+    stop(sprintf("Failed to create save directory %s", dirname(save_filename)))
   }
 }
 
@@ -107,7 +107,7 @@ if (file.exists(save_filename)) {
 
 # Run analysis
 
-print("Running sampler.")
+print("Generating Stan model.")
 
 regressor_string <- paste0(
   " ~ (1 | state) + (1 | eth) + (1 | educ) + male + ",
@@ -124,11 +124,6 @@ logit_prior <- c(prior(normal(0, 2), class = b),
                  prior(normal(0, 10.5), class = b, coef = repvote), 
                  prior(exponential(0.5), class = sd))
 
-
-
-#code <- make_stancode(mpg ~ wt, data = mtcars)
-
-
 code <- make_stancode(
   formula(model_string), 
   family = bernoulli(link="logit"),
@@ -140,9 +135,14 @@ data <- make_standata(
   data = survey_sample_df,
   prior = logit_prior)
 
+print("Running optimization.")
 
 mod <- stan_model(model_code=code)
+stan_time <- Sys.time()
 map_fit <- optimizing(mod, data=data, hessian=TRUE, draws=5000, constrained=TRUE)
+stan_time <- Sys.time() - stan_time
+print("Optimizing done!")
+print(stan_time)
 
 class(map_fit)
 names(map_fit)

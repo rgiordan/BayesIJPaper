@@ -17,10 +17,10 @@ runs of the three `postprocess_for_paper.R` scripts produce all paper results.
 Multiple disconnects between what `postprocess_for_paper.R` expects and what
 the pipeline actually produces:
 
-**(a) Wrong search directory for input files.**  
+<!-- **(a) Wrong search directory for input files.**
 `postprocess_for_paper.R` line 11 sets `results_dir` to
 `src/singular_simulations/`, but `run_simpler_simulation.R` saves to
-`src/singular_simulations/output/`.
+`src/singular_simulations/output/`. -->
 
 **(b) Completely different file-naming conventions.**  
 `postprocess_for_paper.R` lines 23–24 looks for:
@@ -76,7 +76,7 @@ save(logit_post, survey_sample_df, opt, sys_info, sys_time, stan_time,
 
 ---
 
-### 3. `rstanarm` pipeline — requires `rstansensitivity` package
+<!-- ### 3. `rstanarm` pipeline — requires `rstansensitivity` package
 
 **Files:**  
 - `src/rstanarm/postprocess_for_paper.R` line 3: `library(rstansensitivity)`  
@@ -101,11 +101,11 @@ install a version from source/GitHub.
 - Otherwise, remove the `library(rstansensitivity)` lines (the package does
   not appear to be used beyond `GroupLogLikelihoodDraws`), and change
   `rstansensitivity::GroupLogLikelihoodDraws` → `GroupLogLikelihoodDraws` in
-  `run_bootstrapped_mcmc_rstanarm.R`.
+  `run_bootstrapped_mcmc_rstanarm.R`. -->
 
 ---
 
-### 4. `experiment_run_map.R` — `stan_time` undefined at save point
+<!-- ### 4. `experiment_run_map.R` — `stan_time` undefined at save point
 
 **File:** `src/mrp/experiment_run_map.R` line 156
 
@@ -121,9 +121,9 @@ assigned in the lmer branch only in `run_mcmc.R`, not in
 **Fix:** Add `stan_time <- NA` before the `save()` call, or compute it by
 timing the `optimizing()` call as done in the MAP branch of `run_mcmc.R`.
 
----
+--- -->
 
-## MODERATE BUGS
+<!-- ## MODERATE BUGS
 
 ### 5. Typo `dirnamte()` in two error-message paths
 
@@ -139,8 +139,8 @@ stop(sprintf("Failed to create save directory %s", dirnamte(save_filename)))
 directory creation fails, but when it does the error handler itself will error,
 obscuring the original problem.
 
-**Fix:** Replace `dirnamte` → `dirname` in both files.
-
+**Fix:** Replace `dirnamte` → `dirname` in both files. -->
+<!--
 ---
 
 ### 6. `generate_rstanarm_configs.R` — argument name mismatch
@@ -158,10 +158,10 @@ current reproduction, but it will prevent regenerating configs from scratch.
 **Fix:** Change `formula = row$formula_str` → `formula_str = row$formula_str`
 on line 55.
 
----
+--- -->
 
 ## DOCUMENTATION ERRORS
-
+<!--
 ### 7. README.md — wrong directory name and wrong package count
 
 **File:** `README.md` lines 12–13
@@ -173,9 +173,9 @@ on line 55.
 - There are **four** packages (`bayesijlib`, `rstanijlib`, `rstanarmijlib`,
   `bayesijmrp`), not three.
 
----
+--- -->
 
-### 8. CLAUDE.md — wrong path to `libs/` and incomplete package list
+<!-- ### 8. CLAUDE.md — wrong path to `libs/` and incomplete package list
 
 **File:** `CLAUDE.md`
 
@@ -183,8 +183,8 @@ on line 55.
   `libs/install_packages_locally.sh` (under the repo root, not under `src/`).
 - Lists only three packages; `bayesijmrp` is omitted.
 
----
-
+--- -->
+<!--
 ### 9. `src/rstanarm/README.md` — wrong script name
 
 **File:** `src/rstanarm/README.md` (Step 5 and the source command)
@@ -198,7 +198,7 @@ source("src/rstanarm/postprocess_ARM_results.R")  # wrong
 source("src/rstanarm/postprocess_for_paper.R")    # correct
 ```
 
----
+--- -->
 
 ### 10. `src/mrp/README.md` (and identical text in `mcmc_files.txt`) — two errors
 

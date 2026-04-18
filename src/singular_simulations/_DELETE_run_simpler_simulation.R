@@ -1,6 +1,9 @@
 #!/usr/bin/env Rscript
 # ./run_simpler_simulation.R --seed=1 --output_description=TEST --num_draws=10 --chains=1 --force
 
+# 4/18/26 I conjecture that this is not the file I used.
+
+
 library(rstanarm)
 library(rstan)
 library(tidyverse)

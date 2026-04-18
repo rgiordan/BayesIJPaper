@@ -52,7 +52,7 @@ for (i in 1:nrow(model_df)) {
         GenerateRstanarmIJConfig(
             model_name =  row$model_name,
             subdir =      row$subdir,
-            formula =     row$formula_str,
+            formula_str =     row$formula_str,
             rstan_fun =   row$rstan_fun,
             family =      row$family,
             num_obs_var = row$num_obs_var,

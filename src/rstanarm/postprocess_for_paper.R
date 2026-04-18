@@ -2,7 +2,6 @@
 
 library(tidyverse)
 library(rstan)
-library(rstansensitivity)
 library(gridExtra)
 
 library(bayesijlib)

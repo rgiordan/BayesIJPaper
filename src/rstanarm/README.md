@@ -64,10 +64,10 @@ This iterates over all models in `configs/rstanarm_ij_model_list.json`, loads
 the per-model `.Rdata` files from `cluster/output/`, and saves
 `cluster/output/compiled_results_1116.Rdata`.
 
-### Step 5 — Run `postprocess_ARM_results.R`
+### Step 5 — Run `postprocess_for_paper.R`
 
 ```r
-source("src/rstanarm/postprocess_ARM_results.R")
+source("src/rstanarm/postprocess_for_paper.R")
 ```
 
 The script:

@@ -8,8 +8,8 @@ the experiments for our paper,
 
 ## Install the packages
 
-There are three R packages that implement repeatedly-used functionality.  These
-packages are found in the `lib` directory, and can be installed
+There are four R packages that implement repeatedly-used functionality.  These
+packages are found in the `libs` directory, and can be installed
 using the `install_packages_locally.sh` script.
 
 ## Rerun the analyses

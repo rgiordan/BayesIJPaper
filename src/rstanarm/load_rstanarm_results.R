@@ -2,7 +2,6 @@
 
 library(tidyverse)
 library(rstanarm)
-library(rstansensitivity)
 library(gridExtra)
 
 library(broom)

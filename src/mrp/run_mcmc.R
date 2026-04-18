@@ -128,7 +128,7 @@ print(sprintf("Saving to %s", save_filename))
 if (!dir.exists(dirname(save_filename))) {
   success <- dir.create(dirname(save_filename), recursive=TRUE)
   if (!success) {
-    stop(sprintf("Failed to create save directory %s", dirnamte(save_filename)))
+    stop(sprintf("Failed to create save directory %s", dirname(save_filename)))
   }
 }
 
@@ -219,6 +219,7 @@ if (opt$lmer) {
 
 sys_info <- Sys.info()
 sys_time <- Sys.time()
-save(logit_post, survey_sample_df, opt, sys_info, sys_time, stan_time, file=save_filename)
+save(logit_post, survey_sample_df, opt, sys_info, sys_time, stan_time,
+     file=save_filename)
 
 
