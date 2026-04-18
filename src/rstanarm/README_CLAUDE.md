@@ -99,21 +99,3 @@ Reads:
 Produces: `paper/experiment_data/arm/arm_results_original_data_061721.Rdata`
 
 ---
-
-## Dependency Summary
-
-```
-configs/rstanarm_ij_model_list.json
-        |
-        +---> run_base_mcmc_rstanarm.R ---------> {model}_base_mcmc_{tag}.Rdata
-        |                                                    |
-        +---> run_bootstrapped_mcmc_rstanarm.R -> {model}_bootstrap_mcmc_{tag}.Rdata
-                                                             |
-                                                   load_rstanarm_results.R
-                                                             |
-                                                   compiled_results_1116.Rdata
-                                                             |
-                                                   postprocess_for_paper.R
-                                                             |
-                                          arm_results_original_data_061721.Rdata
-```
