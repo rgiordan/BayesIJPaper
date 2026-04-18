@@ -122,4 +122,5 @@ result_df <- data.frame(
   mcmc_time=stan_time)
 
 infl_vec <- infl$infl_vec
-save(result_df, infl_vec, num_blocks, ij_time, weight_time, linpred_time, file=save_filename)
+save(result_df, infl_vec, num_blocks, ij_time, weight_time, linpred_time, 
+     file=save_filename)

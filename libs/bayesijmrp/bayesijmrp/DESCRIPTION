@@ -5,7 +5,7 @@ Authors@R:
     person(given = "Anonymous",
            family = "Anonymous",
            role = c("aut", "cre"),
-           email = "Anonymous",
+           email = "anon@anon.com",
            comment = c(ORCID = "0000-0002-5686-9210"))
 Description: MCMC weights and influence functions for Bayesian MrP analyses
 Depends: R (>= 4.1.0), dplyr
