@@ -8,6 +8,7 @@ library(rstanarm)
 library(tidyverse)
 library(bayesijlib)
 library(rstanarmijlib)
+library(rstan)
 library(lme4)
 #library(gridExtra)
 #library(broom)
@@ -44,6 +45,17 @@ obs_per_re <- 100
 
 desc <- sprintf("redim%d_obsperre%d_seed%d", re_dim, obs_per_re, seed_val)
 
+TEST <- TRUE
+if (TEST) {
+  num_sims <- 5
+  num_draws <- 500
+  desc <- paste0("TEST_", desc)
+} else {
+  num_sims <- 100
+  num_draws <- 5000
+}
+
+
 model_formula <- formula("y ~ x - 1 + (1|z)")
 
 df_base <- DrawSimulatedData(re_dim, obs_per_re)
@@ -61,7 +73,7 @@ base_filename <- file.path(output_dir, sprintf(
 if (rerun_fit) {
   mcmc_time <- Sys.time()
   rstanarm_result <- rstanarm::stan_glmer(
-    model_formula, df_base, family=gaussian(), iter=5000)
+    model_formula, df_base, family=gaussian(), iter=num_draws)
   mcmc_time <- Sys.time() - mcmc_time
   print(mcmc_time)
   rstanarm_result
@@ -128,9 +140,7 @@ sim_filename <- file.path(
   output_dir, sprintf("super_simple_simulation_sim_results_%s.Rdata", desc))
 pars <- c("x", "sigma", "Sigma[z:(Intercept),(Intercept)]")
 
-num_sims <- 100
 sim_time <- Sys.time()
-
 sim_means <- data.frame()
 ij_cov_list <- list()
 bayes_cov_list <- list()
@@ -142,7 +152,8 @@ for (sim in 1:num_sims) {
   is_singular <- length(lme_res@optinfo$conv$lme4) > 0
   is_singular_list[[sim]] <- is_singular
 
-  rstanarm_result_sim <- rstanarm::stan_glmer(model_formula, df_sim, family=gaussian(), iter=5000)
+  rstanarm_result_sim <- rstanarm::stan_glmer(
+    model_formula, df_sim, family=gaussian(), iter=num_draws)
   par_draws_sim <- as.matrix(rstanarm_result_sim)
   par_draws_sim <- par_draws_sim[, pars]
   par_draws_sim <- cbind(
