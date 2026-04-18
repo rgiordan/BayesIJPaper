@@ -1,17 +1,18 @@
 #!/usr/bin/env Rscript
-# Example invocations:
+#
+# Example invocation:
 # ./simpler_simulation
 
-library(ggplot2)
+#library(ggplot2)
 library(rstanarm)
 library(tidyverse)
 library(bayesijlib)
 library(rstanarmijlib)
 library(lme4)
-library(gridExtra)
-library(broom)
-library(doParallel)
-library(sandwich)
+#library(gridExtra)
+#library(broom)
+#library(doParallel)
+#library(sandwich)
 
 options(mc.cores=4)
 rstan_options(auto_write=TRUE)
@@ -19,7 +20,7 @@ base_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 output_dir <- file.path(base_dir, "src/singular_simulations/output")
 
 ##############################################################################
-# This simple data generating process produces singular models some 
+# This simple data generating process produces singular models some
 # fraction of the time
 
 DrawSimulatedData <- function(num_re, obs_per_re) {
@@ -48,13 +49,8 @@ model_formula <- formula("y ~ x - 1 + (1|z)")
 df_base <- DrawSimulatedData(re_dim, obs_per_re)
 lmer_result <- lmer(model_formula, df_base)
 
-
 pars <- c("x", "sigma", "Sigma[z:(Intercept),(Intercept)]")
 
-# Set which analysis you want to rerun.  Note that the
-# simulations take a long time.
-
-rerun_sims <- TRUE
 rerun_fit <- TRUE
 
 #############################################################
@@ -131,55 +127,50 @@ cbind(num_exch_obs * diag(bayes_cov),
 sim_filename <- file.path(
   output_dir, sprintf("super_simple_simulation_sim_results_%s.Rdata", desc))
 pars <- c("x", "sigma", "Sigma[z:(Intercept),(Intercept)]")
-if (rerun_sims) {
-  num_sims <- 100
-  sim_means <- data.frame()
-  ij_cov_list <- list()
-  bayes_cov_list <- list()
-  is_singular_list <- list()
-  sim_time <- Sys.time()
-  for (sim in 1:num_sims) {
-    cat("------------------------------------\n", sim, "\n")
-    df_sim <- DrawSimulatedData(re_dim, obs_per_re)
-    lme_res <- lmer(y ~ x - 1 + (1 | z), df_sim)
-    is_singular <- length(lme_res@optinfo$conv$lme4) > 0
-    is_singular_list[[sim]] <- is_singular
-    
-    rstanarm_result_sim <- rstanarm::stan_glmer(model_formula, df_sim, family=gaussian(), iter=5000)
-    par_draws_sim <- as.matrix(rstanarm_result_sim)
-    par_draws_sim <- par_draws_sim[, pars]
-    par_draws_sim <- cbind(
-      par_draws_sim,
-      log(par_draws_sim[, "sigma"]),
-      log(par_draws_sim[, "Sigma[z:(Intercept),(Intercept)]"]))
-    colnames(par_draws_sim)[(ncol(par_draws_sim) - 1):ncol(par_draws_sim)] <-
-      c("log_sigma", "log_Sigma[z:(Intercept),(Intercept)]")
-    sim_df <- as.data.frame(colMeans(par_draws_sim))
-    colnames(sim_df) <- "mean"
-    sim_df <-
-      sim_df %>%
-      mutate(sim=!!sim, par=colnames(par_draws_sim))
-    
-    sim_means <- bind_rows(sim_means, sim_df)
-    
-    # Compute the covariance to check for bias.
-    lp_draws_sim <- log_lik(rstanarm_result_sim)
-    num_exch_obs <- ncol(lp_draws_sim)
-    
-    ij_cov_sim <- ComputeIJCovariance(lp_draws_sim, par_draws_sim)
-    
-    ij_cov_list[[sim]] <- ij_cov_sim
-    bayes_cov_list[[sim]] <- cov(par_draws_sim, par_draws_sim)
-  }
-  sim_time <- Sys.time() - sim_time
 
-  save(sim_means, sim_time, ij_cov_list, bayes_cov_list, is_singular_list,
-       file=sim_filename)
-} else {
-  load(sim_filename)
+num_sims <- 100
+sim_time <- Sys.time()
+
+sim_means <- data.frame()
+ij_cov_list <- list()
+bayes_cov_list <- list()
+is_singular_list <- list()
+for (sim in 1:num_sims) {
+  cat("------------------------------------\n", sim, "\n")
+  df_sim <- DrawSimulatedData(re_dim, obs_per_re)
+  lme_res <- lmer(y ~ x - 1 + (1 | z), df_sim)
+  is_singular <- length(lme_res@optinfo$conv$lme4) > 0
+  is_singular_list[[sim]] <- is_singular
+
+  rstanarm_result_sim <- rstanarm::stan_glmer(model_formula, df_sim, family=gaussian(), iter=5000)
+  par_draws_sim <- as.matrix(rstanarm_result_sim)
+  par_draws_sim <- par_draws_sim[, pars]
+  par_draws_sim <- cbind(
+    par_draws_sim,
+    log(par_draws_sim[, "sigma"]),
+    log(par_draws_sim[, "Sigma[z:(Intercept),(Intercept)]"]))
+  colnames(par_draws_sim)[(ncol(par_draws_sim) - 1):ncol(par_draws_sim)] <-
+    c("log_sigma", "log_Sigma[z:(Intercept),(Intercept)]")
+  sim_df <- as.data.frame(colMeans(par_draws_sim))
+  colnames(sim_df) <- "mean"
+  sim_df <-
+    sim_df %>%
+    mutate(sim=!!sim, par=colnames(par_draws_sim))
+
+  sim_means <- bind_rows(sim_means, sim_df)
+
+  # Compute the covariance to check for bias.
+  lp_draws_sim <- log_lik(rstanarm_result_sim)
+  num_exch_obs <- ncol(lp_draws_sim)
+
+  ij_cov_sim <- ComputeIJCovariance(lp_draws_sim, par_draws_sim)
+
+  ij_cov_list[[sim]] <- ij_cov_sim
+  bayes_cov_list[[sim]] <- cov(par_draws_sim, par_draws_sim)
 }
+sim_time <- Sys.time() - sim_time
 
-
-
+save(sim_means, sim_time, ij_cov_list, bayes_cov_list, is_singular_list,
+      file=sim_filename)
 
 

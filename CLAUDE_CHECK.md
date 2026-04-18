@@ -337,3 +337,19 @@ optional exploratory tools or removed to reduce confusion:
 | 15 | style | `bayesijlib`, `bayesijmrp` | Duplicate `GetBlockBootstrapCovarianceDraws` |
 | 16 | style | `rstanarmijlib/R/rstanarm_lib.R` line 311 | Scoping bug in `GetExchangeableColumn` |
 | — | info | `src/mrp/analysis.R` etc. | Orphaned exploratory scripts (4 files) |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
