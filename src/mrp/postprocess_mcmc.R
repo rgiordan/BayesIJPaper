@@ -8,6 +8,7 @@
 
 library(tidyverse)
 library(brms)
+library(bayesijlib) # For GetBlockBootstrapCovarianceDraws
 library(bayesijmrp)
 library(optparse)
 
@@ -93,7 +94,7 @@ stan_time <- ifelse(is.null(load_env$stan_time), NA, load_env$stan_time)
 lp_draws <- infl$lp_mat
 par_draws <- as.matrix(mrp_list$mrp_draws, ncol=1)
 num_blocks <- 100
-infl_block_boostrap_list <- GetBlockBootstrapCovarianceDraws(
+infl_block_boostrap_list <- bayesijlib::GetBlockBootstrapCovarianceDraws(
   lp_draws, par_draws, num_blocks=num_blocks, num_draws=500, show_progress_bar=TRUE
 )
 

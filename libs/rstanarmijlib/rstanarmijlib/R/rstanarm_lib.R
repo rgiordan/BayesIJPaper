@@ -1,17 +1,8 @@
-library(rstanarm)
-library(doParallel)
-library(lme4)
+
 
 ############################################
 # This whole file is only for the paper.
 
-# source(file.path(base_dir, "result_processing_lib.R"))
-# source(file.path(base_dir, "cov_se_lib.R"))
-# source(file.path(base_dir, "run_ij_lib.R"))
-
-# This actually didn't work that well.
-# https://github.com/pcdjohnson/GLMMmisc
-#library(GLMMmisc)
 
 GetRstanarmDataFrame <- function(stan_data, num_obs) {
     # Gather everything in stan_data with the right length.
@@ -254,6 +245,7 @@ GroupLogLikelihoodDraws <- function(loglik_draws_mat, exchangeable_col) {
 }
 
 
+#' @importFrom bayesijlib ComputeIJStandardErrors
 # Run the base MCMC and compute the IJ for an rstanarm configuration.
 RunRstanarmBaseMCMC <- function(rstanarm_ij_config,
                                 stan_examples_dir,
@@ -308,10 +300,10 @@ RunRstanarmBaseMCMC <- function(rstanarm_ij_config,
 
 
 GetExchangeableColumn <- function(exchangeable_col, df) {
-  if (rstanarm_ij_config$exchangeable_col == "") {
+  if (exchangeable_col == "") {
     ecol <- 1:nrow(df)
   } else {
-    ecol <- df[[rstanarm_ij_config$exchangeable_col]]
+    ecol <- df[[exchangeable_col]]
     stopifnot(length(ecol) == nrow(df))
   }
   return(ecol)

@@ -100,8 +100,6 @@ if (FALSE) {
     select(method, seed)
 }
 
-warning("Check whether mrp_var is actually the variance!!!")
-
 unique(result_df$method)
 
 mrp_boot_draws <- 

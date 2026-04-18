@@ -18,12 +18,14 @@ StackChainArray <- function(draws_array) {
 }
 
 
+#' @importFrom rstan extract
 #' @export
 OrderedExtract <- function(modelfit, pars) {
     return(StackChainArray(rstan::extract(modelfit, pars, permute=FALSE)))
 }
 
 
+#' @importFrom mcmcse mcse.multi
 mcse.multi_safe <- function(arg_draws) {
     # Set a default to return if the method fails.
     output_list <- list(cov=matrix(NA, ncol(arg_draws), ncol(arg_draws)))

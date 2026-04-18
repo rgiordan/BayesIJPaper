@@ -1,7 +1,3 @@
-library(tidyverse)
-library(brms)
-
-
 ##############################################
 # MCMC
 
