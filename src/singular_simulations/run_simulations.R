@@ -151,6 +151,8 @@ for (sim in 1:num_sims) {
   colnames(par_draws_sim)[(ncol(par_draws_sim) - 1):ncol(par_draws_sim)] <-
     c("log_sigma", "log_Sigma[z:(Intercept),(Intercept)]")
 
+  # colMeans returns a column vector, so each row of the
+  # dataframe is a parameter.
   sim_df <- as.data.frame(colMeans(par_draws_sim))
   colnames(sim_df) <- "mean"
   sim_df <-
