@@ -79,7 +79,7 @@ lmer_fit <- LoadIntoEnv(file.path(
   mrp_dir, "bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata"))
 
 # Stan's MAP fit is no good, use our own instead
-map_fit <- LoadIntoEnv(file.path(mrp_dir, "custom_map_analysis.Rdata"))
+map_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/custom_map_analysis.Rdata"))
 
 
 

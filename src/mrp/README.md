@@ -72,7 +72,7 @@ Computes an improved MAP estimator using Stan and produces comparison tables (MC
 Rscript analyze_map.R
 ```
 
-Produces: `custom_map_analysis.Rdata`
+Produces: `bootstrap_data/custom_map_analysis.Rdata`
 
 ---
 
@@ -171,6 +171,6 @@ Reads:
 - `bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata`
 - `bootstrap_data/mrp_original_seed134432_samples5000.Rdata`
 - `bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata`
-- `custom_map_analysis.Rdata`
+- `bootstrap_data/custom_map_analysis.Rdata`
 
 Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata`

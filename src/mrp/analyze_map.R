@@ -375,4 +375,4 @@ if (FALSE) {
 # Save our results here
 
 save(map_mcmc_df, map_mcmc_wide_df, opt_result, opt_par,
-     file=file.path(mrp_dir, "custom_map_analysis.Rdata"))
+     file=file.path(mrp_dir, "bootstrap_data/custom_map_analysis.Rdata"))
