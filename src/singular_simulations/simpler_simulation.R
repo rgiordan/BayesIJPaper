@@ -63,7 +63,7 @@ lmer_result <- lmer(model_formula, df_base)
 
 pars <- c("x", "sigma", "Sigma[z:(Intercept),(Intercept)]")
 
-rerun_fit <- TRUE
+rerun_fit <- FALSE
 
 #############################################################
 # Compute the base fit that we will use to compute the IJ
@@ -76,7 +76,6 @@ if (rerun_fit) {
     model_formula, df_base, family=gaussian(), iter=num_draws)
   mcmc_time <- Sys.time() - mcmc_time
   print(mcmc_time)
-  rstanarm_result
 
   par_draws <- as.matrix(rstanarm_result)
   par_draws <- par_draws[, pars]
@@ -118,17 +117,17 @@ lp_draws <- log_lik(rstanarm_result)
 ij_cov <- ComputeIJCovariance(lp_draws, par_draws)
 bayes_cov <- cov(par_draws, par_draws)
 
-ij_freq_se <- ComputeIJFrequentistSe(lp_draws, par_draws)
-ij_se <- se_results$ij_cov_se
-ij_full_se <- sqrt(ij_freq_se^2 + ij_se^2)
-
-bayes_freq_se <- ComputeIJFrequentistSe(par_draws, par_draws)
-bayes_se <- se_results$bayes_cov_se
-bayes_full_se <- sqrt(bayes_freq_se^2 + bayes_se^2)
-
-cbind(num_exch_obs * diag(bayes_cov),
-      diag(ij_cov))
-
+# ij_freq_se <- ComputeIJFrequentistSe(lp_draws, par_draws)
+# ij_se <- se_results$ij_cov_se
+# ij_full_se <- sqrt(ij_freq_se^2 + ij_se^2)
+# 
+# bayes_freq_se <- ComputeIJFrequentistSe(par_draws, par_draws)
+# bayes_se <- se_results$bayes_cov_se
+# bayes_full_se <- sqrt(bayes_freq_se^2 + bayes_se^2)
+# 
+# cbind(num_exch_obs * diag(bayes_cov),
+#       diag(ij_cov))
+# 
 
 
 
@@ -136,24 +135,30 @@ cbind(num_exch_obs * diag(bayes_cov),
 ########################################################
 # Run simulations to get the true frequentist variance
 
-sim_filename <- file.path(
-  output_dir, sprintf("super_simple_simulation_sim_results_%s.Rdata", desc))
 pars <- c("x", "sigma", "Sigma[z:(Intercept),(Intercept)]")
 
 sim_time <- Sys.time()
-sim_means <- data.frame()
-ij_cov_list <- list()
-bayes_cov_list <- list()
-is_singular_list <- list()
+# sim_means <- data.frame()
+# ij_cov_list <- list()
+# bayes_cov_list <- list()
+# is_singular_list <- list()
 for (sim in 1:num_sims) {
   cat("------------------------------------\n", sim, "\n")
+  sim_filename <- file.path(
+    output_dir, sprintf("super_simple_simulation_sim%d_results_%s.Rdata", 
+                        sim, desc))
+
   df_sim <- DrawSimulatedData(re_dim, obs_per_re)
   lme_res <- lmer(y ~ x - 1 + (1 | z), df_sim)
   is_singular <- length(lme_res@optinfo$conv$lme4) > 0
-  is_singular_list[[sim]] <- is_singular
+  # is_singular_list[[sim]] <- is_singular
 
+  mcmc_time <- Sys.time()
   rstanarm_result_sim <- rstanarm::stan_glmer(
     model_formula, df_sim, family=gaussian(), iter=num_draws)
+  mcmc_time <- Sys.time() - mcmc_time
+  print(mcmc_time)
+
   par_draws_sim <- as.matrix(rstanarm_result_sim)
   par_draws_sim <- par_draws_sim[, pars]
   par_draws_sim <- cbind(
@@ -162,26 +167,29 @@ for (sim in 1:num_sims) {
     log(par_draws_sim[, "Sigma[z:(Intercept),(Intercept)]"]))
   colnames(par_draws_sim)[(ncol(par_draws_sim) - 1):ncol(par_draws_sim)] <-
     c("log_sigma", "log_Sigma[z:(Intercept),(Intercept)]")
+
   sim_df <- as.data.frame(colMeans(par_draws_sim))
   colnames(sim_df) <- "mean"
   sim_df <-
     sim_df %>%
     mutate(sim=!!sim, par=colnames(par_draws_sim))
 
-  sim_means <- bind_rows(sim_means, sim_df)
-
   # Compute the covariance to check for bias.
   lp_draws_sim <- log_lik(rstanarm_result_sim)
   num_exch_obs <- ncol(lp_draws_sim)
 
-  ij_cov_sim <- ComputeIJCovariance(lp_draws_sim, par_draws_sim)
+  ij_cov <- ComputeIJCovariance(lp_draws_sim, par_draws_sim)
 
-  ij_cov_list[[sim]] <- ij_cov_sim
-  bayes_cov_list[[sim]] <- cov(par_draws_sim, par_draws_sim)
+  # ij_cov_list[[sim]] <- ij_cov_sim
+  # bayes_cov_list[[sim]] <- cov(par_draws_sim, par_draws_sim)
+  ij_cov <- ij_cov_sim
+  bayes_cov <- cov(par_draws_sim, par_draws_sim)
+  # Save simulations results
+  save(sim_df, mcmc_time, ij_cov, bayes_cov, is_singular,
+       file=sim_filename)
 }
 sim_time <- Sys.time() - sim_time
-
-save(sim_means, sim_time, ij_cov_list, bayes_cov_list, is_singular_list,
-      file=sim_filename)
+print(sim_time)
+cat("Done!  (˶˃ ᵕ ˂˶)\n\n")
 
 
