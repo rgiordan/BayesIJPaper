@@ -149,10 +149,7 @@ if (opt$base) {
   se_results <- list(
     bayes_cov_se=se_results_env$bayes_cov_se,
     bayes_cov_se_delta_method=se_results_env$bayes_cov_se_delta_method,
-    bayes_ij_diff_se=se_results_env$bayes_ij_diff_se,
-    bayes_se_list=se_results_env$bayes_se_list,
-    ij_cov_se=se_results_env$ij_cov_se,
-    ij_se_list=se_results_env$ij_se_list
+    ij_cov_se=se_results_env$ij_cov_se
   )
 
   # Don't save the lp draws, they take up too much disk space.

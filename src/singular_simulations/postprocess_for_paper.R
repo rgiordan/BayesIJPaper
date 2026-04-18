@@ -51,21 +51,30 @@ if (FALSE) {
   # This line must be based on an outdated use of the block bootstrap,
   # since this standard error has the wrong dimension.  You need
   # the sampling variance of the IJ variance, not of the scores themselves.
-  ij_se <- se_results$ij_cov_se$cov_se
+  ij_se <- base_env$se_results$ij_cov_se$cov_se
 }
 
-ij_se_list <- GetBlockBootstrapCovarianceDraws(
-  lp_draws, par_draws, num_blocks=100, num_draws=100)
-num_pars <- ncol(par_draws)
-num_samples <- dim(ij_se_list$cov_samples)[1] 
-ij_cov_draws <- array(NA, dim=c(num_samples, num_pars, num_pars))
-for (draw in 1:num_samples) {
-  infl_draws_mat <- num_exch_obs * ij_se_list$cov_samples[draw,,]
-  ij_cov_draw <- cov(infl_draws_mat, infl_draws_mat)
-  colnames(ij_cov_draw) <- rownames(ij_cov_draw) <- colnames(par_draws)
-  ij_cov_draws[draw,,] <- ij_cov_draw
+{
+  # TODO: this logic is now in ComputeIJStandardErrors, but that
+  # would require re-running all the samplers.  After rerunning MCMC
+  # with the updated ComputeIJStandardErrors, you could just use
+  # ij_mcmc_se <- base_env$se_results$ij_cov_se
+  
+  ij_se_list <- GetBlockBootstrapCovarianceDraws(
+    lp_draws, par_draws, num_blocks=100, num_draws=100)
+  num_pars <- ncol(par_draws)
+  num_samples <- dim(ij_se_list$cov_samples)[1] 
+  ij_cov_draws <- array(NA, dim=c(num_samples, num_pars, num_pars))
+  for (draw in 1:num_samples) {
+    infl_draws_mat <- num_exch_obs * ij_se_list$cov_samples[draw,,]
+    ij_cov_draw <- cov(infl_draws_mat, infl_draws_mat)
+    colnames(ij_cov_draw) <- rownames(ij_cov_draw) <- colnames(par_draws)
+    ij_cov_draws[draw,,] <- ij_cov_draw
+  }
+  ij_mcmc_se <- apply(ij_cov_draws, FUN=sd, MARGIN=c(2,3))
 }
-ij_mcmc_se <- apply(ij_cov_draws, FUN=sd, MARGIN=c(2,3))
+
+
 ij_full_se <- sqrt(ij_freq_se^2 + ij_mcmc_se^2)
 colnames(ij_full_se) <- rownames(ij_full_se) <- colnames(par_draws)
 

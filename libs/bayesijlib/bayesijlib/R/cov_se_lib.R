@@ -159,18 +159,11 @@ GetBlockBootstrapCovarianceDraws <- function(draws1_mat, draws2_mat,
 }
 
 
-ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks, num_draws) {
-  # This way of doing it was based on an old version of
-  # GetBlockBootstrapCovarianceDraws.  I include it only as a record
-  # of what the function used to do.
-  # ij_se_list <- GetBlockBootstrapCovarianceDraws(
-  #     lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
-  # ij_cov_se <- ij_se_list$cov_se
-
+ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks=100, num_draws=100) {
 
   # Compute block bootstrap draws of the influence function
   ij_se_list <- GetBlockBootstrapCovarianceDraws(
-    lp_draws, par_draws, num_blocks=100, num_draws=100)
+    lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
   num_pars <- ncol(par_draws)
   num_samples <- dim(ij_se_list$cov_samples)[1]
   ij_cov_draws <- array(NA, dim=c(num_samples, num_pars, num_pars))
@@ -193,7 +186,23 @@ ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks, num_draws) 
   bayes_cov_se_delta_method <-
     GetCovarianceMatrixSE(par_draws, par_draws, correlated_samples=TRUE)
 
-  return(environment())
+  # Note: bayes_ij_diff_se is not currently saved, though it used to be.
+  # Note that the difference between the ij_cov and bayes_cov
+  # are correlated under MCMC sampling since they use the same samples,
+  # so you cannot compute the standard error of the difference from
+  # the individual standard errors.
+  # Instead, to compute it, use the block bootstraps from ij_se_list.
+
+  return(list(
+    ij_se_list=ij_se_list,
+    ij_cov_se=ij_cov_se,
+    bayes_cov_se=bayes_cov_se,
+    bayes_cov_se_delta_method=bayes_cov_se_delta_method,
+A    bayes_se_list=bayes_se_list,
+    num_obs=num_obs,
+    num_blocks=num_blocks,
+    num_draws=num_draws
+  ))
 }
 
 

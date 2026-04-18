@@ -87,37 +87,37 @@ for (i in 1:length(model_list)) {
             select(-ij_cov) %>%
             rename(ij_freq_se=ij_se)
 
-        if (FALSE) {
-            # Compute when these are done
-            boot_ij_covs <-
-                boot_results$boot_ij_covs %>%
-                unlist() %>%
-                array(dim=c(dim(boot_results$boot_ij_covs[[1]]),
-                            length(boot_results$boot_ij_covs)))
-            stopifnot(max(abs(boot_ij_covs[,,1] - boot_results$boot_ij_covs[[1]])) < 1e-12) # Sanity check
-            ij_boot_se <- apply(boot_ij_covs, MARGIN=c(1, 2), sd)
-            rownames(ij_boot_se) <- colnames(ij_boot_se) <- rownames(ij_cov)
+        # if (FALSE) {
+        #     # Compute when these are done
+        #     boot_ij_covs <-
+        #         boot_results$boot_ij_covs %>%
+        #         unlist() %>%
+        #         array(dim=c(dim(boot_results$boot_ij_covs[[1]]),
+        #                     length(boot_results$boot_ij_covs)))
+        #     stopifnot(max(abs(boot_ij_covs[,,1] - boot_results$boot_ij_covs[[1]])) < 1e-12) # Sanity check
+        #     ij_boot_se <- apply(boot_ij_covs, MARGIN=c(1, 2), sd)
+        #     rownames(ij_boot_se) <- colnames(ij_boot_se) <- rownames(ij_cov)
 
-            ij_boot_se_df <- with(
-                base_results$mcmc_results,
-                TidyCovarianceFrame(ij_cov, ij_boot_se, "ij")) %>%
-                select(-ij_cov) %>%
-                rename(ij_boot_se=ij_se)
-        }
+        #     ij_boot_se_df <- with(
+        #         base_results$mcmc_results,
+        #         TidyCovarianceFrame(ij_cov, ij_boot_se, "ij")) %>%
+        #         select(-ij_cov) %>%
+        #         rename(ij_boot_se=ij_se)
+        # }
         
         bayes_cov_se <- base_results$mcmc_results$se$bayes_cov_se
         bayes_df <- with(
             base_results$mcmc_results,
             TidyCovarianceFrame(num_exch_obs * bayes_cov, num_exch_obs * bayes_cov_se, "bayes"))
 
-        ij_m_bayes_cov_se <- base_results$mcmc_results$se$bayes_ij_diff_se
-        diff_df <- with(
-            base_results$mcmc_results,
-            TidyCovarianceFrame(
-                num_exch_obs * bayes_cov - ij_cov,
-                ij_m_bayes_cov_se, "bayes_ij_diff")) %>%
-            rename(bayes_ij_diff=bayes_ij_diff_cov) %>%
-            mutate(bayes_ij_z=bayes_ij_diff / bayes_ij_diff_se)
+        # ij_m_bayes_cov_se <- base_results$mcmc_results$se$bayes_ij_diff_se
+        # diff_df <- with(
+        #     base_results$mcmc_results,
+        #     TidyCovarianceFrame(
+        #         num_exch_obs * bayes_cov - ij_cov,
+        #         ij_m_bayes_cov_se, "bayes_ij_diff")) %>%
+        #     rename(bayes_ij_diff=bayes_ij_diff_cov) %>%
+        #     mutate(bayes_ij_z=bayes_ij_diff / bayes_ij_diff_se)
     
         join_cols <- c("row_variable", "column_variable",
                        "row_variable_name", "column_variable_name",
@@ -125,7 +125,7 @@ for (i in 1:length(model_list)) {
         this_tidy_result <-
             ij_df %>%
             inner_join(bayes_df, by=join_cols) %>%
-            inner_join(diff_df, by=join_cols) %>%
+            # inner_join(diff_df, by=join_cols) %>%
             inner_join(ij_full_se_df, by=join_cols) %>%
             inner_join(ij_freq_se_df, by=join_cols)
      
@@ -191,7 +191,7 @@ combined_df <-
     mutate("ij_bootstrap_ijdiff_z"=ij_bootstrap_diff / ij_full_se) %>%
     ComputeRelativeError("bayes", "bootstrap") %>%
     mutate(cov_scale=abs(bootstrap_cov) + bootstrap_se) %>%  
-    NormalizeColumn("bayes_ij_diff") %>%
+    # NormalizeColumn("bayes_ij_diff") %>%
     NormalizeColumn("bayes_bootstrap_diff") %>%
     NormalizeColumn("ij_bootstrap_diff") %>%
     mutate(is_diag=(column_variable == row_variable)) %>%

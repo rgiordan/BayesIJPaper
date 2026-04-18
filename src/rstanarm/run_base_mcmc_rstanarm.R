@@ -154,7 +154,6 @@ save_se_fields <- c(
   "ij_cov_se",
   "bayes_cov_se",
   "bayes_cov_se_delta_method",
-  "bayes_ij_diff_se",
   "num_blocks",
   "num_draws",
   "num_obs")
