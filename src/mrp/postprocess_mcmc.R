@@ -53,7 +53,7 @@ load_env <- load_into_env(opt$mcmc_file)
 weight_time <- Sys.time()
 mrp_list <- bayesijmrp::GetLogitMCMCWeights(
   load_env$logit_post, 
-  survey_df=load_env$survey_boot_df, 
+  survey_df=load_env$survey_sample_df, 
   pop_df=orig_env$pop_agg_df, 
   pop_w=orig_env$pop_agg_df$w,
   save_preds=TRUE)
@@ -64,7 +64,9 @@ mrp_var <- var(mrp_list$mrp_draws)
 
 infl <- bayesijmrp::EvalInfluenceFunction(mrp_list, 
                                           load_env$logit_post, 
-                                          load_env$survey_boot_df)
+                                          load_env$survey_sample_df)
+infl$infl_vec
+
 
 # For fairness, time the IJ computation on its own rather than through MrPaw
 post <- load_env$logit_post
@@ -72,7 +74,7 @@ post <- load_env$logit_post
 ij_time <- Sys.time()
 stopifnot(class(post) == "brmsfit")
 linpred_time <- Sys.time()
-eta_draws <- posterior_linpred(post, newdata=load_env$survey_boot_df)
+eta_draws <- posterior_linpred(post, newdata=load_env$survey_sample_df)
 linpred_time <- Sys.time() - linpred_time
 y <- post$data$abortion
 lp_mat <- (y * t(eta_draws) - log(1 + exp(t(eta_draws)))) %>% t()

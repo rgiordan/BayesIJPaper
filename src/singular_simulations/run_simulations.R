@@ -182,8 +182,9 @@ for (sim in 1:num_sims) {
 
   # ij_cov_list[[sim]] <- ij_cov_sim
   # bayes_cov_list[[sim]] <- cov(par_draws_sim, par_draws_sim)
-  ij_cov <- ij_cov_sim
   bayes_cov <- cov(par_draws_sim, par_draws_sim)
+
+  cat("Saving to", sim_filename, "\n")
   # Save simulations results
   save(sim_df, mcmc_time, ij_cov, bayes_cov, is_singular,
        file=sim_filename)

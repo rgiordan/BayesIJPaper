@@ -6,7 +6,7 @@ Issues are organized from most to least critical.  The goal is that successful
 runs of the three `postprocess_for_paper.R` scripts produce all paper results.
 
 ---
-
+<!--
 ## CRITICAL BUGS — will prevent `postprocess_for_paper.R` from running
 
 ### 1. `singular_simulations/postprocess_for_paper.R` — broken pipeline
@@ -21,7 +21,7 @@ the pipeline actually produces:
 `postprocess_for_paper.R` line 11 sets `results_dir` to
 `src/singular_simulations/`, but `run_simpler_simulation.R` saves to
 `src/singular_simulations/output/`. -->
-
+<!--
 **(b) Completely different file-naming conventions.**  
 `postprocess_for_paper.R` lines 23–24 looks for:
 ```
@@ -51,9 +51,9 @@ compute or save `se_results`.
 - Write (or recover) a script that aggregates multiple simulation runs into a
   `sim_results` file containing `sim_means` and `ij_cov_list`.
 - Ensure `se_results` (block-bootstrap standard errors for IJ and Bayes
-  covariances) is computed and saved by the simulation script.
+  covariances) is computed and saved by the simulation script. -->
 
----
+--- -->
 
 ### 2. `mrp/postprocess_mcmc.R` — wrong variable name for survey data
 
