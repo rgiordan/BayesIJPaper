@@ -1,7 +1,6 @@
 library(tidyverse)
 library(bayesijlib)
 library(rstanarmijlib)
-#library(rstanarm)
 library(gridExtra)
 library(broom)
 

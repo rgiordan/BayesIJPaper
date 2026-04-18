@@ -4,7 +4,7 @@
 # or a single simulation replicate.
 #
 # Example invocations:
-# ./run_mcmc.R --base
+# ./run_mcmc.R --base --seed=100 --re_dim=100 --obs_per_re=100
 # ./run_mcmc.R -sim --sim_num=1 --seed=100
 # ./run_mcmc.R --sim --sim_num=3 --seed=100 --prefix=TEST
 
