@@ -92,7 +92,23 @@ ComputeIJCovariance <- function(loglik_draws_mat, param_draws_mat,
   num_obs <- ncol(loglik_draws_mat)
   infl_draws_mat <- num_obs * cov(loglik_draws_mat, param_draws_mat)
   colnames(infl_draws_mat) <- colnames(param_draws_mat)
-  ij_cov <- cov(infl_draws_mat, infl_draws_mat)
+  ij_cov <- ComputeIJCovarianceFromInfluence(infl_mat)
   return(ij_cov)
+}
+
+
+#' Return an estimate of the infinitesimal jackknife covariance estimate
+#' of the frequentist variance of the posterior expectations of the parameters
+#' in param_draws_mat.
+#' @param infl_mat A matrix of n * cov(lp, par), with datapoints in rows and parameters
+#'                 in columns.
+#' @return The IJ covariance matrix, which is an estimate of
+#' N * Cov(E[params | x]), where N is the number of distinct exchangeable
+#' observations.
+#' @export
+ComputeIJCovarianceFromInfluence <- function(infl_mat) {
+    ij_cov <- cov(infl_mat, infl_mat)
+    colnames(ij_cov) <- rownames(ij_cov) <- colnames(infl_mat)
+    return(ij_cov)
 }
 

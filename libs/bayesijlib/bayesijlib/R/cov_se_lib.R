@@ -36,8 +36,11 @@ mcse.multi_safe <- function(arg_draws) {
 }
 
 GetCovarianceSE <- function(x_draws, y_draws, correlated_samples) {
-    # Get standard errors for a single scalar covariance.   x_draws and y_draws should
-    # be vectors, not matrices.
+    # Get standard errors for a single scalar covariance under
+    # random sampling of the rows of the draws.   This uses
+    # the population moments and the delta method.
+
+    # x_draws and y_draws should be vectors, not matrices.
     x_mean <- mean(x_draws)
     y_mean <- mean(y_draws)
 
@@ -57,7 +60,8 @@ GetCovarianceSE <- function(x_draws, y_draws, correlated_samples) {
 
 
 GetCovarianceMatrixSE <- function(x_draws, y_draws, correlated_samples) {
-    # Get standard errors for a covariance matrix.  x_draws and y_draws should
+    # Get standard errors for a covariance matrix under random sampling of
+    # the rows of x_draws and y_draws.  x_draws and y_draws should
     # be matrices.
     stopifnot(nrow(x_draws) == nrow(y_draws))
     num_x_pars <- ncol(x_draws)
@@ -156,12 +160,29 @@ GetBlockBootstrapCovarianceDraws <- function(draws1_mat, draws2_mat,
 
 
 ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks, num_draws) {
-  # This covariance attempts to compute the effective sample size using
-  # autocorrelation and compute the Monte Carlo error that way.
+  # This way of doing it was based on an old version of
+  # GetBlockBootstrapCovarianceDraws.  I include it only as a record
+  # of what the function used to do.
+  # ij_se_list <- GetBlockBootstrapCovarianceDraws(
+  #     lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
+  # ij_cov_se <- ij_se_list$cov_se
 
+
+  # Compute block bootstrap draws of the influence function
   ij_se_list <- GetBlockBootstrapCovarianceDraws(
-      lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
-  ij_cov_se <- ij_se_list$cov_se
+    lp_draws, par_draws, num_blocks=100, num_draws=100)
+  num_pars <- ncol(par_draws)
+  num_samples <- dim(ij_se_list$cov_samples)[1]
+  ij_cov_draws <- array(NA, dim=c(num_samples, num_pars, num_pars))
+  for (draw in 1:num_samples) {
+    # For each blocked draw, compute ij_cov
+    infl_draws_mat <- num_exch_obs * ij_se_list$cov_samples[draw,,]
+    colnames(infl_draws_mat) <- colnames(par_draws)
+    ij_cov_draw <- bayesijlib::ComputeIJCovarianceFromInfluence(infl_draws_mat)
+    ij_cov_draws[draw,,] <- ij_cov_draw
+  }
+  ij_cov_se <- apply(ij_cov_draws, FUN=sd, MARGIN=c(2,3))
+  colnames(ij_cov_se) <- rownames(ij_cov_se) <- colnames(par_draws)
 
   num_obs <- ncol(lp_draws)
   bayes_se_list <- GetBlockBootstrapCovarianceDraws(
