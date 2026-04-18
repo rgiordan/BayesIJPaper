@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -a 1-100
-#SBATCH -c 4
+#SBATCH -c 1
 #SBATCH --output=output/logs/mcmc_%A_%a_%j.out
 #SBATCH --error=output/logs/mcmc_%A_%a_%j.err
 
