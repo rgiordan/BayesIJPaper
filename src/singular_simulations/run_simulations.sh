@@ -7,4 +7,4 @@
 #SBATCH --error=output/logs/singular_simulations-%j-%a.err
 #SBATCH --cpus-per-task 4
 
-./run_simulation.R
+./run_simulations.R

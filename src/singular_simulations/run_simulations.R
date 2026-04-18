@@ -45,7 +45,7 @@ obs_per_re <- 100
 
 desc <- sprintf("redim%d_obsperre%d_seed%d", re_dim, obs_per_re, seed_val)
 
-TEST <- TRUE
+TEST <- FALSE
 if (TEST) {
   num_sims <- 5
   num_draws <- 500
