@@ -14,9 +14,10 @@ import subprocess
 
 _BASE = 'base'
 _BOOT = 'bootstrap'
-_SIM = 'simulation'
-_LME4 = 'lme4'
-_VALID_ANALYSES = [ _BASE, _BOOT, _SIM, _LME4 ]
+# _SIM = 'simulation'
+# _LME4 = 'lme4'
+# _VALID_ANALYSES = [ _BASE, _BOOT, _SIM, _LME4 ]
+_VALID_ANALYSES = [ _BASE, _BOOT ]
 
 # Optionally set this to a default remote folder
 default_base_dir = None
@@ -59,15 +60,15 @@ with open(model_list_full_path, "r") as f:
     model_list = json.loads(f.read())
 
 # Set which script to run.
-r_script_dir = os.path.join(args.base_dir, 'rstanarm/cluster')
+r_script_dir = os.path.join(args.base_dir, 'rstanarm/')
 if analysis == _BASE:
     script = os.path.join(r_script_dir, 'run_base_mcmc_rstanarm.R')
 elif analysis == _BOOT:
     script = os.path.join(r_script_dir, 'run_bootstrapped_mcmc_rstanarm.R')
-elif analysis == _SIM:
-    script = os.path.join(r_script_dir, 'run_mcmc_simulations_rstanarm.R')
-elif analysis == _LME4:
-    script = os.path.join(r_script_dir, 'run_lme4.R')
+# elif analysis == _SIM:
+#     script = os.path.join(r_script_dir, 'run_mcmc_simulations_rstanarm.R')
+# elif analysis == _LME4:
+#     script = os.path.join(r_script_dir, 'run_lme4.R')
 
 if not os.path.isfile(script):
     raise ValueError('Script {} does not exist.'.format(script))

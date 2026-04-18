@@ -1,4 +1,5 @@
-# Load and process results produced by run_base_mcmc_rstanarm.R and run_bootstrap_mcmc_rstanarm.
+# Load and process results produced by 
+# run_base_mcmc_rstanarm.R and run_bootstrap_mcmc_rstanarm.
 
 library(tidyverse)
 library(rstanarm)
@@ -194,7 +195,7 @@ combined_df <-
     NormalizeColumn("bayes_bootstrap_diff") %>%
     NormalizeColumn("ij_bootstrap_diff") %>%
     mutate(is_diag=(column_variable == row_variable)) %>%
-    mutate(is_re=(column_variable_name == "b" || row_variable_name == "b"))
+    mutate(is_re=(column_variable_name == "b" | row_variable_name == "b"))
 
 combined_df_nore <-
     combined_df %>%
