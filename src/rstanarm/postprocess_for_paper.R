@@ -210,7 +210,7 @@ if (FALSE) {
 ##########################################
 # Save a file with all the ARM results
 
-paper_filename <- sprintf("arm_results_original_data_061721.Rdata")
+paper_filename <- sprintf("arm_results_postprocessed.Rdata")
 save(combined_df_long_labeled,
      combined_df_wide_labeled,
      model_df,

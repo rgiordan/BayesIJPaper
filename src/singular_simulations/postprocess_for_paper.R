@@ -3,6 +3,7 @@ library(bayesijlib)
 library(rstanarmijlib)
 library(gridExtra)
 library(broom)
+library(latex2exp)
 
 
 options(mc.cores=4)
@@ -22,33 +23,60 @@ desc <- sprintf("redim%d_obsperre%d_seed%d", re_dim, obs_per_re, seed_val)
 sim_filename <- file.path(
   results_dir, 
   sprintf("super_simple_simulation_sim_results_%s.Rdata", desc))
-load(sim_filename)
+sim_env <- LoadIntoEnv(sim_filename)
 
 base_filename <- file.path(
   results_dir, 
   sprintf("super_simple_simulation_base_results_%s.Rdata", desc))
-load(base_filename)
+base_env <- LoadIntoEnv(base_filename)
 
 ############################
 
-lp_draws <- log_lik(rstanarm_result)
+lp_draws <- log_lik(base_env$rstanarm_result)
+par_draws <- base_env$par_draws
 num_exch_obs <- ncol(lp_draws)
 
 ij_cov <- ComputeIJCovariance(lp_draws, par_draws)
 bayes_cov <- cov(par_draws, par_draws)
 
+# ij_freq_se estimates the sampling variability of
+# ij_cov over resampling of the datapoints.
 ij_freq_se <- ComputeIJFrequentistSe(lp_draws, par_draws)
-ij_se <- se_results$ij_cov_se
-ij_full_se <- sqrt(ij_freq_se^2 + ij_se^2)
+
+if (FALSE) {
+  # se_results comes from the corresponding entries of ComputeIJStandardErrors,
+  # and ij_cov_se is the cov_se entry of the output of 
+  # GetBlockBootstrapCovarianceDraws(lp_draws, par_draws).
+  
+  # This line must be based on an outdated use of the block bootstrap,
+  # since this standard error has the wrong dimension.  You need
+  # the sampling variance of the IJ variance, not of the scores themselves.
+  ij_se <- se_results$ij_cov_se$cov_se
+}
+
+ij_se_list <- GetBlockBootstrapCovarianceDraws(
+  lp_draws, par_draws, num_blocks=100, num_draws=100)
+num_pars <- ncol(par_draws)
+num_samples <- dim(ij_se_list$cov_samples)[1] 
+ij_cov_draws <- array(NA, dim=c(num_samples, num_pars, num_pars))
+for (draw in 1:num_samples) {
+  infl_draws_mat <- num_exch_obs * ij_se_list$cov_samples[draw,,]
+  ij_cov_draw <- cov(infl_draws_mat, infl_draws_mat)
+  colnames(ij_cov_draw) <- rownames(ij_cov_draw) <- colnames(par_draws)
+  ij_cov_draws[draw,,] <- ij_cov_draw
+}
+ij_mcmc_se <- apply(ij_cov_draws, FUN=sd, MARGIN=c(2,3))
+ij_full_se <- sqrt(ij_freq_se^2 + ij_mcmc_se^2)
+colnames(ij_full_se) <- rownames(ij_full_se) <- colnames(par_draws)
 
 bayes_freq_se <- ComputeIJFrequentistSe(par_draws, par_draws)
-bayes_se <- se_results$bayes_cov_se
-bayes_full_se <- sqrt(bayes_freq_se^2 + bayes_se^2)
+bayes_mcmc_se <- base_env$se_results$bayes_cov_se
+bayes_full_se <- sqrt(bayes_freq_se^2 + bayes_mcmc_se^2)
 
 ###################################
 
 sim_draws <-
-    sim_means %>%
+    sim_env$sim_means %>%
     pivot_wider(id_cols="sim", names_from="par", values_from="mean") %>%
     select(-sim) %>%
     as.matrix()
@@ -63,13 +91,13 @@ cbind(num_exch_obs * diag(sim_cov),
 
 
 #####################
-
-keep_pars <- c("(Intercept)", "x", "log_sigma")
-keep_cols <- rownames(ij_cov) %in% keep_pars
-
-ij_covs <- array(unlist(ij_cov_list), dim=c(dim(ij_cov_list[[1]]), length(ij_cov_list)))
-stopifnot(max(abs(ij_covs[, ,1] - ij_cov_list[[1]])) < 1e-12)
-ij_cov_boot_se <- apply(ij_covs, MARGIN=c(1,2), sd)
+# 
+# keep_pars <- c("(Intercept)", "x", "log_sigma")
+# keep_cols <- rownames(ij_cov) %in% keep_pars
+# 
+# ij_covs <- array(unlist(ij_cov_list), dim=c(dim(ij_cov_list[[1]]), length(ij_cov_list)))
+# stopifnot(max(abs(ij_covs[, ,1] - ij_cov_list[[1]])) < 1e-12)
+# ij_cov_boot_se <- apply(ij_covs, MARGIN=c(1,2), sd)
 
 
 ########################
@@ -104,13 +132,13 @@ var_label_df <- bind_rows(
 )
 
 
-cov_wide_df <-
-    cov_long_df %>%
-    pivot_wider(id_cols=c(row_variable, column_variable),
-                names_from=c(method, metric), values_from=value) %>%
-    filter(row_variable == column_variable) %>%
-    rename(variable=row_variable) %>%
-    inner_join(var_label_df, by="variable")
+# cov_wide_df <-
+#     cov_long_df %>%
+#     pivot_wider(id_cols=c(row_variable, column_variable),
+#                 names_from=c(method, metric), values_from=value) %>%
+#     filter(row_variable == column_variable) %>%
+#     rename(variable=row_variable) %>%
+#     inner_join(var_label_df, by="variable")
 
 
 cov_wide2_df <-
@@ -129,7 +157,9 @@ levels(cov_wide2_df$variable_label) <-
     TeX(sprintf("$%s$", levels(cov_wide2_df$variable_label)))
 
 if (FALSE) {
-    ggplot(cov_wide2_df %>% filter(variable %in% plot_vars)) +
+  cov_wide2_df %>% 
+    # filter(variable %in% plot_vars) %>%
+    ggplot() +
         geom_bar(aes(y=mean, fill=method, x=method),
                 position="dodge", stat="Identity") +
         geom_errorbar(aes(ymin=mean - 2 * se, ymax=mean + 2 * se, x=method)) +
@@ -140,6 +170,6 @@ if (FALSE) {
 
 num_mcmc_draws <- nrow(par_draws)
 num_sims <- nrow(sim_draws)
-save(cov_long_df, cov_wide_df, cov_wide2_df,
+save(cov_long_df, cov_wide2_df,
      re_dim, obs_per_re, num_exch_obs, seed_val, num_mcmc_draws, num_sims,
      file=file.path(output_dir, "simpler_sim_results.Rdata"))
