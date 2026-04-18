@@ -63,71 +63,54 @@ lmer_result <- lmer(model_formula, df_base)
 
 pars <- c("x", "sigma", "Sigma[z:(Intercept),(Intercept)]")
 
-rerun_fit <- FALSE
 
 #############################################################
 # Compute the base fit that we will use to compute the IJ
 
 base_filename <- file.path(output_dir, sprintf(
   "super_simple_simulation_base_results_%s.Rdata", desc))
-if (rerun_fit) {
-  mcmc_time <- Sys.time()
-  rstanarm_result <- rstanarm::stan_glmer(
-    model_formula, df_base, family=gaussian(), iter=num_draws)
-  mcmc_time <- Sys.time() - mcmc_time
-  print(mcmc_time)
 
-  par_draws <- as.matrix(rstanarm_result)
-  par_draws <- par_draws[, pars]
-  par_draws <- cbind(
-    par_draws,
-    log(par_draws[, "sigma"]),
-    log(par_draws[, "Sigma[z:(Intercept),(Intercept)]"]))
-  colnames(par_draws)[(ncol(par_draws) - 1):ncol(par_draws)] <-
-    c("log_sigma", "log_Sigma[z:(Intercept),(Intercept)]")
-  
-  head(par_draws)
-  
-  lp_draws <- log_lik(rstanarm_result)
-  num_exch_obs <- ncol(lp_draws)
-  
-  se_results_env <- ComputeIJStandardErrors(
-    lp_draws=lp_draws, par_draws=par_draws, num_blocks=100, num_draws=100)
-  
-  se_results <- list(
-    bayes_cov_se=se_results_env$bayes_cov_se,
-    bayes_cov_se_delta_method=se_results_env$bayes_cov_se_delta_method,
-    bayes_ij_diff_se=se_results_env$bayes_ij_diff_se,
-    bayes_se_list=se_results_env$bayes_se_list,
-    ij_cov_se=se_results_env$ij_cov_se,
-    ij_se_list=se_results_env$ij_se_list
-  )
-  
-  # Don't save the lp draws, they take up too much disk space.
-  save(df_base, mcmc_time, rstanarm_result, par_draws, se_results,
-       file=base_filename)
-  
-} else {
-  load(base_filename)
-}
+mcmc_time <- Sys.time()
+rstanarm_result <- rstanarm::stan_glmer(
+  model_formula, df_base, family=gaussian(), iter=num_draws)
+mcmc_time <- Sys.time() - mcmc_time
+print(mcmc_time)
+
+par_draws <- as.matrix(rstanarm_result)
+par_draws <- par_draws[, pars]
+par_draws <- cbind(
+  par_draws,
+  log(par_draws[, "sigma"]),
+  log(par_draws[, "Sigma[z:(Intercept),(Intercept)]"]))
+colnames(par_draws)[(ncol(par_draws) - 1):ncol(par_draws)] <-
+  c("log_sigma", "log_Sigma[z:(Intercept),(Intercept)]")
+
+head(par_draws)
 
 lp_draws <- log_lik(rstanarm_result)
-#pars <- colnames(par_draws)[!grepl("^b\\[", colnames(par_draws))]
+num_exch_obs <- ncol(lp_draws)
+
+se_results_env <- ComputeIJStandardErrors(
+  lp_draws=lp_draws, par_draws=par_draws, num_blocks=100, num_draws=100)
+
+se_results <- list(
+  bayes_cov_se=se_results_env$bayes_cov_se,
+  bayes_cov_se_delta_method=se_results_env$bayes_cov_se_delta_method,
+  bayes_ij_diff_se=se_results_env$bayes_ij_diff_se,
+  bayes_se_list=se_results_env$bayes_se_list,
+  ij_cov_se=se_results_env$ij_cov_se,
+  ij_se_list=se_results_env$ij_se_list
+)
+
+# Don't save the lp draws, they take up too much disk space.
+save(df_base, mcmc_time, rstanarm_result, par_draws, se_results,
+      file=base_filename)
+  
+
+lp_draws <- log_lik(rstanarm_result)
 
 ij_cov <- ComputeIJCovariance(lp_draws, par_draws)
 bayes_cov <- cov(par_draws, par_draws)
-
-# ij_freq_se <- ComputeIJFrequentistSe(lp_draws, par_draws)
-# ij_se <- se_results$ij_cov_se
-# ij_full_se <- sqrt(ij_freq_se^2 + ij_se^2)
-# 
-# bayes_freq_se <- ComputeIJFrequentistSe(par_draws, par_draws)
-# bayes_se <- se_results$bayes_cov_se
-# bayes_full_se <- sqrt(bayes_freq_se^2 + bayes_se^2)
-# 
-# cbind(num_exch_obs * diag(bayes_cov),
-#       diag(ij_cov))
-# 
 
 
 
