@@ -15,3 +15,9 @@ install_local(file.path(
 install_local(file.path(
     lib_loc, "bayesijmrp/bayesijmrp"),
     force=TRUE, upgrade="never")
+
+
+# Untested attempt to unify the libraries
+# install_local(file.path(
+#     lib_loc, "bayesijpaper/bayesijpaper"),
+#     force=TRUE, upgrade="never")
