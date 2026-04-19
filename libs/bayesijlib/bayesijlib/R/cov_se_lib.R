@@ -165,6 +165,7 @@ ComputeIJStandardErrors <- function(lp_draws, par_draws, num_blocks=100, num_dra
   ij_se_list <- GetBlockBootstrapCovarianceDraws(
     lp_draws, par_draws, num_blocks=num_blocks, num_draws=num_draws)
   num_pars <- ncol(par_draws)
+  num_exch_obs <- ncol(lp_draws)
   num_samples <- dim(ij_se_list$cov_samples)[1]
   ij_cov_draws <- array(NA, dim=c(num_samples, num_pars, num_pars))
   for (draw in 1:num_samples) {

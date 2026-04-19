@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #
 # Example usage:
-# $ rstanarm/cluster/run_bootstrapped_mcmc_rstanarm.R ---model_list_ind="1" --default_num_boots=2 --save_filename="/tmp/test.Rdata" --force
+# $ ./run_bootstrapped_mcmc_rstanarm.R --model_list_ind="1" --default_num_boots=2 --save_filename="/tmp/test.Rdata" --force
 
 library(optparse)
 library(tidyverse)
