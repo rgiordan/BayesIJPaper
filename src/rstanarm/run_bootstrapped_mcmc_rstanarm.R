@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 #
 # Example usage:
-# $ rstanarm/cluster/run_bootstrapped_mcmc_rstanarm.R --base_dir=$(pwd) --model_list_ind="1" --default_num_boots=2 --save_filename="/tmp/test.Rdata" --force
+# $ rstanarm/cluster/run_bootstrapped_mcmc_rstanarm.R ---model_list_ind="1" --default_num_boots=2 --save_filename="/tmp/test.Rdata" --force
 
 library(optparse)
 library(tidyverse)
@@ -12,8 +12,8 @@ library(rstanarmijlib)
 
 option_list <- list(
     make_option(c("--base_dir"),
-                default="./",
-                help="The base directory"),
+                default=system("git rev-parse --show-toplevel", intern=TRUE),
+                help="The base directory of the repository"),
     make_option(c("--model_list_filename"),
                 default="rstanarm_ij_model_list.json",
                 help="The name of the model list JSON file."),

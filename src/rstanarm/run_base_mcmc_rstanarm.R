@@ -1,10 +1,9 @@
 #!/usr/bin/env Rscript
 #
 # Example usage:
-# $ rstanarm/cluster/run_base_mcmc_rstanarm.R --base_dir=$(pwd) --model_list_ind="1" --save_draws --save_filename="/tmp/test_1.Rdata" --force
-# $ ./run_base_mcmc_rstanarm.R --base_dir=$(pwd) --model_list_ind="64" --save_draws --save_filename="/tmp/test_64.Rdata" --force
-# $ ./run_base_mcmc_rstanarm.R --base_dir=$(pwd) --model_list_ind="19" --save_draws --save_filename="/tmp/test_19.Rdata" --force
-# $ ./run_base_mcmc_rstanarm.R --base_dir=$(pwd) --model_list_ind="1" --save_draws --save_filename="/tmp/test_1_sim.Rdata" --model_list_filename=rstanarm_ij_simulation_model_list.json --force
+# $ ./run_base_mcmc_rstanarm.R --model_list_ind="1" --save_draws --save_filename="/tmp/test_1.Rdata" --force
+# $ ./run_base_mcmc_rstanarm.R --model_list_ind="64" --save_draws --save_filename="/tmp/test_64.Rdata" --force
+# $ ./run_base_mcmc_rstanarm.R --model_list_ind="19" --save_draws --save_filename="/tmp/test_19.Rdata" --force
 
 library(optparse)
 library(tidyverse)
@@ -17,8 +16,8 @@ num_mcmc_cores <- 2
 
 option_list <- list(
     make_option(c("--base_dir"),
-                default="./",
-                help="The base directory"),
+                default=system("git rev-parse --show-toplevel", intern=TRUE),
+                help="The base directory of the repository"),
     make_option(c("--model_list_filename"),
                 default="rstanarm_ij_model_list.json",
                 help="The name of the model list JSON file."),
@@ -58,8 +57,6 @@ print(opt)
 print("===================")
 
 base_dir <- opt$base_dir
-# setwd(base_dir)
-# source(file.path(base_dir, "rstanarm_lib.R"))
 
 stopifnot(!is.null(opt$model_list_ind))
 
@@ -68,7 +65,7 @@ stan_examples_dir <- file.path(base_dir, "example-models")
 
 #model_list_file <- file(file.path(base_dir, opt$model_list_filename), "rb")
 model_list_file <- file(file.path(
-  base_dir, "rstanarm/configs", opt$model_list_filename), "rb")
+  base_dir, "src/rstanarm/configs", opt$model_list_filename), "rb")
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
@@ -88,7 +85,7 @@ rstanarm_ij_config <- SetConfigDefaults(
 
 
 if (is.null(opt$save_filename)) {
-  save_filename <- file.path(base_dir, "output",
+  save_filename <- file.path(base_dir, "src/rstanarm/cluster/output",
                              sprintf("%s_base_mcmc.Rdata", rstanarm_ij_config$desc))
 } else {
   save_filename <- opt$save_filename

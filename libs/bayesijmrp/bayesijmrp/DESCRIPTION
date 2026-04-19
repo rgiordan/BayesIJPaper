@@ -16,3 +16,4 @@ Roxygen: list(markdown = TRUE)
 RoxygenVersion: 7.3.2
 Suggests:
     testthat, purrr, rlang
+RoxygenNote: 7.3.2

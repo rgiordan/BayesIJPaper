@@ -1,3 +1,5 @@
+#!/usr/bin/env Rscript
+
 library(ggplot2)
 library(tidyverse)
 library(rstanarm)
@@ -52,7 +54,7 @@ for (i in 1:nrow(model_df)) {
         GenerateRstanarmIJConfig(
             model_name =  row$model_name,
             subdir =      row$subdir,
-            formula_str =     row$formula_str,
+            formula_str = row$formula_str,
             rstan_fun =   row$rstan_fun,
             family =      row$family,
             num_obs_var = row$num_obs_var,
@@ -73,18 +75,18 @@ write(model_json, file=outfile)
 close(outfile)
 
 
-########################################
-# Get configurations for a rerun.
+# ########################################
+# # Get configurations for a rerun.
 
-if (FALSE) {
-    rerun_inds <- which(model_df$rerun)
-    rerun_model_list <- lapply(rerun_inds, function(i) { model_list[[i]] })
-    rerun_model_list[[6]]
+# if (FALSE) {
+#     rerun_inds <- which(model_df$rerun)
+#     rerun_model_list <- lapply(rerun_inds, function(i) { model_list[[i]] })
+#     rerun_model_list[[6]]
 
-    # Save as JSON
-    rerun_model_json <- jsonlite::toJSON(rerun_model_list)
-    outfile <- file(file.path(base_dir, "rerun_rstanarm_ij_model_list.json"), "wb")
-    write(rerun_model_json, file=outfile)
-    close(outfile)
-}
+#     # Save as JSON
+#     rerun_model_json <- jsonlite::toJSON(rerun_model_list)
+#     outfile <- file(file.path(base_dir, "rerun_rstanarm_ij_model_list.json"), "wb")
+#     write(rerun_model_json, file=outfile)
+#     close(outfile)
+# }
 
