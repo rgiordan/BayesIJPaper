@@ -11,43 +11,146 @@
 
 
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection}}
+\newcommand{\armNumModels}{56}
+\newcommand{\armNumDatasets}{14}
+\newcommand{\armNumCovsEstimated}{768}
+\newcommand{\armNumMCMCSamples}{2{,}000}
+\newcommand{\armNumBootstraps}{200}
+\newcommand{\armMedianNumObs}{240}
+\newcommand{\armMinNumObs}{40}
+\newcommand{\armMaxNumObs}{3{,}020}
+\newcommand{\armMinMCMCTimeSecs}{1.37}
+\newcommand{\armMaxMCMCTimeMins}{41.81}
+\newcommand{\armTotalMCMCTimeMins}{57.74}
+\newcommand{\armTotalBootTimeHours}{266.83}
+\newcommand{\simNumRe}{100}
+\newcommand{\simNumObs}{10{,}000}
+\newcommand{\simNumSims}{11}
+\newcommand{\simNumMCMCDraws}{10{,}000}
+\newcommand{\mrpThetaDim}{129}
+\newcommand{\mrpNobs}{5{,}000}
+\newcommand{\mrpNTotalobs}{59{,}810}
+\newcommand{\mrpNSamples}{101}
+\newcommand{\mrpNMCMC}{18{,}000}
+\newcommand{\mrpNperD}{38.76}
+\newcommand{\mrpNBoot}{101}
+\newcommand{\mrpBootMinutes}{12}
+\newcommand{\mrpIJSec}{15}
+\newcommand{\mrpLinpredSec}{10}
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in readChar(con, 5L, useBytes = TRUE): cannot open the connection}}\end{kframe}
-\end{knitrout}
-
-\begin{kframe}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'arm\_env' not found}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'simple\_sim\_env' not found}}
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'mrp\_env' not found}}\end{kframe}
 
 
 \def\ARMTable{
 \begin{table}[h]
-\begin{kframe}
+\begin{center}
+% latex table generated in R 4.5.3 by xtable 1.8-4 package
+% Sat Apr 18 17:46:58 2026
+\begin{tabular}{|l|c|c|}
+  \hline
+ & Fixed effects only & Random and fixed effects \\ 
+  \hline
+Linear regression & 398 & 168 \\ 
+   \hline
+Logistic regression & 192 &  10 \\ 
+   \hline
+\end{tabular}
 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'arm\_env' not found}}\end{kframe}
+Models
+
+\vspace{0.1in}% latex table generated in R 4.5.3 by xtable 1.8-4 package
+% Sat Apr 18 17:46:58 2026
+\begin{tabular}{|l|c|c|}
+  \hline
+ & Cross-covariance estimate & Variance estimate \\ 
+  \hline
+Log scale parameter & 191 &  62 \\ 
+   \hline
+Regression parameter & 325 & 190 \\ 
+   \hline
+\end{tabular}
+
+
+Covariances to estimate
+
+\end{center}
+
 \caption{Models from \cite{gelman:2006:arm}\tablabel{arm_models}}
 \end{table}
 }
 
 
 \def\ARMModelList{
-\begin{kframe}
+% latex table generated in R 4.5.3 by xtable 1.8-4 package
+% Sat Apr 18 17:46:58 2026
+\begin{table}[ht]
+\centering
+\begin{tabular}{rlllr}
+  \hline
+ & Chapter & Model & Dataset & Number of parameters \\ 
+  \hline
+1 & ARM\_Ch.10 & ideo\_reparam & ideo &  15 \\ 
+  2 & ARM\_Ch.10 & sesame\_multi\_preds\_3a & sesame &  45 \\ 
+  3 & ARM\_Ch.10 & sesame\_multi\_preds\_3b & sesame &  45 \\ 
+  4 & ARM\_Ch.10 & sesame\_one\_pred\_2b & sesame &   6 \\ 
+  5 & ARM\_Ch.10 & sesame\_one\_pred\_a & sesame &   6 \\ 
+  6 & ARM\_Ch.10 & sesame\_one\_pred\_b & sesame &   6 \\ 
+  7 & ARM\_Ch.12 & radon\_complete\_pool & radon &   6 \\ 
+  8 & ARM\_Ch.12 & radon\_group & radon &  15 \\ 
+  9 & ARM\_Ch.12 & radon\_group\_chr & radon &  15 \\ 
+  10 & ARM\_Ch.12 & radon\_intercept & radon &   6 \\ 
+  11 & ARM\_Ch.12 & radon\_intercept\_chr & radon &   6 \\ 
+  12 & ARM\_Ch.12 & radon\_no\_pool & radon &  10 \\ 
+  13 & ARM\_Ch.12 & radon\_no\_pool\_chr & radon &  10 \\ 
+  14 & ARM\_Ch.13 & pilots & pilots &  10 \\ 
+  15 & ARM\_Ch.13 & radon\_inter\_vary & radon &  21 \\ 
+  16 & ARM\_Ch.13 & radon\_vary\_si & radon &  10 \\ 
+  17 & ARM\_Ch.14 & election88 & election &  10 \\ 
+  18 & ARM\_Ch.20 & hiv & hiv &  10 \\ 
+  19 & ARM\_Ch.20 & hiv\_inter & hiv &  15 \\ 
+  20 & ARM\_Ch.23 & electric & electric &  10 \\ 
+  21 & ARM\_Ch.23 & electric\_1a & electric &  15 \\ 
+  22 & ARM\_Ch.23 & electric\_1b & electric &  15 \\ 
+  23 & ARM\_Ch.23 & electric\_multi\_preds & electric &  10 \\ 
+  24 & ARM\_Ch.23 & electric\_one\_pred & electric &   6 \\ 
+  25 & ARM\_Ch.3 & kidiq\_interaction & kidscore &  15 \\ 
+  26 & ARM\_Ch.3 & kidiq\_multi\_preds & kidscore &  10 \\ 
+  27 & ARM\_Ch.3 & kidscore\_momhs & kidscore &   6 \\ 
+  28 & ARM\_Ch.3 & kidscore\_momiq & kidscore &   6 \\ 
+  29 & ARM\_Ch.4 & logearn\_height & earnings &   6 \\ 
+  30 & ARM\_Ch.4 & logearn\_height\_male & earnings &  10 \\ 
+  31 & ARM\_Ch.4 & logearn\_interaction & earnings &  15 \\ 
+  32 & ARM\_Ch.4 & logearn\_logheight & earnings &  10 \\ 
+  33 & ARM\_Ch.4 & mesquite\_log & mesquite &  36 \\ 
+  34 & ARM\_Ch.4 & mesquite\_va & mesquite &  15 \\ 
+  35 & ARM\_Ch.4 & mesquite\_vas & mesquite &  36 \\ 
+  36 & ARM\_Ch.4 & mesquite\_vash & mesquite &  28 \\ 
+  37 & ARM\_Ch.4 & mesquite\_volume & mesquite &  15 \\ 
+  38 & ARM\_Ch.5 & nes2000\_vote & vote &   3 \\ 
+  39 & ARM\_Ch.5 & separation & separation &   3 \\ 
+  40 & ARM\_Ch.5 & wells\_d100ars & wells &   6 \\ 
+  41 & ARM\_Ch.5 & wells\_daae\_c & wells &  21 \\ 
+  42 & ARM\_Ch.5 & wells\_dae & wells &  10 \\ 
+  43 & ARM\_Ch.5 & wells\_dae\_c & wells &  15 \\ 
+  44 & ARM\_Ch.5 & wells\_dae\_inter & wells &  15 \\ 
+  45 & ARM\_Ch.5 & wells\_dae\_inter\_c & wells &  28 \\ 
+  46 & ARM\_Ch.5 & wells\_dist100 & wells &   3 \\ 
+  47 & ARM\_Ch.5 & wells\_interaction & wells &  10 \\ 
+  48 & ARM\_Ch.5 & wells\_interaction\_c & wells &  10 \\ 
+  49 & ARM\_Ch.5 & wells\_predicted & wells &  28 \\ 
+  50 & ARM\_Ch.5 & wells\_predicted\_log & wells &  28 \\ 
+  51 & ARM\_Ch.6 & earnings1 & earnings &   6 \\ 
+  52 & ARM\_Ch.6 & earnings2 & earnings &  10 \\ 
+  53 & ARM\_Ch.7 & congress & congress &  10 \\ 
+  54 & ARM\_Ch.7 & earnings1 & earnings &   6 \\ 
+  55 & ARM\_Ch.7 & earnings2 & earnings &  10 \\ 
+  56 & ARM\_Ch.7 & earnings\_interactions & earnings &  15 \\ 
+   \hline
+\end{tabular}
+\end{table}
 
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'arm\_env' not found}}\end{kframe}
 }
 
 
@@ -55,10 +158,15 @@
 %
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.588\linewidth]{figure/relerr_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'arm\_env' not found}}\end{kframe}
+}
+
+\caption[The distribution of the z-statistics $\zdiff$]{The distribution of the z-statistics $\zdiff$.  Red lines indicate the boundaries of a two-sided normal test for significance with level $0.1$, and ``Rejected'' counts the number of covariances in both sides of the rejection region.  The ``Log scale parameter'' panel includes all variances or covariances that involve at least one log scale parameter.}\label{fig:relerr_graph}
+\end{figure}
+
 \end{knitrout}
 }
 
@@ -67,10 +175,15 @@
 %
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.588\linewidth]{figure/normerr_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'arm\_env' not found}}\end{kframe}
+}
+
+\caption[The distribution of the relative errors $\normdiffij$]{The distribution of the relative errors $\normdiffij$. The ``Log scale parameter'' panel includes all variances or covariances that involve at least one log scale parameter.}\label{fig:normerr_graph}
+\end{figure}
+
 \end{knitrout}
 }
 
@@ -80,10 +193,15 @@
 %
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.588\linewidth]{figure/normerr_post_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'arm\_env' not found}}\end{kframe}
+}
+
+\caption[The distribution of the relative errors $\normdiffbayes$]{The distribution of the relative errors $\normdiffbayes$. The ``Log scale parameter'' panel includes all variances or covariances that involve at least one log scale parameter.}\label{fig:normerr_post_graph}
+\end{figure}
+
 \end{knitrout}
 }
 
@@ -96,10 +214,15 @@
 \def\SingularResultsGraph{
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.294\linewidth]{figure/simple_sim_result-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in PlotVar("{}x"{}): object 'simple\_sim\_env' not found}}\end{kframe}
+}
+
+\caption[The difference from the simulation, IJ, and Bayesian covariances]{The difference from the simulation, IJ, and Bayesian covariances. Standard errors include variation due to both Monte Carlo and, in the case of the IJ and simulation, frequentist error.}\label{fig:simple_sim_result}
+\end{figure}
+
 \end{knitrout}
 %
 }
@@ -119,10 +242,15 @@
 \newcommand{\MRPGraph}{
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.490\linewidth]{figure/mrp_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'mrp\_env' not found}}\end{kframe}
+}
+
+\caption[Covariance estimates for the MrP model]{Covariance estimates for the MrP model. The dots are the estimates computed on the single dataset chosen as the basis for bootstrapping. The boxplots show the spread of the IJ and posterior covariance across simulations, which includes both frequentist and MCMC variability. The horizontal line shows the true sampling variance as estimated by simulation.}\label{fig:mrp_graph}
+\end{figure}
+
 \end{knitrout}
 }
 
@@ -130,10 +258,15 @@
 \newcommand{\MRPMAPGraph}{
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.490\linewidth]{figure/mrp_map_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'mrp\_env' not found}}\end{kframe}
+}
+
+\caption[MAP versus MCMC for the MrP model]{MAP versus MCMC for the MrP model}\label{fig:mrp_map_graph}
+\end{figure}
+
 \end{knitrout}
 }
 
@@ -143,10 +276,15 @@
 \newcommand{\MRPLMERGraph}{
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.490\linewidth]{figure/mrp_lmer_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'mrp\_env' not found}}\end{kframe}
+}
+
+\caption[LMER versus MCMC for the MrP model]{LMER versus MCMC for the MrP model}\label{fig:mrp_lmer_graph}
+\end{figure}
+
 \end{knitrout}
 }
 
@@ -154,9 +292,14 @@
 \newcommand{\MRPLMERSdGraph}{
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{figure}[!h]
 
+{\centering \includegraphics[width=0.98\linewidth,height=0.490\linewidth]{figure/mrp_lmer_sd_graph-1} 
 
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in eval(ei, envir): object 'mrp\_env' not found}}\end{kframe}
+}
+
+\caption[LMER versus MCMC standard errors for the MrP model]{LMER versus MCMC standard errors for the MrP model}\label{fig:mrp_lmer_sd_graph}
+\end{figure}
+
 \end{knitrout}
 }
