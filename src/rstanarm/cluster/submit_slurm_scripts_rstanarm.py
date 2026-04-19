@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Create and submit shell scripts to run ``model_script.R`` for a set of models.
+"""Create and submit shell scripts to run MCMC for a set of rstanarm models.
 
 Example
-rstanarm/cluster/submit_slurm_scripts_rstanarm.py --base_dir=$(pwd) --no-submit --description='test' --analysis='base'
+./submit_slurm_scripts_rstanarm.py --no-submit --description='test' --analysis='base'
+./submit_slurm_scripts_rstanarm.py --no-submit --description='test' --analysis='bootstrap'
 """
 
 import argparse
@@ -12,11 +13,17 @@ import json
 import os
 import subprocess
 
+def get_git_root():
+    result = subprocess.run(
+        ["git", "rev-parse", "--show-toplevel"],
+        capture_output=True,
+        text=True,
+        check=True
+    )
+    return result.stdout.strip()
+
 _BASE = 'base'
 _BOOT = 'bootstrap'
-# _SIM = 'simulation'
-# _LME4 = 'lme4'
-# _VALID_ANALYSES = [ _BASE, _BOOT, _SIM, _LME4 ]
 _VALID_ANALYSES = [ _BASE, _BOOT ]
 
 # Optionally set this to a default remote folder
@@ -50,8 +57,11 @@ if not analysis in _VALID_ANALYSES:
     print('Valid analyses:', str(_VALID_ANALYSES))
     raise ValueError('Invalid analysis ' + analysis)
 
+if args.base_dir is None:
+    args.base_dir = get_git_root()
+
 model_list_full_path = os.path.join(
-    args.base_dir, 'rstanarm/configs/', args.model_list_filename)
+    args.base_dir, 'src/rstanarm/configs/', args.model_list_filename)
 if not os.path.isfile(model_list_full_path):
     raise ValueError('Cannot find model list JSON file {}'.format(
         model_list_full_path))
@@ -60,15 +70,11 @@ with open(model_list_full_path, "r") as f:
     model_list = json.loads(f.read())
 
 # Set which script to run.
-r_script_dir = os.path.join(args.base_dir, 'rstanarm/')
+r_script_dir = os.path.join(args.base_dir, 'src/rstanarm/')
 if analysis == _BASE:
     script = os.path.join(r_script_dir, 'run_base_mcmc_rstanarm.R')
 elif analysis == _BOOT:
     script = os.path.join(r_script_dir, 'run_bootstrapped_mcmc_rstanarm.R')
-# elif analysis == _SIM:
-#     script = os.path.join(r_script_dir, 'run_mcmc_simulations_rstanarm.R')
-# elif analysis == _LME4:
-#     script = os.path.join(r_script_dir, 'run_lme4.R')
 
 if not os.path.isfile(script):
     raise ValueError('Script {} does not exist.'.format(script))
@@ -81,7 +87,7 @@ config = {
     'model_list_filename': args.model_list_filename }
 
 slurm_script_dir = os.path.join(
-    args.base_dir, 'rstanarm/cluster/slurm_scripts')
+    args.base_dir, 'src/rstanarm/cluster/slurm_scripts')
 if not os.path.isdir(slurm_script_dir):
     raise ValueError('Script directory {} does not exist.'.format(
         slurm_script_dir))
@@ -97,7 +103,7 @@ for model_ind in range(len(model_list)):
     full_script_name = os.path.join(slurm_script_dir, script_name)
 
     # Set the configuration options
-    output_dir = os.path.join(args.base_dir, 'rstanarm/cluster/output')
+    output_dir = os.path.join(args.base_dir, 'src/rstanarm/cluster/output')
     this_config = config.copy()
     if analysis == _BASE:
         save_filename = os.path.join(
@@ -107,14 +113,6 @@ for model_ind in range(len(model_list)):
         save_filename = os.path.join(
             output_dir,
             '{}_boot_mcmc_{}.Rdata'.format(desc, args.description))
-    elif analysis == _SIM:
-        save_filename = os.path.join(
-            output_dir,
-            '{}_sim_mcmc_{}.Rdata'.format(desc, args.description))
-    elif analysis == _LME4:
-        save_filename = os.path.join(
-            output_dir,
-            '{}_lme4_{}.Rdata'.format(desc, args.description))
 
     this_config.update({
         'model_list_ind': model_ind + 1, # python is zero-indexed, R one-indexed
@@ -139,22 +137,6 @@ for model_ind in range(len(model_list)):
         if args.no_save_rstan_fit:
             command_string += ' --no_save_rstan_fit '
 
-    # For simulations:
-    if analysis == _SIM:
-        command_string += ' --num_sims={} '.format(args.num_sims)
-        if args.sim_ground_truth is None:
-            # Use an rstan fit as the basis for the simulation
-            initial_fit_filename = os.path.join(
-                output_dir,
-                '{}_base_mcmc_{}.Rdata'.format(desc, args.description))
-        else:
-            # Use a ground truth file as the basis for the simulation
-            initial_fit_filename = os.path.join(
-                output_dir, args.sim_ground_truth)
-            command_string += ' --simulate_from_ground_truth '
-
-        command_string += ' --initial_fit_filename={}'.format(
-            initial_fit_filename)
 
     # Write the command to the script and call it if requested.
     with open(full_script_name, 'w') as slurm_script:
