@@ -1,0 +1,202 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Do not edit the TeX file your work
+% will be overwritten.  Edit the RnW
+% file instead.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+<<set_single_column, echo=FALSE>>=
+# We can't use the for_arxiv toggle because knitr processes before main is
+# run.  So set the appropriate variable here.
+single_column <- TRUE       # for the arxiv
+#single_column <- FALSE      # for a two-column conference paper.
+@
+
+<<setup, include=FALSE, cache=FALSE>>=
+knitr_debug <- FALSE # Set to true to see error output
+knitr_cache <- FALSE # Set to true to cache knitr output for this analysis.
+
+cache_arm <- FALSE && knitr_cache
+cache_nuisance <- FALSE && knitr_cache
+cache_singular <- FALSE && knitr_cache
+cache_mrp <- FALSE && knitr_cache
+
+source("R_scripts/initialize.R", echo=FALSE)
+@
+
+
+<<load_data>>=
+SourceFile("R_scripts/ARM/load_data.R")
+SourceFile("R_scripts/singular_example/load_data.R")
+SourceFile("R_scripts/mrp/load_data.R")
+#source("R_scripts/ARM/load_pilots_data.R")
+#source("R_scripts/poisson_sim/load_data.R")
+@
+
+<<define_macros, results="asis">>=
+SourceFile("R_scripts/ARM/define_macros.R")
+SourceFile("R_scripts/singular_example/define_macros.R")
+SourceFile("R_scripts/mrp/define_macros.R")
+#source("R_scripts/ARM/define_pilots_macros.R")
+#source("R_scripts/poisson_sim/define_macros.R")
+@
+
+
+\def\ARMTable{
+\begin{table}[h]
+<<arm_model_table, cache=cache_arm, results='asis'>>=
+SourceFile("R_scripts/ARM/model_table.R", echo=knitr_debug, print.eval=TRUE)
+@
+\caption{Models from \cite{gelman:2006:arm}\tablabel{arm_models}}
+\end{table}
+}
+
+
+\def\ARMModelList{
+<<arm_model_list, cache=cache_arm, results='asis'>>=
+SourceFile("R_scripts/ARM/arm_models_list_table.R", echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+\def\ARMGraphZ{
+%
+<<graph_fig_cap1>>=
+figcap <- paste(
+    "The distribution of the z-statistics $\\zdiff$.  ",
+    "Red lines indicate the boundaries of a two-sided normal test for significance ",
+    "with level $0.1$, and ``Rejected'' counts the number of covariances ",
+    "in both sides of the rejection region.  ",
+    "The ``Log scale parameter'' panel includes all variances or covariances ",
+    "that involve at least one log scale parameter.",
+    sep="")
+SetFullImageSize()
+@
+<<relerr_graph, cache=cache_arm, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/ARM/z_score_graph.R", echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+\def\ARMGraphDiff{
+%
+<<graph_fig_cap2>>=
+figcap <- paste(
+    "The distribution of the relative errors $\\normdiffij$. ",
+    "The ``Log scale parameter'' panel includes all variances or covariances ",
+    "that involve at least one log scale parameter.",
+    sep="")
+SetFullImageSize()
+@
+<<normerr_graph, cache=cache_arm, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/ARM/standardized_difference_graph.R", echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+
+\def\ARMGraphPostDiff{
+%
+<<normerr_post_graph_cap>>=
+figcap <- paste(
+    "The distribution of the relative errors $\\normdiffbayes$. ",
+    "The ``Log scale parameter'' panel includes all variances or covariances ",
+    "that involve at least one log scale parameter.",
+    sep="")
+SetFullImageSize()
+@
+<<normerr_post_graph, cache=cache_arm, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/ARM/standardized_difference_graph_posterior.R", echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\SingularResultsGraph{
+<<graph_fig_cap12>>=
+figcap <- paste(
+    "The difference from the simulation, IJ, and Bayesian covariances. ",
+    "Standard errors include variation due to both Monte Carlo and, in the case ",
+    "of the IJ and simulation, frequentist error.",
+    sep="")
+SetShortImageSize()
+@
+<<simple_sim_result, cache=cache_singular, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/singular_example/result_graph.R",
+           echo=knitr_debug, print.eval=TRUE)
+@
+%
+}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% <<sim_ar_vars>>=
+% sim_ar <- 1.
+% sim_img_over_legend <- 2
+% sim_r_width <- 2.7
+% @
+
+\newcommand{\MRPGraph}{
+<<graph_fig_cap14>>=
+SetImageSize(aspect_ratio=5/10)
+figcap <- paste0("Covariance estimates for the MrP model. ",
+                 "The dots are the estimates computed on the single dataset ",
+                 "chosen as the basis for bootstrapping. ",
+                 "The boxplots show the spread of the IJ and ",
+                 "posterior covariance across simulations, which ",
+                 "includes both frequentist and MCMC variability. ",
+                 "The horizontal line shows the true sampling variance ",
+                 "as estimated by simulation.")
+@
+<<mrp_graph, cache=knitr_cache, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/mrp/result_graph.R",
+           echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+\newcommand{\MRPMAPGraph}{
+<<graph_fig_cap15>>=
+SetImageSize(aspect_ratio=5/10)
+figcap <- paste0("MAP versus MCMC for the MrP model")
+@
+<<mrp_map_graph, cache=knitr_cache, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/mrp/map_graph.R",
+           echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+
+
+\newcommand{\MRPLMERGraph}{
+<<graph_fig_cap16>>=
+SetImageSize(aspect_ratio=5/10)
+figcap <- paste0("LMER versus MCMC for the MrP model")
+@
+<<mrp_lmer_graph, cache=knitr_cache, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/mrp/lmer_graph.R",
+           echo=knitr_debug, print.eval=TRUE)
+@
+}
+
+
+\newcommand{\MRPLMERSdGraph}{
+<<graph_fig_cap17>>=
+SetImageSize(aspect_ratio=5/10)
+figcap <- paste0("LMER versus MCMC standard errors for the MrP model")
+@
+<<mrp_lmer_sd_graph, cache=knitr_cache, fig.show='hold', fig.cap=figcap>>=
+SourceFile("R_scripts/mrp/lmer_sd_graph.R",
+           echo=knitr_debug, print.eval=TRUE)
+@
+}

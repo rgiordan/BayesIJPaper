@@ -1,0 +1,70 @@
+\documentclass[12pt]{article}
+
+\usepackage{etoolbox}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{xargs}[2008/03/08]
+\usepackage{enumitem}
+\usepackage{refstyle}
+\usepackage{varioref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{thmtools}
+\usepackage{accents}
+
+\input{_knitr_header.tex}
+\input{_defs.tex}
+
+% figures_knitr.tex is produced by running knitr on figures_knitr.Rnw.
+% It defines all macros called below.
+\input{figures_knitr.tex}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ARM (Gelman & Hill regression examples) %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{ARM Models}
+
+\ARMTable
+
+\ARMModelList
+
+\ARMGraphZ
+
+\ARMGraphDiff
+
+\ARMGraphPostDiff
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Singular simulation             %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{Singular Simulation}
+
+\SingularResultsGraph
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% MRP analysis                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section*{MRP}
+
+\MRPGraph
+
+\MRPMAPGraph
+
+\MRPLMERGraph
+
+\MRPLMERSdGraph
+
+\end{document}

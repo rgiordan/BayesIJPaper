@@ -1,0 +1,66 @@
+\documentclass[12pt]{article} % JASA and arxiv
+%\documentclass[unnumsec,webpdf,contemporary,medium,namedate]{oup-authoring-template} % JRSS-B
+
+
+\usepackage{etoolbox}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+\usepackage{xcolor}
+\usepackage{xargs}[2008/03/08]
+
+\usepackage{enumitem} % For unseparated item bullets
+
+% Documentation
+% http://ftp.math.purdue.edu/mirrors/ctan.org/macros/latex/contrib/refstyle/refstyle.pdf
+\usepackage{refstyle}
+\usepackage{varioref} % Use refstyle instead of varioref directly.
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs} % For mathscr
+\usepackage{mathtools}
+\usepackage{bm} % For bold math symbols
+\usepackage{thmtools} % For QED after examples
+\usepackage{accents} % For fancier accents to notate limiting values
+
+% For algorithms
+\usepackage{algorithm}
+% http://tug.ctan.org/macros/latex/contrib/algorithmicx/algorithmicx.pdf
+\usepackage{algpseudocode}
+\usepackage{pdfpages}
+
+
+\usepackage{setspace}
+\renewcommand*{\bibfont}{\singlespacing} % single spaced bib
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% This picks up the knitr boilerplate, allowing us to \input partial knitr
+% documents.
+\input{_knitr_header.tex}
+
+\input{_defs.tex}
+\input{_theorem_defs.tex}
+
+\input{figures_knitr.tex}
+
+
+% \usepackage{lineno}
+% \linenumbers
+
+
+\begin{document}
+
+
+
+
+\end{document}

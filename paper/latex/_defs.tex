@@ -1,0 +1,203 @@
+% Paper-specific math macros.
+\def\undernote#1#2{\underbrace{#1}_{\mathclap{\substack{#2}}}}
+\def\overnote#1#2{\overbrace{#1}^{\mathclap{\substack{#2}}}}
+\def\intertxt#1{\quad\textrm{#1}\quad}
+
+% Operators
+\def\ind#1{\mathbb{I}\left(#1\right)}
+\def\abs#1{\left\vert #1\right\vert }
+\def\norm#1{\left\Vert #1\right\Vert }
+\def\evalat#1#2{\left.#1\right|_{#2}}
+\def\fracat#1#2#3{\left.\frac{#1}{#2}\right\vert_{#3}}
+\def\iid{\overset{iid}{\sim}}
+\def\indep{\overset{indep}{\sim}}
+\DeclareMathOperator*{\argmax}{\mathrm{argmax}}
+\DeclareMathOperator*{\argsup}{\mathrm{argsup}}
+\def\trans{\intercal}   % transpose
+\def\diag#1{\mathrm{diag}\left(#1\right)}
+\def\trace#1{\mathrm{tr}\left(#1\right)}
+
+% Modes of convergence
+\def\plim{\xrightarrow[N\rightarrow\infty]{prob}\,}
+\def\dlim{\xrightarrow[N\rightarrow\infty]{dist}\,}
+
+
+% Expectation and centering
+\def\expect#1#2{\underset{#1}{\mathbb{E}}\left[#2\right]}
+\def\cov#1#2{\underset{#1}{\mathrm{Cov}}\left(#2\right)}
+\def\var#1#2{\underset{#1}{\mathrm{Var}}\left(#2\right)}
+\def\covhat#1#2{\underset{#1}{\widehat{\mathrm{Cov}}}\left(#2\right)}
+
+\def\p{\mathbb{P}}
+\def\post{\p(\theta | \xvec)}
+\def\postw{\p(\theta | \xvec; \wvec)}
+\def\prob#1#2{\underset{#1}{\p}\left(#2\right)}
+
+% MrP notation
+\def\target{T}
+\def\survey{S}
+
+% Data distribution
+\def\fdist{\mathbb{F}}
+%\def\xfdist{\xvec\iid\fdist}
+\def\xfdist{\fdist(\xvec)}
+
+% Prior
+\def\prior{\pi}
+\def\logprior{\log\pi}
+\def\logpriorgrad#1{\left(\logprior\right)_{(#1)}}
+
+% Variants of the normal distribution
+\def\normdist{\mathcal{N}}
+\def\normhatarg#1{\hat{\mathcal{G}}(#1)}
+\def\normresid#1#2{\mathcal{G}_{#1}^{#2}}
+\def\normhat{\normhatarg{\tau}}
+\def\normalizer{\hat{Z}}  % Normalizing constant for the Normal approximation
+\def\normfourth{\hat{\mathcal{M}}} % Array of normal fourth moments
+
+
+% Summation and product shortcuts
+\def\sumn{\sum_{n=1}^N}
+\def\summ{\sum_{m=1}^N}
+\def\meann{\frac{1}{N}\sum_{n=1}^N}
+\def\indexset{\mathcal{S}}
+\def\means{\frac{1}{|\indexset|}\sum_{s \in \indexset}}
+
+% Observations and functions of interest
+\def\g{g}   % Function of interest
+\def\y{y}   % Response variable
+\def\x{x}   % A single IID datapoint
+\def\xn{x_{*}}  % A generic datapoint for integrating out
+\def\xvec{{\mathcal{X}}}    % All the data
+\def\z{z}   % MrP regressor
+\def\zn{z_{*}}   % MrP regressor
+\def\yn{\y_{*}}   % Response variable
+\def\t{t}   % Path variable for von Mises expansion
+\def\onevec{1_N}    % Bootstrap weights all ones
+
+% Domains and dimension
+\def\thetadom{\Omega_\theta}
+\def\rdom#1{\mathbb{R}^{#1}}
+\def\thetaball#1{B_{#1}}
+\def\ydim{D_{y}}   % Dim of sufficient statistics
+\def\gdim{D_g}  % Dimension of g(\theta)
+\def\thetadim{D_\theta}  % This is not used everywhere, TODO(use it everywhere)
+\def\ng{\mathscr{N}_g}  % Observation indices in group g
+
+
+\def\deltaulln{\delta_{LLN}}
+
+% Information matrix stuff
+\def\info{\mathcal{I}}
+\def\infoev{\lambda_\mathcal{I}}
+\def\infoevhat{\hat{\lambda}_\mathcal{I}}
+\def\infohat{\hat{\mathcal{I}}}
+
+% Optima and related features of the log likelihood
+\def\scorecov{\Sigma}
+\def\scorecovhat{\hat\Sigma}
+% \def\thetatrue{\accentset{\infty}{\theta}}
+% \def\gammatrue{\accentset{\infty}{\gamma}}
+\def\thetatrue{\theta_{\infty}}
+\def\gammatrue{\gamma_{\infty}}
+\def\thetahat{\hat\theta}
+\def\gammahat{\hat\gamma}
+\def\thetatil{\tilde{\theta}}   % Taylor series intermediate value
+
+\def\gammabar{\overline{\gamma}}
+
+
+\def\ghat{\hat{\g}} % G centered at MAP
+
+% BCLT residuals
+\def\resid#1{\mathscr{R}^{#1}}
+
+% Taylor series residual
+\def\tresid#1#2{\mathscr{T}_{(#1)}\left(#2\right)}
+
+% The regular event
+\def\regevent{\mathfrak{R}}
+
+% Covariances of g(\theta)
+\def\gmeantrue{\mu^g}   % The true average posterior expectation
+\def\gcovtrue{V^g}
+\def\gcovmaphat{\hat{V}^{\mathrm{Sand}}}
+\def\gcovhat{\hat{V}^{g}}
+\def\gcovij{V^{\mathrm{IJ}}}
+\def\gcovijhat{\hat{V}^{\mathrm{IJ}}}
+\def\gcovboothat{\hat{V}^{\mathrm{Boot}}}
+\def\gcovboot{V^{\mathrm{Boot}}}
+\def\gcovbayeshat{\hat{V}^{\mathrm{Bayes}}}
+\def\gcovbayes{V^{\mathrm{Bayes}}}
+
+% Influence function)
+\def\infl{\psi}
+%\def\infltil{\accentset{\infty}{\psi}}
+\def\infltil{\psi^{0}}
+\def\inflalt#1{\psi^{#1}}
+\def\inflhat{\hat{\psi}}
+
+% Data weights
+\def\w{w}
+\def\wvec{\mathcal{W}}
+
+
+
+% Taylor expansion and gradient notation
+\def\ggrad#1{g_{(#1)}}
+\def\psigrad#1{\psi_{(#1)}}
+\def\ellgrad#1{\ell_{(#1)}}
+\def\phigrad#1{\phi_{(#1)}}
+\def\psigrad#1{\psi_{(#1)}}
+\def\tgrad{\mathfrak{d}T}
+
+
+% Order notation
+\def\ord#1{O\left(#1\right)}
+\def\ordlog#1{\tilde{O}\left(#1\right)}
+\def\ordlogp#1{\tilde{O}_p\left(#1\right)}
+\def\ordp#1{O_p\left(#1\right)}
+\def\littleop#1{o_p\left(#1\right)}
+
+% Log likelihood
+\def\lik{\mathscr{L}}
+\def\likf{\mathscr{L}_{\fdist}}
+\def\likhat{\hat{\mathscr{L}}}
+\def\likk#1{\mathscr{L}_{(#1)}}
+\def\likhatk#1{\hat{\mathscr{L}}_{(#1)}}
+
+% Higher order notation
+% Overbar is posterior centering, underbar is frequentist centering
+\def\gbar{\bar{\g}}
+
+% Note that differentiation does not preserve posterior unbiasedness
+\def\gbargrad#1{\bar{\g}_{(#1)}}
+\def\gbargrad#1{\g_{(#1)}}
+
+% Differentiation does not preserve centering at $\thetahat$
+\def\ghatgrad#1{\hat{\g}_{(#1)}}
+\def\ghatgrad#1{\g_{(#1)}}
+
+\def\ellbar{\bar{\ell}}
+\def\ellunderbar{\underline{\ell}}
+\def\ellbarbar{\underline{\ellbar}}
+\def\ellbargrad#1{\bar{\ell}_{(#1)}}
+\def\ellunderbargrad#1{\ellunderbar_{(#1)}}
+% Note that differentiation does not preserve posterior unbiasedness
+%\def\ellbarbargrad#1{\ellbarbar_{(#1)}}
+\def\ellbarbargrad#1{\ellunderbargrad{#1}}
+\def\ellhatunderbar{\hat{\underline{\ell}}} % X-demeaned, centered at \thetahat
+\def\ellhatunderbargrad#1{\ellhatunderbar_{(#1)}}
+
+\def\phibar{\underline{\phi}}
+
+
+% Experiments and MCMC notation
+\def\seboot{\Xi^{\textrm{boot}}}
+\def\seijfreq{\Xi^{\textrm{IJ:freq}}}
+\def\seijmcmc{\Xi^{\textrm{IJ:mcmc}}}
+\def\seij{\Xi^{\textrm{IJ}}}
+\def\sebayes{\Xi^{\textrm{bayes}}}
+\def\zdiff{Z}
+\def\normdiffij{\Delta^{\mathrm{IJ}}}
+\def\normdiffbayes{\Delta^{\mathrm{Bayes}}}

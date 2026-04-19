@@ -12,6 +12,8 @@ There are four R packages that implement repeatedly-used functionality.  These
 packages are found in the `libs` directory, and can be installed
 using the `install_packages_locally.sh` script.
 
+The packages required by the various scripts are listed in `r_packages.csv`.
+
 ## Rerun the analyses
 
 There are three analyses in the paper, each in its own directory:

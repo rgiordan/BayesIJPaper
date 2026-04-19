@@ -1,0 +1,398 @@
+\documentclass[12pt]{article} % JASA and arxiv
+%\documentclass[unnumsec,webpdf,contemporary,medium,namedate]{oup-authoring-template} % JRSS-B
+
+
+\usepackage{etoolbox}
+
+% Set this toggle true to compile a version for the arxiv, and
+% false to compile for the currently configured conference.
+\newbool{arxiv}
+
+%\booltrue{arxiv}
+\boolfalse{arxiv}
+
+
+
+
+
+\ifbool{arxiv}{
+    % For arxiv
+    \usepackage[style=authoryear,natbib=true]{biblatex}
+    \addbibresource{references.bib}
+    \usepackage{hyperref}
+
+    \addtolength{\oddsidemargin}{-.5in}%
+    \addtolength{\evensidemargin}{-1in}%
+    \addtolength{\textwidth}{1in}%
+    \addtolength{\textheight}{1.7in}%
+    \addtolength{\topmargin}{-1in}%
+
+} {
+
+    % For JASA
+    \usepackage[style=authoryear,natbib=true,maxbibnames=10]{biblatex}
+    \addbibresource{references.bib}
+    \usepackage[hidelinks=True]{hyperref}
+
+    \def\spacingset#1{\renewcommand{\baselinestretch}%
+    {#1}\small\normalsize} \spacingset{1.0}
+
+    % DON'T change margins - should be 1 inch all around.
+    \addtolength{\oddsidemargin}{-.5in}%
+    \addtolength{\evensidemargin}{-1in}%
+    \addtolength{\textwidth}{1in}%
+    \addtolength{\textheight}{1.7in}%
+    \addtolength{\topmargin}{-1in}%
+
+    % Set whether the authors are anonymized
+    \newbool{blind}
+
+    \booltrue{blind}
+    %\boolfalse{blind}
+}
+
+
+
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{subfigure}
+\usepackage{booktabs} % for professional tables
+\usepackage{xcolor}
+\usepackage{xargs}[2008/03/08]
+
+\usepackage{enumitem} % For unseparated item bullets
+
+% Documentation
+% http://ftp.math.purdue.edu/mirrors/ctan.org/macros/latex/contrib/refstyle/refstyle.pdf
+\usepackage{refstyle}
+\usepackage{varioref} % Use refstyle instead of varioref directly.
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathrsfs} % For mathscr
+\usepackage{mathtools}
+\usepackage{bm} % For bold math symbols
+\usepackage{thmtools} % For QED after examples
+\usepackage{accents} % For fancier accents to notate limiting values
+
+% For algorithms
+\usepackage{algorithm}
+% http://tug.ctan.org/macros/latex/contrib/algorithmicx/algorithmicx.pdf
+\usepackage{algpseudocode}
+\usepackage{pdfpages}
+
+
+\usepackage{setspace}
+\renewcommand*{\bibfont}{\singlespacing} % single spaced bib
+
+
+
+
+% \setlength fixes todonotes; see section 1.6.5 of todonotes manual
+% http://tug.ctan.org/macros/latex/contrib/todonotes/todonotes.pdf
+%\setlength{\marginparwidth}{2cm}
+% \usepackage[textsize=tiny]{todonotes}
+%\usepackage[disable]{todonotes}
+
+
+% Comment out to hide labels
+%\usepackage[final]{showlabels}
+%\renewcommand{\showlabelfont}{\small}
+% \usepackage{rotating}
+% \renewcommand{\showlabelsetlabel}[1]
+% {\begin{turn}{90}\showlabelfont #1\end{turn}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%
+%       SHOW LABELS     %
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newbool{showlabels}
+
+%\booltrue{showlabels}
+\boolfalse{showlabels}
+
+
+\ifbool{showlabels} {
+    \usepackage[inline]{showlabels}
+    \renewcommand{\showlabelsetlabel}[1] {
+        { \tiny \showlabelfont #1 }
+    }    
+}
+
+\ifbool{arxiv}{
+
+    \newbool{largespacing}
+
+    % Set true for editing
+    %\toggletrue{largespacing}
+    \boolfalse{largespacing}
+    \ifbool{largespacing}{%
+        \doublespacing
+        \usepackage{showkeys}
+    }
+    % What about this one?
+    %https://ctan.org/pkg/apxproof
+}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+% This picks up the knitr boilerplate, allowing us to \input partial knitr
+% documents.
+\input{_knitr_header.tex}
+
+\input{_defs.tex}
+\input{_theorem_defs.tex}
+
+\input{figures_knitr.tex}
+
+
+% \usepackage{lineno}
+% \linenumbers
+
+
+\begin{document}
+
+
+
+\title{The Bayesian Infinitesimal Jackknife for Variance}
+
+\ifbool{arxiv}{
+    \author{
+        Ryan Giordano \\ \texttt{rgiordano@berkeley.edu}
+        \and
+        Tamara Broderick \\ \texttt{tbroderick@mit.edu}
+      }
+} {
+    % JASA
+    \title{The Bayesian Infinitesimal Jackknife for Variance}
+    \ifbool{blind} { 
+        \author{(ANONYMIZED)}
+    } {
+        \author{
+            Ryan Giordano \\ \texttt{rgiordano@berkeley.edu}
+            \and
+            Tamara Broderick \\ \texttt{tbroderick@mit.edu}
+            }        
+    }
+}
+
+
+
+\maketitle
+
+\notbool{arxiv} {
+    % JASA
+
+    \begin{abstract}
+    %
+    \input{abstract.tex}
+    %
+    \end{abstract}        
+    
+    % Only include keywords for the journal
+    \noindent%
+    {\it Keywords:}  Influence function, sandwich covariance,
+        infinitesimal jackknife, Bernstein-von Mises theorem,
+        Bayesian robustness
+    \vfill    
+
+    
+    \newpage
+    %\spacingset{1.9} % DON'T change the spacing!
+
+    % It says don't change the spacing, but then the rendering
+    % does not produce the maximum allowed 26 lines per page
+    \spacingset{1.8} % DON'T change the spacing!
+}
+
+
+% What is the frequentist variance and why would you care.
+% The Laplace approximation and bootstrap have shortcomings that the IJ
+% does not.
+\section{Introduction}\seclabel{introduction}
+\input{introduction.tex}
+
+\section{Setup and Motivation}\seclabel{basics}
+
+%\subsection{Formal problem statement}
+\input{problem_statement.tex}
+
+\subsection{Notation}\seclabel{notation}
+\input{notation.tex}
+
+\subsection{Three methods for estimating $\gcovtrue$}\seclabel{three_methods}
+\input{three_methods.tex}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\section{Theoretical results}
+\seclabel{finite_dim}
+% \input{finite_dim_intro.tex}
+
+% \subsection{Intuition}
+\seclabel{bayes_clt}
+\input{finite_dim_intuition.tex}
+
+\subsection{Consistency theorem}
+\seclabel{finite_dim_clts}
+\input{finite_dim_clts.tex}
+
+\subsection{Discussion of the proof and results}
+\seclabel{theory_discussion}
+\input{theory_discussion.tex}
+
+
+
+\subsection{Data weights and the influence function}
+\seclabel{data_weights}
+\input{weights.tex}
+
+\subsection{Related Work}\seclabel{related_work}
+\input{related_work.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\section{Experiments}
+\seclabel{experiments}
+\input{experiment_methodology.tex}
+
+\subsection{A degenerate joint MAP approximation with simulated data}
+\applabel{singular_example}
+\input{experiments_singular.tex}
+
+\subsection{Applied regression modeling examples}
+\seclabel{arm_experiments}
+\input{experiments_arm.tex}
+
+\section{Conclusion}
+\input{conclusion.tex}
+
+\notbool{blind} { 
+    \section{Acknowledgements}
+    \input{acks.tex}
+}
+
+%\clearpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifbool{arxiv}{
+    \section{Data Availability Statement}
+    \input{data_availability_statement.tex}
+    \printbibliography{}
+} {
+    % JASA
+    %\section{Data Availability Statement}
+    \paragraph{Data Availability Statement.}
+    \input{data_availability_statement.tex}
+    \printbibliography{}
+}
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\ifbool{arxiv}{
+    \section*{The Bayesian Infinitesimal Jackknife for Variance: Supplemental information and proofs}
+    \appendix
+} {
+    \section*{The Bayesian Infinitesimal Jackknife for Variance: Supplemental information and proofs}
+    \appendix
+}
+
+
+\section{A simple closed-form example}
+\applabel{normal_example}
+\input{simple_examples/normal.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Notation key}
+\input{appendices/notation_key}
+
+\section{Setup and Preliminaries}
+
+\subsubsection{Derivative arrays}
+\input{appendices/derivative_arrays}
+
+\subsubsection{General index sets}\seclabel{index_sets}
+\input{appendices/index_sets.tex}
+
+\subsection{Taylor series expansions and their asymptotics}\applabel{loglik_asymptotics}
+\input{appendices/loglik_asymptotics.tex}
+
+\subsection{Consistency results}\applabel{freq_clt_proof}
+\input{appendices/fclt_proof.tex}
+
+
+
+\section{Proof of \thmref{bayes_clt_main}}\applabel{bayes_clt_proof}
+\input{appendices/clt_proof.tex}
+
+\section{Proof of \thmref{ij_consistent}}\applabel{ij_consistent}
+\input{appendices/ij_consistent_proof.tex}
+
+\section{Weighting representation}\applabel{weights_higher_order}
+\input{appendices/appendix_higher_order.tex}
+
+
+\subsection{Derivatives of posterior expectations}\applabel{post_derivs}
+\input{appendices/appendix_posterior_derivs.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newpage
+\section{Experiment details and additional experiments}\applabel{experiments}
+
+\subsubsection{Measuring sampling error}
+\applabel{experiments_sampling_error}
+\input{experiments_sampling_error}
+
+\subsection{Applied regression and modeling textbook details}
+\applabel{experiment_arm_appendix}
+\input{experiment_arm_appendix.tex}
+
+\subsection{Multilevel regression and poststratification}
+\seclabel{mrp_experiments}
+\input{experiments_mrp.tex}
+
+\subsubsection{Multilevel regression and poststratification details}
+\applabel{experiments_mrp_appendix}
+\input{experiments_mrp_appendix.tex}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\section{Additional closed-form examples}
+\applabel{simple_examples_appendix}
+
+% \subsection{Simple examples}\applabel{simple_examples}
+\input{simple_examples/examples.tex}
+
+
+
+
+
+\end{document}
