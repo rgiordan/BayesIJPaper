@@ -14,7 +14,7 @@ library(ggforce) # For geom_ellipse
 # This must be run from within the git repo, obviously.
 git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
 paper_directory <- file.path(git_repo_loc, "paper/latex/")
-data_path <- file.path(git_repo_loc, "experiment_data")
+data_path <- file.path(git_repo_loc, "paper/experiment_data")
 
 SourceFile <- function(filename, ...) {
   source(file.path(paper_directory, filename), ...)
