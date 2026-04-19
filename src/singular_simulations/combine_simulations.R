@@ -4,7 +4,7 @@
 # them into the single file that postprocess_for_paper.R expects.
 #
 # Example invocations:
-# ./combine_simulations.R
+# ./combine_simulations.R --seed=100 --obs_per_re=100 --re_dim=100
 # ./combine_simulations.R --seed=100 --prefix=TEST
 
 library(tidyverse)
@@ -57,10 +57,10 @@ if (file.exists(sim_filename) && !opt$force) {
   if (!interactive()) quit(save="no")
 }
 
-# Find all individual sim files matching this desc
-sim_files <- sort(Sys.glob(file.path(
-  results_dir,
-  sprintf("super_simple_simulation_sim*_results_%s.Rdata", desc))))
+sim_files <- list.files(
+  path=results_dir, 
+  pattern = sprintf("super_simple_simulation_sim[0-9]+_results_%s.Rdata", desc), 
+  full.names = TRUE)
 
 if (length(sim_files) == 0) {
   stop(sprintf("No simulation files found in %s for desc=%s", results_dir, desc))
