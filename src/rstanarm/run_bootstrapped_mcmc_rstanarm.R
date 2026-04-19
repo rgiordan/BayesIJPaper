@@ -52,10 +52,10 @@ base_dir <- opt$base_dir
 stopifnot(!is.null(opt$model_list_ind))
 
 model_list_ind <- opt$model_list_ind
-stan_examples_dir <- file.path(base_dir, "rstanarm/example-models")
+stan_examples_dir <- file.path(base_dir, "src/rstanarm/example-models")
 
 model_list_file <- file(file.path(
-  base_dir, "rstanarm/configs", opt$model_list_filename), "rb")
+  base_dir, "src/rstanarm/configs", opt$model_list_filename), "rb")
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
@@ -78,7 +78,7 @@ rstanarm_ij_config <- SetConfigDefaults(
 
 if (is.null(opt$save_filename)) {
   save_filename <- file.path(
-    base_dir, "output",
+    base_dir, "src/rstanarm/output",
     sprintf("%s_bootstrap_mcmc.Rdata", rstanarm_ij_config$desc))
 } else {
   save_filename <- opt$save_filename
