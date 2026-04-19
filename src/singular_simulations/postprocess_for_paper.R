@@ -1,3 +1,8 @@
+#!/usr/bin/env Rscript
+#
+# Process the results of combine_simulations.R and the
+# base posterior into results that can be used in latex.
+
 library(tidyverse)
 library(bayesijlib)
 library(rstanarmijlib)
@@ -32,7 +37,11 @@ base_env <- LoadIntoEnv(base_filename)
 
 ############################
 
+print("Evaluating log likelihood (this can be slow)")
 lp_draws <- log_lik(base_env$rstanarm_result)
+print("Done evaluating log likelihood.")
+
+
 par_draws <- base_env$par_draws
 num_exch_obs <- ncol(lp_draws)
 
@@ -129,7 +138,6 @@ cov_long_df <-
     )
 
 # parameter labels
-unique(cov_long_df$row_variable)
 GetVariableLabel <- function(variable, variable_label) {
     data.frame(variable, variable_label, stringsAsFactors=FALSE)
 }
@@ -179,6 +187,10 @@ if (FALSE) {
 
 num_mcmc_draws <- nrow(par_draws)
 num_sims <- nrow(sim_draws)
+
+save_filename <- file.path(output_dir, "simpler_sim_results.Rdata")
+print(sprintf("Saving to %s", save_filename))
 save(cov_long_df, cov_wide2_df,
      re_dim, obs_per_re, num_exch_obs, seed_val, num_mcmc_draws, num_sims,
-     file=file.path(output_dir, "simpler_sim_results.Rdata"))
+     file=save_filename)
+cat("Done!  (づ ◕‿◕ )づ  \n\n\n")
