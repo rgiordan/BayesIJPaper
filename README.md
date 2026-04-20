@@ -35,3 +35,20 @@ Finally, you can generate the paper's tables and figures by running
 `paper/latex/make recompile_knitr`
 
 The output will be in figures.pdf.
+
+# AI Assistance acknowledgement
+
+The AI assistant Claude Code v2.1.114 was used to help clean and document the
+minimal steps to reproducing the paper.  The key tasks that AI helped with were:
+
+- Identifying files and scripts that had been used for exploratory analysis
+  but were not required to produce the final output;
+- Identifying references to files or scripts outside the present repository
+  in order to make this respository entirely self-contained;
+- Identifying bugs or typos, particularly due to functions whose defintion had changed over time;
+- Consistently documenting the steps for reproduction, and creating makefiles based on these
+  instructions.
+
+With the exception of the makefiles, and minor formatting changes (e.g. changing
+the name of an R package), AI was primarily used to make code suggestions that were
+checked and implemented by hand.
