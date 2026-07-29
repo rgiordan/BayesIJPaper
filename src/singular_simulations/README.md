@@ -137,3 +137,10 @@ make          # builds paper/experiment_data/simulations/simpler_sim_results.Rda
               # and everything it depends on
 make -j 8     # parallelize across the 100 independent sim replicates
 ```
+
+
+# Rough runtime estimate
+
+The runtime is dominated by calls to `run_mcmc.R` in stages 1 and 2;
+each such call takes roughly three minutes.  Stage 2 can be run in parallel.  The
+other stages should run quickly.
