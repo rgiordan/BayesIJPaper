@@ -17,4 +17,4 @@ SourceFile("R_scripts/ARM/define_macros.R")
 SourceFile("R_scripts/singular_example/define_macros.R")
 SourceFile("R_scripts/mrp/define_macros.R")
 
-SourceFile("R_scripts/singular_example/result_graph.R")
+source("R_scripts/mrp/result_graph.R", print.eval=TRUE)
