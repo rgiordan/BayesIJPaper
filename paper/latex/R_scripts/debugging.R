@@ -17,4 +17,5 @@ SourceFile("R_scripts/ARM/define_macros.R")
 SourceFile("R_scripts/singular_example/define_macros.R")
 SourceFile("R_scripts/mrp/define_macros.R")
 
-source("R_scripts/mrp/result_graph.R", print.eval=TRUE)
+mrp_env$compiled_df[1:5,]
+#source("R_scripts/mrp/result_graph.R", print.eval=TRUE)
