@@ -1,0 +1,16 @@
+We present two experimental analyses of the IJ covariance.  The first is a
+simulated random effects model under misspecification.  We designed the
+simulation to have a degenerate MAP approximation but well-behaved MCMC
+posterior expectation, and show that the IJ covariance is able to accurately
+estimate the true sampling variance over new draws of the data. The second
+experiment is an application of the IJ covariance to a large number of linear
+and generalized linear models and datasets taken from \citet{gelman:2006:arm}.
+On these real-world datasets a simulated ground truth is unavailable, so we
+compare the IJ covariances to the much more computationally expensive bootstrap
+estimated variance.
+
+Additional experimental results can be found in
+\appref{simple_examples_appendix}, including a number of closed--form examples,
+as well as an additional application to a real-world ``multilevel regression and
+post--stratification'' analysis from the surveys literature
+\citep{park:2004:mrp}.

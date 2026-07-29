@@ -1,0 +1,510 @@
+It is region $R_1$ that will dominate the value of the integral $I(\phi)$.  We
+will first perform a Taylor series expansion of all the terms around their
+sample versions, and then take probability limits of the resulting expressions.
+
+First, we will show that integrals over $\normhat$ in $R_1$ are sufficiently
+close to the corresponding Gaussian integrals over $\rdom{\thetadim}$ for
+sufficiently large $\delta_1$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{lem}\lemlabel{region_r1_gaussian_moments}
+%
+Let \assuref{core_bclt_assu} hold.  Let $\tau^k$ represent the
+$\thetadim$-dimensional array of outer products of $\tau$.  When $\regevent$ occurs and
+$\delta_1 \ge \sqrt{24 / \infoev}$ then, for any $k \ge 0$,
+%
+\begin{align*}
+%
+\int_{R_1} \normhatarg{\tau} \tau^k d\tau =
+    \expect{\normhat}{\tau^k} + O(N^{-3}).
+%
+\end{align*}
+%
+\begin{proof}
+%
+By definition,
+%
+\begin{align*}
+%
+\int_{R_1} \normhatarg{\tau} \tau^k d\tau  - \expect{\normhat}{\tau^k}
+={}&
+\int_{R_2 \bigcup R_3} \normhatarg{\tau} \tau^k d\tau
+%
+\end{align*}
+%
+We will now use a technique similar to that of the proof of
+\lemref{region_r2} to control the norm of the final integral.
+Recall that, on $\regevent$, the minimum eigenvalue of $\infohat$, $\infoevhat$,
+is at least $\frac{1}{2} \infoev$ (\lemref{regular_event} \eventref{infoev}),
+so that $\normalizer^{-1} = O(1)$.
+%
+\begin{align*}
+%
+\MoveEqLeft
+\norm{
+    \int_{R_2 \bigcup R_3}
+            \normhatarg{\tau} \tau^k d\tau
+}_2
+\\\le&
+    \int_{R_2 \bigcup R_3}
+            \normhatarg{\tau} \norm{\tau}^k_2 d\tau
+\\={}&
+\normalizer^{-1} \int_{R_2 \bigcup R_3}
+        \exp\left(-\frac{1}{2} \infohat \tau^2 \right)
+            \norm{\tau}^k_2 d\tau
+\\\le&
+\normalizer^{-1} \int_{R_2 \bigcup R_3}
+        \exp\left(-\frac{1}{4} \infoev \norm{\tau}_2^2 \right)
+            \norm{\tau}^k_2 d\tau
+\\\le&
+\sup_{\tau \in R_2 \bigcup R_3}
+    \exp\left(-\frac{1}{8} \infoev \norm{\tau}_2^2 \right)
+\normalizer^{-1} \int_{R_2 \bigcup R_3}
+        \exp\left(-\frac{1}{8} \infoev \norm{\tau}_2^2 \right)
+            \norm{\tau}^k_2 d\tau
+\\={}&
+\exp\left(-\frac{1}{8} \infoev \delta_1^2 (\log N)^2 \right)
+\normalizer^{-1} \int_{R_2 \bigcup R_3}
+        \exp\left(-\frac{1}{8} \infoev \norm{\tau}_2^2 \right)
+            \norm{\tau}^k_2 d\tau
+\\={}& O(N^{-3}),
+%
+\end{align*}
+%
+where the final line takes $\delta_1^2 \ge \frac{24}{\infoev}$, that $\log N <
+(\log N)^2$ for $N \ge 3$, that $\normalizer^{-1} = O(1)$, and that normal
+moments are finite.
+%
+\end{proof}
+%
+\end{lem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Next, we series expand the likelihood term.
+
+% Note that you need a standalone lemma for the log likelihood expansion
+% to deal with the normalizing constant.
+\begin{lem}\lemlabel{region_r1_loglik_expansion}
+%
+Let \assuref{core_bclt_assu} hold.  For any $\xvec$ such that $\regevent$
+occurs, and for $\theta \in R_1$,
+%
+\begin{align*}
+%
+\MoveEqLeft
+\exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right) = \\
+& \exp\left(\frac{1}{2} \infohat \tau^2 \right) \times
+\left( 1 + N^{-1/2} \frac{1}{6} \likhatk{3}(\theta) \tau^3 +
+    \ordlog{N^{-1}} \right).
+%
+\end{align*}
+%
+\begin{proof}
+%
+
+Using \eqref{taylor_expansion}, write the log likelihood term as
+%
+\begin{align}
+%
+\MoveEqLeft
+\exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right) =  \nonumber \\
+& \exp\left(\frac{1}{2} \likhatk{2}(\thetahat) \tau^2 \right) \times \nonumber \\
+& \exp\left(
+        N^{-1/2} \frac{1}{6} \likhatk{3}(\thetahat) \tau^3 +
+        N^{-1} \frac{1}{6} \tresid{4}{\likhat(\theta), \thetahat, \theta} \tau^4
+    \right). \eqlabel{r1_loglike_term_factorization}
+%
+\end{align}
+%
+We will expand the second term of \eqref{r1_loglike_term_factorization} using
+the expansion of the  exponential function around 0, which holds for all
+$z$:
+%
+\begin{align*}
+\exp(z) ={}& 1 + z + z^2 + \frac{1}{2} \int_0^1 (1 - t)^2 \exp(tz) dt z^3 \\
+={}& 1 + z + O(|z|^2).
+\end{align*}
+%
+To match \eqref{r1_loglike_term_factorization}, we need to evaluate at
+%
+\begin{align*}
+%
+z = N^{-1/2} \frac{1}{6} \likhatk{3}(\thetahat) \tau^3 +
+    N^{-1} \tresid{4}{\likhat(\theta), \thetahat, \theta} \tau^4.
+%
+\end{align*}
+%
+When $\regevent$ occurs (\lemref{regular_event} \eventref{ulln}), we
+have
+%
+\begin{align*}
+%
+\norm{N^{-1} \tresid{4}{\likhat(\theta), \thetahat, \theta} \tau^4}_2 \le&
+N^{-1} \sup_{\theta \in R_1}
+    \norm{\tresid{4}{\likhat(\theta), \thetahat, \theta}}_2
+    \sup_{\tau \in R_1}\norm{\tau^3}_2 \\
+={}& \ordlog{N^{-1}}\\
+%
+\norm{N^{-1/2} \frac{1}{6} \likhatk{3}(\thetahat) \tau^3}_2 \le&
+N^{-1/2} \frac{1}{6} \norm{\likhatk{3}(\thetahat)}_2
+    \sup_{\tau \in R_1}\norm{\tau^3}_2\\
+={}& \ordlog{N^{-1/2}} \Rightarrow\\
+|z| ={}& \ordlog{N^{-1/2}},
+%
+\end{align*}
+%
+so that
+%
+\begin{align}
+%
+\exp\left(
+        N^{-1/2} \frac{1}{6} \likhatk{3}(\thetahat) \tau^3 +
+        N^{-1} \frac{1}{6} \tresid{4}{\likhat(\theta), \thetahat, \theta} \tau^4
+    \right) = \nonumber\\
+1 + N^{-1/2} \frac{1}{6} \likhatk{3}(\theta) \tau^3 +
+    \ordlog{N^{-1}}
+. \eqlabel{r1_exp_expansion}
+%
+\end{align}
+%
+Combining \eqref{r1_loglike_term_factorization, r1_exp_expansion} and
+recognizing the definition of $\infohat$ gives the desired result.
+%
+\end{proof}
+%
+\end{lem}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{lem}\lemlabel{r1_normalizer_expansion}
+%
+Let \assuref{core_bclt_assu} hold.  When $\regevent$ occurs and $\delta_1$ is as
+given in \lemref{region_r1_gaussian_moments},
+%
+\begin{align*}
+%
+\int_{R_1} \exp\left(
+    N \likhat(\theta) - N \likhat(\thetahat)
+\right) d\tau = \normalizer + \ordlog{N^{-1}}.
+%
+\end{align*}
+%
+\begin{proof}
+%
+Recall that, by definition,
+%
+\begin{align*}
+%
+\normalizer = \int \exp\left(-\frac{1}{2} \infohat \tau^2 \right) d\tau.
+%
+\end{align*}
+%
+Expanding using \lemref{region_r1_loglik_expansion} gives
+%
+\begin{align*}
+%
+\MoveEqLeft
+\left| \int_{R_1} \exp\left(
+    N \likhat(\theta) - N \likhat(\thetahat)
+\right) d\tau - \normalizer \right|
+\\={}&
+\left|
+\int_{R_1} \exp\left(\frac{1}{2} \infohat \tau^2 \right)
+\left( 1 + N^{-1/2} \frac{1}{6} \likhatk{3}(\theta) \tau^3 +
+    \ordlog{N^{-1}} \right) d\tau -
+\int \exp\left(-\frac{1}{2} \infohat \tau^2 \right) d\tau
+\right|
+%
+\\={}&
+\left|
+\int_{R_1} \exp\left(\frac{1}{2} \infohat \tau^2 \right)
+\left( N^{-1/2} \frac{1}{6} \likhatk{3}(\theta) \tau^3 +
+    \ordlog{N^{-1}} \right) d\tau -
+\int_{R_2 \bigcup R_3} \exp\left(-\frac{1}{2} \infohat \tau^2 \right) d\tau
+\right|
+%
+\\\le&
+\frac{1}{6} N^{-1/2} \sup_{\theta \in R_1} \norm{
+    \likhatk{3}(\theta) }_2
+\expect{\normhat}{\ind{\tau \in R_1}\tau^3} +
+\sup_{\tau \in R_2 \bigcup R_3}
+    \exp\left(-\frac{1}{4} \infoev \norm{\tau}_2^2 \right) +
+\ordlog{N^{-1}}
+%
+\\={}&
+O(N^{-2}) +
+\exp\left(-\frac{1}{4} \infoev \delta_1^2 (\log N)^2 \right) +
+\ordlog{N^{-1}}
+\\={}& \ordlog{N^{-1}},
+\end{align*}
+%
+where, in the penultimate line, we use \lemref{region_r1_gaussian_moments},
+including the given lower bound on $\delta_1$.
+%
+\end{proof}
+%
+\end{lem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+In \lemref{region_r1_final_bound} to follow, we integrate the result of
+\lemref{region_r1_loglik_expansion} using \lemref{region_r1_gaussian_moments} to
+produce our final results for region $R_1$. Recall from
+\defref{loglik_details_def} that $\normhat = \normalizer^{-1}
+\exp\left(\frac{1}{2} \infohat \tau^2 \right)$ is the density of the Gaussian
+distribution on $\tau$ with mean zero and covariance $\infohat^{-1} =
+(-\likhatk{2}(\thetahat))^{-1}$.
+
+Note that the statement of \lemref{region_r1_final_bound} combines vector-valued
+quantities like $\phigrad{2}(\thetahat, \xvec_s) \expect{\normhat}{\tau^2}$ with
+scalar--valued quantities like $\norm{\phigrad{2}(\thetahat, \xvec_s)}_2$.  This is
+for notational convenience since the scalar-valued terms will simply become part
+of the residual, and their component values do not matter.  Formally, the
+equation can be taken to hold componentwise.
+%
+\begin{lem}\lemlabel{region_r1_final_bound}
+%
+Let \assuref{core_bclt_assu} hold.  When $\delta_1$ is as given in
+\lemref{region_r2}, then, for any $\xvec$ such that $\regevent$
+occurs,
+%
+\begin{align*}
+%
+\MoveEqLeft
+I_1(\phi) =
+    \phi(\thetahat, \xvec_s)
+    \int_{R_1} \exp\left(
+        N \likhat(\theta) - N \likhat(\thetahat)
+    \right) d\tau +
+\nonumber\\ &\quad
+    N^{-1} \normalizer \left(
+        \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \expect{\normhat}{\tau^2} +
+        \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
+            \expect{\normhat}{\tau^4} \right) +
+\nonumber\\ &\quad
+    \ordlog{N^{-2}} \bigg(
+        1 +
+        \norm{\phigrad{1}(\thetahat, \xvec_s)}_2 +
+        \norm{\phigrad{2}(\thetahat, \xvec_s)}_2 +
+        \expect{\normresid{\infoev / 2}{R_1}(\tau)}{
+            \norm{\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2}
+    \bigg).
+%
+\end{align*}
+%
+\begin{proof}
+%
+The result will follow by Taylor expanding $\phi$, combining with
+\lemref{region_r1_loglik_expansion}, and then integrating using the fact that
+Gaussian integrals in region $R_1$ are approximately equal to Gaussian integrals
+over the whole domain, as proved in \lemref{region_r1_gaussian_moments}.
+
+
+%%%%%%%%%%%%%%%%%
+
+We first Taylor expand $\phi(\theta, \xvec_s)$ around $\thetahat$ and substitute
+$\tau = \sqrt{N}(\theta - \thetahat)$.
+%
+\begin{align}
+\phi(\theta, \xvec_s) ={}&
+    \phi(\thetahat, \xvec_s) +
+    N^{-1/2} \phigrad{1}(\thetahat, \xvec_s) \tau + \nonumber \\
+&
+    N^{-1} \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \tau^2 +
+    N^{-3/2} \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat} \tau^3.
+    \eqlabel{r1_phi_expansion}
+\end{align}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+We will now combine \eqref{r1_phi_expansion} with
+\lemref{region_r1_loglik_expansion}.
+%
+\begin{align}
+\MoveEqLeft
+\exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right)
+\left(
+    \phi(\theta, \xvec_s) - \phi(\thetahat, \xvec_s)
+\right) = \nonumber \\
+%%%%%%%%%%%%%%%%%%%%%%%
+\MoveEqLeft
+\exp\left(
+    \frac{1}{2} \infohat \tau^2
+\right) \times \nonumber\\
+&
+\left(
+    N^{-1/2} \phigrad{1}(\thetahat, \xvec_s) \tau +
+    N^{-1} \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \tau^2 +
+    N^{-3/2} \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat} \tau^3
+\right)  \times \nonumber\\
+&
+\left(
+    1 +
+    N^{-1/2} \frac{1}{6} \likhatk{3}(\thetahat) \tau^3 +
+    \ordlog{N^{-1}}
+\right) = \nonumber\\
+%%%%%%%%%%%%%%%%%%%%%%%
+\MoveEqLeft
+\exp\left(
+    \frac{1}{2} \infohat \tau^2
+\right) \times \nonumber\\
+&
+\Bigg(
+    N^{-1/2} \phigrad{1}(\thetahat, \xvec_s) \tau +
+\nonumber\\ &\quad
+    N^{-1} \left(
+        \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \tau^2 +
+        \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s) \tau^4 \right) +
+\nonumber\\ &\quad
+    N^{-3/2} \left(
+        \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat} \tau^3 +
+        \frac{1}{12} \likhatk{3}(\thetahat)  \phigrad{2}(\thetahat, \xvec_s) \tau^5
+    \right) +
+\nonumber\\ &\quad
+    \ordlog{N^{-3/2}} \bigg(
+        \phigrad{1}(\thetahat, \xvec_s) \tau +
+% \nonumber\\ &\quad\quad\quad
+        N^{-1/2}  \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \tau^2 +
+        N^{-1} \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat} \tau^3
+    \bigg)
+\Bigg) = \nonumber\\
+%%%%%%%%%%%%%%%%%%%%%%%
+\MoveEqLeft
+\exp\left(
+    \frac{1}{2} \infohat \tau^2
+\right) \times \nonumber\\
+&
+\Bigg(
+    N^{-1/2} \phigrad{1}(\thetahat, \xvec_s) \tau +
+% \nonumber\\ &\quad
+    N^{-1} \left(
+        \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \tau^2 +
+        \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s) \tau^4 \right) +
+\nonumber\\ &\quad
+    \ordlog{N^{-3/2}} \bigg(
+        \phigrad{1}(\thetahat, \xvec_s) \tau +
+        \left( \ord{1} \tau^5 + \ord{N^{-1/2}}  \tau^2\right)
+            \phigrad{2}(\thetahat, \xvec_s) +
+\nonumber\\ &\quad\quad\quad\quad\quad\quad\quad
+        \ord{1} \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat} \tau^3
+    \bigg)
+\Bigg).
+\eqlabel{r1_product_expansion1}
+\end{align}
+
+In the final line of \eqref{r1_product_expansion1} we absorbed some higher-order
+quantities into the lower-order $\ordlog{N^{-3/2}}$ term for convenience of
+expression, and used the fact that, when $\regevent$ occurs, for $k=1,2,3$,
+$\norm{\likhatk{k}(\thetahat)}_2 = \ord{1}$ when $\regevent$ occurs, since
+%
+\begin{align*}
+%
+\norm{\likhatk{k}(\thetahat) - \likk{k}(\thetahat)}_2 \le&
+    \sup_{\theta \in R_1} \norm{\likhatk{k}(\theta) - \likk{k}(\theta)}_2 \le
+    \epsilon_U,
+%
+\end{align*}
+%
+so
+%
+\begin{align*}
+%
+\norm{\likhatk{k}(\thetahat)}_2 \le&
+    \norm{\likhatk{k}(\thetahat) - \likk{k}(\thetahat)}_2 +
+    \norm{\likk{k}(\thetahat) - \likk{k}(\thetatrue)}_2 +
+    \norm{\likk{k}(\thetatrue)}_2 \\
+\le&
+    \epsilon_U +
+    \sup_{\theta \in R_1} \norm{\likk{k}(\theta) - \likk{k}(\thetatrue)}_2 + \norm{\likk{k}(\thetatrue)}_2
+= \ord{1},
+%
+\end{align*}
+%
+by continuity of $\likk{k}(\theta)$.
+
+Next, we integrate both sides of \eqref{r1_product_expansion1} using
+\lemref{region_r1_gaussian_moments} to replace Gaussian integrals over $R_1$
+with Gaussian moments over the whole domain, up to an order $N^{-3}$ which can
+be absorbed in the $\ordlog{N^{-2}}$ error term.
+%
+\begin{align*}
+%
+I_1(\phi) ={}&
+\int_{R_1} \phi(\theta, \xvec_s)
+   \exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right) d \tau
+\\
+={}&
+\phi(\thetahat, \xvec_s)
+\int_{R_1} \exp\left(
+    N \likhat(\theta) - N \likhat(\thetahat)
+\right) d\tau +
+\\{}&
+N^{-1} \left(
+    \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s)
+        \expect{\normhat}{\tau^2} +
+    \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
+        \expect{\normhat}{\tau^4} \right) +
+\nonumber\\ &
+    \ordlog{N^{-2}} \bigg(
+        1 +
+        \norm{\phigrad{1}(\thetahat, \xvec_s)}_2 +
+        \norm{\phigrad{2}(\thetahat, \xvec_s)}_2 +
+\nonumber\\ &
+    \hspace{5em}
+        \int_{R_1}
+            \exp\left(-\frac{1}{2} \infohat \tau^2 \right)
+            \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}
+            d\tau
+\bigg).
+%
+\end{align*}
+
+Finally, since $\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}$ depends
+explicitly on $\tau$, we must control this term in a more convenient form.  We
+will argue as in \lemref{region_r1_gaussian_moments}.   Recall that, when
+$\regevent$ occurs, $\infoevhat \ge \frac{\infoev}{2}$, so that $\normalizer =
+O(1)$ and
+%
+\begin{align*}
+%
+\MoveEqLeft
+\norm{\normalizer \int_{R_1} \exp\left(-\frac{1}{2} \infohat \tau^2 \right)
+    \tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat} d\tau }_2
+\\\le&
+\normalizer \int_{R_1} \exp\left(-\frac{1}{2} \infohat \tau^2 \right)
+    \norm{\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2  d\tau
+\\ \le&
+\normalizer \int_{R_1} \exp\left(-\frac{\infoev}{4} \norm{\tau}_2^2 \right)
+    \norm{\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2  d\tau.
+% \\ \le&
+% \normalizer \int_{R_1 \bigcup R_2}
+%     \exp\left(-\frac{\infoev}{4} \norm{\tau}_2^2 \right)
+%         \norm{\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2  d\tau.
+%
+\end{align*}
+%
+The result follows by multiplying by the $O(1)$ normalizer of
+the $\normresid{\infoev / 2}{R_1}$ distribution.
+%
+\end{proof}
+%
+\end{lem}

@@ -1,0 +1,177 @@
+
+All that remains to prove \thmref{bayes_clt_main} is to show that the residual is
+$O_p(1)$ when summed.  The form of $\resid{\phi}(\xvec_s)$ is awkward, but it is
+designed specifically to commute with suprema over sums, allowing us to apply
+ULLNs to the remainder of our BCLT, as stated formally in
+\lemref{integral_commuting_sums,taylor_commuting_sums} below.
+
+Observe that residual expressions of the form $\sup_{\theta \in R_1 \bigcup R_2}
+\norm{\phi(\theta, \x)}_2$ would not be as useful, since
+%
+\begin{align*}
+%
+\meann \sup_{\theta \in R_1 \bigcup R_2} \norm{\phi(\theta, \x_n)}_2 \ge
+\sup_{\theta \in R_1 \bigcup R_2} \meann \norm{\phi(\theta, \x_n)}_2,
+\end{align*}
+%
+and ULLN bound on the latter does not imply a bound on the former, since the
+supremum may depend on $\x_n$ in a way that causes the sample mean to diverge.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{lem}\lemlabel{integral_commuting_sums}
+%
+The Gaussian integrals of \defref{bclt_resid} commutes with sums.
+%
+For a scalar--valued function $\phi(\theta, \xvec_s)$ and an index set
+$\indexset$,
+%
+\begin{align*}
+%
+\means \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+              {\phi(\theta, \xvec_s)}^2
+% \means \resid{2}(\xvec_s)
+            \le
+\sup_{\theta \in R_1 \bigcup R_2} \means \phi(\theta, \xvec_s)^2.
+%
+\end{align*}
+%
+\begin{proof}
+%
+\begin{align*}
+%
+\means \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+              {\phi(\theta, \xvec_s)}^2
+% \means \resid{2}(\xvec_s)
+% ={}&
+% \means \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+%             {\phi(\theta, \xvec_s)^2}
+\le{}&
+\expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+              {\means \phi(\theta, \xvec_s)^2}
+\\\le{}&
+\sup_{\tau \in R_1 \bigcup R_2}
+    \means \phi(\thetahat + \tau / \sqrt{N}, \xvec_s)^2
+\\={}&
+\sup_{\theta \in R_1 \bigcup R_2} \means \phi(\theta, \xvec_s)^2.
+%
+\end{align*}
+%
+\end{proof}
+%
+\end{lem}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\begin{lem}\lemlabel{taylor_commuting_sums}
+%
+The Taylor series residual of \defref{bclt_resid} commutes with sums.
+%
+When $\theta \in R_1 \bigcup R_2$, for a k-th order continuously differentiable
+function $\phi(\theta, \xvec_s)$ and an index set $\indexset$,
+%
+\begin{align*}
+%
+\means \norm{\tresid{k}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2^2 \le
+\sup_{\theta \in R_1 \bigcup R_2}
+    \means \norm{\phi_{(k)}(\theta, \xvec_s)}_2^2.
+%
+\end{align*}
+%
+\begin{proof}
+%
+Recall from \defref{taylor_residual} that
+%
+\begin{align*}
+%
+\MoveEqLeft
+\means \norm{\tresid{k}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2^2
+=\\{}&
+\means \norm{
+    \frac{1}{(k-1)!} \int_0^1 (1 - t)^{k-1}
+    \phi_{(k)}(\thetahat + t (\theta - \thetahat), \xvec_s) dt
+}_2^2
+\le\\&
+\means \frac{1}{(k-1)!} \int_0^1
+\norm{\phi_{(k)}(\thetahat + t (\theta - \thetahat), \xvec_s)}_2^2 dt
+=\\&
+\frac{1}{(k-1)!} \int_0^1
+\means \norm{\phi_{(k)}(\thetahat + t (\theta - \thetahat), \xvec_s)}_2^2 dt
+\le\\&
+\frac{1}{(k-1)!}
+\sup_{\theta \in R_1 \bigcup R_2}
+    \means\norm{\phi_{(k)}(\theta, \xvec_s)}_2^2.
+%
+\end{align*}
+%
+The result follows because $k \ge 1$.
+%
+\end{proof}
+%
+\end{lem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%
+\begin{lem}\lemlabel{resid_op1}
+%
+Under \assuref{core_bclt_assu}, $\meann\resid{\phi}(\x_n)^2 = O_p(1)$.
+%
+\begin{proof}
+%
+% By \lemref{regular_event} (in particular \lemref{regular_event} \eventref{ulln}),
+% together with
+
+% TODO: it would be good to just apply the lemmas once to get a big
+% expression in terms of suprema over \thetaball{\delta}.
+
+We may take $\delta_2$ to be the smaller of the values required for
+\defref{bclt_okay} \itemref{grad_op1} and
+the region $R_2$ \lemref{region_r2} to
+hold.  Then, by \defref{bclt_okay_index} \itemref{grad_op1_index},
+for $k=0,1,2,3$,
+%
+\begin{align*}
+%
+\sup_{\theta \in R_1 \bigcup R_2}
+    \meann \norm{\phigrad{k}(\theta, \x_n)}_2^2 = O_p(1),
+%
+\end{align*}
+%
+
+It follows immediately that $\meann
+\norm{\phigrad{k}(\thetahat, \x_n)}_2 = O_p(1)$ and $\meann
+\norm{\phigrad{k}(\thetahat, \x_n)}_2^2 = O_p(1)$ for $k=0, 1, 2, 3$. From this
+and Cauchy-Schwarz it follows that $\meann \resid{0}(\x_n)^2 = O_p(1)$.
+
+Applying \lemref{integral_commuting_sums} with $\indexset = \{1, \ldots, N \}$ and
+$\phi(\theta, \xvec_s) = \norm{\phi(\theta, \x_n)}_2$ gives
+$\meann \resid{2}(\x_n) = O_p(1)$ and $\meann \resid{2}(\x_n)^2 = O_p(1)$.
+
+Similarly, $\meann \resid{1}(\x_n)^2 = O_p(1)$ follows from
+\lemref{integral_commuting_sums} and then \lemref{taylor_commuting_sums}.
+
+The terms $\meann \resid{3}(\x_n)$ and $\meann \resid{3}(\x_n)^2$ are controlled
+by assumption in \defref{bclt_okay} \itemref{prior_op1}.
+
+Finally, the fact that $\meann \resid{\phi}(\x_n)^2 = O_p(1)$ follows
+by Cauchy-Schwarz, since $\resid{\phi}(\x_n)$ is the sum of products
+of terms, the squares of each of which have $O_p(1)$ sum.
+%
+\end{proof}
+%
+\end{lem}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

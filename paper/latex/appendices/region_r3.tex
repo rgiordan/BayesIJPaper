@@ -1,0 +1,64 @@
+
+The integral over $R_3$ goes to zero by strict optimality of $\thetatrue$
+and the proper behavior of the prior.
+
+\begin{lem}\lemlabel{region_r3}
+%
+Under \assuref{core_bclt_assu}, when $\regevent$ occurs with
+$\epsilon_U < \prior(\thetatrue) / 2$,
+%
+\begin{align*}
+%
+\norm{I_3(\phi)}_2 =
+O(\exp(-N \epsilon_L)) \expect{\prior(\theta)}{\norm{ \phi(\theta, \xvec_s) }_2 }.
+%
+\end{align*}
+%
+\begin{proof}
+%
+We have
+%
+\begin{align*}
+\norm{I_3(\phi)}_2
+={}& \norm{ \int_{R_3} \phi(\theta, \xvec_s)
+       \exp\left(
+            N \likhat(\theta) - N \likhat(\thetahat)
+        \right)
+       d \theta }_2 \\
+\le&
+\sup_{\theta \in R_3}
+\exp\Bigg(
+    N \Bigg(
+         \frac{1}{N} \sumn \ell(\x_n \vert \theta) -
+         \frac{1}{N} \sumn \ell(\x_n \vert \thetahat)
+     \Bigg)
+ \Bigg) \times
+ \int_{R_3} \norm{\phi(\theta, \xvec_s)}_2
+ \frac{\prior(\theta)}{\prior(\thetahat)} d \theta \\
+={}&
+    \exp(-N \epsilon_L)
+    \frac{1}{\prior(\thetahat)}
+    \expect{\prior(\theta)}{
+        \norm{\phi(\theta, \xvec_s)}_2 \mathbb{I}(\theta \in R_3)
+    }
+    \quad\textrm{(\lemref{regular_event}, \eventref{strict_opt})}\\
+\le&
+    \exp(-N \epsilon_L)
+    \frac{1}{\prior(\thetatrue) - \epsilon_U}
+    \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}_2 \mathbb{I}(\theta \in R_3)}
+\quad\textrm{(\lemref{regular_event}, \eventref{prior_close})}\\
+\le&
+\exp(-N \epsilon_L) 2 \prior(\thetatrue)^{-1}
+\expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}_2 }.
+\end{align*}
+%
+In the last step, we take $\epsilon_U < \prior(\thetatrue) / 2$ in $\regevent$
+(specifically, \lemref{regular_event} \eventref{prior_close}).
+%
+\end{proof}
+%
+\end{lem}
+%
+We note that the form of the bound in \lemref{region_r3} is designed to
+take advantage of the prior mean assumption \defref{bclt_okay} \itemref{prior_op1},
+or its more general version \defref{bclt_okay_index} \itemref{prior_op1_index}.

@@ -1,0 +1,105 @@
+We need to consider the asymptotic behavior of $\expect{\post}{\phi(\theta, \xvec_s)}$,
+which can be written as the ratio of the integrals
+%
+\begin{align*}
+    %
+\expect{\post}{\phi(\theta, \xvec_s)} ={}&
+\frac{\int \phi(\theta, \xvec_s)
+        \exp\left(N \likhat(\theta)\right)
+        d \theta}
+  {\int \exp\left(N\likhat(\theta)\right) d \theta}.
+ %
+\end{align*}
+%
+Recall that $\thetahat := \mathrm{argmax}_\theta \likhat(\theta)$ and
+define $\thetatil(t) := t (\theta - \thetahat) + \thetahat$.  We will
+employ the following Taylor series expansion:
+\begin{align}
+\likhat(\theta) ={}&
+    \likhat(\thetahat) +
+    \likhatk{1}(\thetahat)(\theta - \thetahat) +
+    \frac{1}{2}\likhatk{2}(\thetahat)(\theta - \thetahat)^2 +
+\nonumber
+\\&
+    \frac{1}{6}\likhatk{3}(\thetahat)(\theta - \thetahat)^3 +
+    \tresid{4}{\likhat, \thetahat, \theta} (\theta - \thetahat)^4,
+    \eqlabel{taylor_expansion}
+\end{align}
+%
+recalling the definition of the integral form of the Taylor series residual
+$\tresid{4}{\likhat, \thetahat, \theta}$ given in \defref{taylor_residual}.
+
+Note that $\likhat(\thetahat)$ is constant in $\theta$, and that
+$\likhatk{1}(\thetahat) = 0$.  Plugging in and changing the domain of
+integration to $\tau$, we see
+%
+\begin{align*}
+\expect{\post}{\phi(\theta, \xvec_s)}
+={}&
+\frac{\int \phi(\theta, \xvec_s)
+       \exp\left(
+            N \likhat(\theta) - N \likhat(\thetahat)
+        \right)
+       d \theta}
+     {\int
+     \exp\left(
+        N \likhat(\theta) - N \likhat(\thetahat)
+     \right) d \theta}
+\\={}&
+\frac{\int \phi(\theta, \xvec_s)
+       \exp\left(
+            N \likhat(\theta) - N \likhat(\thetahat)
+        \right)
+       \sqrt{N} d \tau}
+     {\int
+     \exp\left(
+        N \likhat(\theta) - N \likhat(\thetahat)
+     \right) \sqrt{N} d \tau}.
+% =\\{}&
+% \frac{\int \phi(\theta, \xvec_s)
+%        \exp\left(
+%             \frac{1}{2} \likhatk{2}(\thetahat)\tau^2 +
+%             N^{-1/2} \frac{1}{6}\likhatk{3}(\thetahat) \tau^3 +
+%             N^{-1} \tresid{4}{\likhat, \thetahat, \theta} \tau^4
+%         \right)
+%        d \tau}
+%      {\int
+%      \exp\left(
+%          \frac{1}{2} \likhatk{2}(\thetahat)\tau^2 +
+%          N^{-1/2} \frac{1}{6}\likhatk{3}(\thetahat) \tau^3 +
+%          N^{-1} \tresid{4}{\likhat, \thetahat, \theta} \tau^4
+%      \right) d \tau}.
+\end{align*}
+%
+Since the factor of $\sqrt{N}$ cancels in the preceding display, it will suffice
+to consider the following generic integral.
+%
+\begin{defn}\deflabel{bclt_integral}
+%
+For a target function $\phi$, define the integral functional
+%
+\begin{align}
+I(\phi) :={}&
+\int \phi(\theta, \xvec_s)
+   \exp\left(
+       N \likhat(\theta) - N \likhat(\thetahat)
+   \right)
+   d \tau \\
+={}&
+\int \phi(\theta, \xvec_s) \times
+\\&\quad
+   \exp\left(
+       \frac{1}{2} \likhatk{2}(\thetahat)\tau^2 +
+       N^{-1/2} \frac{1}{6}\likhatk{3}(\thetahat) \tau^3 +
+       N^{-1} \tresid{4}{\likhat, \thetahat, \theta} \tau^4
+   \right)
+   d \tau.
+   \eqlabel{integral_funcational}
+\end{align}
+%
+\end{defn}
+%
+Under \defref{bclt_integral}, $\expect{\post}{\phi(\theta, \xvec_s)} = I(\phi) /
+I(1)$.  We will now consider the behavior of $I(\phi)$ for a
+generic third-order BCLT-okay $\phi$,
+returning to consider the behavior of the ratio in \secref{bclt_region_comb}.

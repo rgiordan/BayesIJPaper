@@ -1,0 +1,88 @@
+
+% We care about posterior expectations, and these expectations have a
+% frequentist variance.
+% Even Bayesians should care about frequentist variances as a robustness measure.
+Suppose we want to use Bayesian methods to infer some parameter or quantity of
+interest from exchangeable data. The Bayesian posterior is often summarized by a
+point estimate and measure of subjective uncertainty, which we will respectively
+take to be the posterior mean and posterior variance.  The computed posterior
+mean is a function of the observed data, and so has a well-defined frequentist
+variance under re-sampling of the exchangeable data.  The Bayesian posterior
+variance of a quantity and the frequentist variance of its mean are conceptually
+distinct: the posterior variance can be thought of as describing the
+uncertainty of subjective beliefs under the assumption of correct model
+specification, and the frequentist variance captures the sensitivity of the
+Bayesian point estimate to re-sampling of the observed data.  In general,
+both may be of interest.
+Even a strict Bayesian can meaningfully interpret the
+frequentist variance of the posterior mean as a \emph{sensitivity analysis},
+quantifying how much the Bayesian point estimate would vary had we received
+different but realistic data.  Such a sensitivity analysis is particularly
+germane when the data is known to have come from a random sample from a real
+population. 
+
+
+% You might think the two notions are the same, but they are not when you
+% have misspecification
+In general, the frequentist and Bayesian variances are not only conceptually
+distinct but can be numerically very different.  It is true that, with
+independent and identically distributed (IID) data, some reasonable regularity
+conditions, a correctly specified model, and a parameter vector of fixed
+dimension, the frequentist and Bayesian variances coincide asymptotically as a
+consequence of the Bernstein--von Mises theorem, a.k.a.\ the Bayesian central limit
+theorem.  However, under \emph{model misspecification}, the equality between the
+frequentist and Bayesian variances no longer holds in general, even
+asymptotically \citep{kleijn:2012:bvm} --- and most models are misspecified.
+
+
+% Standard tools are inadequate
+When posterior means are estimated using Markov Chain Monte Carlo (MCMC), the
+two standard tools for estimating the frequentist variability of Bayesian
+posterior expectations --- the nonparametric bootstrap  (henceforth simply
+``bootstrap'') and the Laplace approximation --- can be each be problematic,
+though for different reasons.
+%
+% The bootstrap is inadequate
+To compute a bootstrap estimate of
+the frequentist variance of a posterior mean, one repeatedly draws ``bootstrap
+datasets,'' with replacement from the original set of datapoints. For each
+bootstrap dataset, one then computes the posterior mean for each set of
+re-sampled data \citep{huggins:2022:bayesbag}.  Though straightforward to
+implement and naively parallelizable, the bootstrap remains
+computationally expensive, since a separate posterior estimate (e.g., a
+run of MCMC) must be computed for each bootstrap dataset.
+%
+% The Laplace approximation is inadequate
+Alternatively, it is straightforward to estimate frequentist variance of a
+Laplace approximation to the posterior.   Specifically, one can do so by
+computing the ``sandwich covariance'' estimate of the maximum \textit{a
+posteriori} (MAP) estimate at which the Laplace approximation is centered
+\citep{stefanski:2002:mestimation}.  This approach essentially uses the standard
+consistent estimator of the limiting covariance derived by
+\citet{kleijn:2012:bvm}.  However, this approach requires using a particular Laplace
+approximation to the posterior rather than MCMC and, as we show below, the
+Laplace approximation can be practically and conceptually problematic.  For
+example, unlike true posterior draws, the Laplace approximation is not invariant
+to reparameterization, and, for some parameterizations the Laplace approximation
+can fail catastrophically, especially in hierarchical models.
+
+
+% We solve these problems with the IJ covariance.
+In the present paper, we provide an estimator of the frequentist variability of
+posterior expectations that enjoys the model-agnostic properties of the
+bootstrap, but can be computed from a single run of MCMC. Our
+method is based on the \emph{infinitesimal jackknife} (IJ) variance estimator, a
+classical frequentist variance estimator derived from the \emph{empirical
+influence function} of a statistical functional.  We show that the Bayesian
+empirical influence function is easily computable as a particular set of
+posterior covariances, the variance of which is a consistent estimator of the
+frequentist variance of a posterior expectation when a Bayesian central limit
+theorem (BCLT) holds for all model parameters.
+
+% We potentially solve other problems.
+Finally, though our present concern is frequentist variance estimates, the
+empirical influence function is a powerful statistical tool, with applications
+in robustness, cross validation, and bias estimation. Consequently, our results
+for the influence function of Bayesian posteriors and a BCLT for expectations of
+data-dependent functions are of broader interest.  We leave off exploring these
+topics for future work.

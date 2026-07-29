@@ -1,0 +1,98 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{algorithms.tex}
+
+There are two well-known classical methods for estimating $\gcovtrue$: the
+sandwich covariance and the bootstrap.  The sandwich covariance
+requires computation of the maximum a posteriori (MAP) estimate, and is
+not available from MCMC samples.  The bootstrap requires running many MCMC
+chains with slightly different data sets, which can be computationally
+expensive. We describe a third method, the infinitesimal jackknife (IJ)
+covariance estimate, which is also classical, but which has not been previously
+applied to MCMC estimates of posterior means.  All three
+are succinctly summarized in \figref{algorithm}.
+
+% How would you use the Laplace approximation to estimate \gcovtrue?
+The sandwich covariance approach to estimating $\gcovtrue$ is given in
+\algrref{sandwich}. To compute the sandwich covariance estimate, one first forms
+the MAP estimate, $\thetahat$.  Then one estimates the sampling variability of
+$\thetahat$ using an asymptotic approximation to the sampling distribution of
+M--estimators under misspecification.  From the sampling variability of
+$\thetahat$, one then uses the delta method to estimate the sampling variability
+of $\g(\thetahat)$ (\citet{stefanski:2002:mestimation}, Chapter 7 of
+\citet{van:2000:asymptotic}).\footnote{It would arguably be more standard to
+describe the covariance estimator for $\thetahat$ as the ``sandwich covariance''
+and the covariance estimator of $\g(\thetahat)$ as the ``delta method covariance.''  But
+the IJ covariance estimate is sometimes described as the ``functional delta method''
+(\citet{van:2000:asymptotic} Chapter 20), so the authors believe that our
+nomenclature is the least ambiguous option.}
+% Under the assumption that
+% the MAP estimate is able to approximate to the desired posterior expectation,
+% $\expect{\post}{\g(\theta)} \approx \g(\thetahat)$, the sampling variability
+% of $\g(\thetahat)$ approximates the sampling variability of $\expect{\post}{\g(\theta)}$.
+%
+When a sufficiently strong BCLT applies, it is known that
+$g(\thetahat)$ consistently estimates $\expect{\post}{g(\theta)}$ and so the
+sandwich covariance estimate consistently estimates $\gcovtrue$ 
+(more details will follow in \secref{finite_dim_clts} below).  However, the MAP
+approximation is not parameterization--invariant, and can behave pathologically
+in particular datasets, even when there exists a parameterization in which a
+BCLT applies.
+
+When the MAP and sandwich covariance are unreliable, one typically turns to MCMC
+estimates.  To estimate $\gcovtrue$ from MCMC samples, a classical method is the
+bootstrap \citep{efron:1994:bootstrap,huggins:2022:bayesbag}.  The bootstrap is
+shown in \algrref{boot}.  The primary difficulty with the bootstrap is that it
+requires $B$ different MCMC chains, which can be computationally expensive;
+often, in practice, even a single run of MCMC requires considerable computing
+resources. When the MCMC noise can be made arbitrarily small, the bootstrap is a
+consistent estimator of $\gcovtrue$ in the fixed-dimension case under conditions
+given by \citet{huggins:2022:bayesbag}.
+
+
+% Define the population IJ estimator
+We propose an estimator of $\gcovtrue$ that can be
+computed from a single MCMC run using only the tractable $\ell(\x_n \vert \z,
+\theta)$.  We call our estimator the {\em infinitesimal jackknife (IJ)
+covariance estimator}, and denote it as $\gcovij$.  The IJ covariance estimator
+is given by the sample variance of a set of simple posterior covariances, as
+given in \eqref{ij_terms}.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\begin{defn}\deflabel{ij_terms}
+    %
+    % Define the Bayesian empirical influence function and IJ covariance estimate as
+    % follows.
+    %
+    \begin{align}\eqlabel{ij_terms}
+        \infl_n := N \cov{\post}{g(\theta), \ell(\x_n \vert \theta)}
+        \textrm{ (Influence score)}
+        \quad\quad
+        \gcovij := \covhat{n \in [N]}{\infl_n}.
+        % \textrm{(IJ covariance estimate)}
+        % \gcovij &:= \meann(\infl(\x_n) \infl(\x_n)^T - \bar\infl \, \bar\infl^T)
+        % &\textrm{(IJ covariance estimate)}\\
+        % &\textrm{where }
+        % \bar\infl := \meann \infl(\x_n).
+    \end{align}
+    %
+%\end{defn}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+% Define the MCMC IJ estimator
+In practice, the posterior covariances of \eqref{ij_terms} typically need to be
+estimated with MCMC.  We denote  by $\gcovijhat$ the corresponding estimate of $\gcovij$
+(see \algrref{ijalg} for a precise statement).
+For any fixed $N$, the output $\gcovijhat$ of \algrref{ijalg} approaches
+$\gcovij$ under a well-mixing MCMC chain as the number of MCMC samples $M
+\rightarrow \infty$. We will theoretically analyze $\gcovij$, though our
+experiments will all employ $\gcovijhat$. Importantly, \algrref{ijalg} requires
+only a single run of MCMC without relying on accuracy of the MAP, as required by
+the sandwich estimator, or running $B$ different MCMC samplers, as required by
+the bootstrap estimator. Our key result, given in \thmref{ij_consistent} below,
+states general conditions under which $\gcovij \plim \gcovtrue$.

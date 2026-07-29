@@ -1,0 +1,23 @@
+In this section we consider some simple illustrative examples. All the
+models in this section will be toy problems for which the IJ is not necessary,
+but they will serve to build intuition for harder, real-life problems.
+%  which we consider
+% in \secref{arm_experiments}.
+
+In each of these examples we will go through the tedious effort to explicitly
+compute $\infl(\x_n)$ and the limit of its sample variance.  We stress, however,
+that we are only doing so for illustrative purposes.  In practice, one would
+simply output $\ell(\x_n \vert \theta)$ from the MCMC algorithm and estimate the
+posterior covariances using MCMC draws, for which none of the below analytic
+derivations would be necessary.
+
+
+\subsubsection{Sample mean}
+\input{simple_examples/example_mean.tex}
+
+
+\subsubsection{Overdispersed Poisson}
+\input{simple_examples/poisson.tex}
+
+\subsubsection{Multivariate regression}
+\input{simple_examples/regression.tex}

@@ -1,0 +1,46 @@
+
+\ARMTable{}
+
+
+% What is the exchangeable unit?
+As discussed in \secref{arm_experiments}, for the ARM experiments we needed to
+make decisions about what was an exchangeable unit. For models with no random
+effects, we define an exchangeable unit to be a tuple containing a particular
+response and a regressor.  For random effects models, we had to choose an
+exchangeable unit. When the random effect had many distinct levels, we
+considered the groups of observations within a level to be a single exchangeable
+unit.  For models whose random effects had few distinct levels, we took the
+exchangeable unit to either be a more fine-grained partition of the data, or, in
+some cases treated the observations as fully independent.
+
+Although the posterior covariance is not of primary
+interest, we compute it to investigate the possibility of differences between
+the frequentist and posterior covariance estimates.
+%
+Given that most of the models in the ARM textbook are carefully selected by
+highly experienced statisticians, one might expect there to be few instances of
+misspecification.  Since the models are additionally mostly low-dimensional, we
+might expect for the posterior covariance to typically provide a good
+approximation to the frequentist covariance by the Bernstein von-Mises theorem.
+
+To investigate this intuition, in \figref{normerr_post_graph} we reproduce
+\figref{normerr_graph} but comparing the bootdstrap and Bayesian posterior
+covariance.  The metric plotted is the posterior version of
+$\normdiffij_{ij}$ in \eqref{arm_metrics}:
+$$
+\normdiffbayes_{ij} :=
+  \frac{\gcovbayeshat_{ij} - \gcovboothat_{ij}}
+  {\left| \gcovboothat_{ij} \right| + \seboot_{ij}}.
+$$
+
+\ARMGraphPostDiff{}
+
+Comparing with \figref{normerr_graph}, we see that the above intuition is mostly
+correct, and that the frequentist and posterior covariances are largely similar.
+The notable exception is for log scale parameters in models with relatively
+large datasets, for which the IJ provides a markedly better approximation to the
+bootstrap than does the posterior covariance.  This suggests the possibility of
+using the difference between IJ and posterior covariances as a diagnostic for
+model misspecification, as is sometimes done in the frequentist literature
+\citep{white:1982:maximum}.  We leave this possibility as an interesting avenue
+for future work.

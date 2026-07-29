@@ -1,0 +1,50 @@
+
+% In this section, we briefly compare our results to selected previous literature
+% on the BCLT.
+
+% Standard BCLTs which approximate the posterior are not actaully so different
+A standard approach to BCLTs emphasizes the large-data distributional limit of
+the Bayesian posterior, e.g., by showing that the total variation distance
+between the Bayesian posterior and a normal approximation convergences to zero
+in probability.  For example, this is the approach taken by Chapter 10 of
+\citet{van:2000:asymptotic}, Theorem 1.4.2 of \citet{ghosh:2003:bayesian}, and
+\citet{lehman:1983:pointestimation}, on which our proof is principally based.
+Results such as our \thmref{bayes_clt_main}, which emphasize the frequentist
+properties of posterior quantities, may seem to be of a different character than
+distributional approximations to the posterior itself.  However, the approach to
+proving convergence in total variation is essentially to prove that posterior
+expectations of bounded functions converge uniformly.  Though our assumption of
+the differentiability $\psi(\theta, \xvec)$ proscribes the direct use of our
+$\thmref{bayes_clt_main}$ to prove convergence in total variation distance, the proof
+technique is the same, differing only in whether $\psi(\theta, \xvec)$ is Taylor
+expanded in $\theta$ near $\thetahat$.  Indeed, one might argue that many BCLTs
+consist of two distinct components: first, to show that only a vanishing ball
+around $\thetahat$ matters for the posterior, and, second, to exploit
+local properties of the posterior near $\thetahat$ to prove whatever result
+is desired.  The first step is, in a sense, generic, and extra assumptions
+can be made (or not) in a region of $\thetahat$ to achieve the desired
+theoretical aim.  For example, total variation distance forgoes the
+expansion of $\psi(\theta, \xvec)$, and a version of our \thmref{bayes_clt_main}
+expanding to higher orders requires nothing more than gather the next order
+terms in a the local Taylor expansion of posterior quantities.
+
+% The global uniqueness is a little weird.
+As mentioned above, half of a proof of a BCLT typically involves proving that
+the behavior of the posterior far from $\thetahat$ is negligible.  To this end,
+some assumptions must be made to ensure that the posterior is well behaved
+outside a ball centered at $\thetahat$.  For example, one must ensure that there
+are no other posterior modes very nearly as high as that at $\thetahat$.  In the
+present work we follow \citet{ghosh:2003:bayesian, lehman:1983:pointestimation}
+and manage the posterior far from $\thetahat$ with the final condition of
+\assuref{bayes_clt}, namely that $\thetatrue$ is a strict optimum of the
+empirical likelihood with probability approaching one.  This assumption may seem
+somewhat artificial, since it is stated in terms of the data, rather than of any
+limiting population quantities.  Recent authors, notably
+\citet{kleijn:2006:misspecification}, express a similar requirement in terms of
+the existence of a consistent test for $\theta = \thetatrue$, which is more
+general and arguably cleaner, but introduces extra complications and  perhaps
+obscure somewhat the role of the assumption in the proof.  Suffice to say, the
+uniqueness of the optimum in misspecified BCLTs is a serious issue, but a
+complicated one that is beyond the scope of the present paper, and we
+essentially assume the problem away.  Again, see
+\citet{kleijn:2006:misspecification} for a more thorough discussion.

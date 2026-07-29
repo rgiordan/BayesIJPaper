@@ -1,0 +1,66 @@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Index sets
+
+To succinctly state our theorems for double sums, it will be convenient to
+introduce a more general index notation.
+
+\begin{defn}\deflabel{index_sets}
+    %
+    Let $\indexset$ denote a set of sets of data indices, where each member $s \in
+    \indexset$ has the same cardinality, and for $s \in \indexset$, let $\xvec_s$
+    denote the set of corresponding datapoints.  We write $\phi(\xvec_s)$ for a
+    function that depends on $|s|$ datapoints.  For example, if $\indexset = \{1,
+    \ldots, N \} =: [N]$, then $\xvec_s = \x_s$, and $\means \phi(\xvec_s) = \meann
+    \phi(\x_n)$.  Similarly, if $\indexset = [N] \times [N]$, then $\xvec_s =
+    (\x_{s_1}, \x_{s_2})$, and $\means \phi(\xvec_s) = \frac{1}{N^2} \sum_{n=1}^N
+    \sum_{m=1}^N \phi(\x_n, \x_m)$.
+    %
+\end{defn}
+
+We now state a generalization of \defref{bclt_okay} that applies to 
+generic index sets as defined in \defref{index_sets}.
+
+\begin{defn}\deflabel{bclt_okay_index}
+%
+For an index set $\indexset$, a data-dependent function
+$\phi(\theta, \xvec_s)$ is $K$-th order BCLT-okay if,
+for each $k = 1, \ldots, K$,
+%
+\begin{enumerate}
+%
+\item\itemlabel{bclt_okay_as_index}
+    $\theta \mapsto \phigrad{k}(\theta, \xvec_s)$ is BCLT-okay
+    $\fdist$-almost surely
+%
+\item\itemlabel{prior_op1_index}
+    $\means \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}^2_2} = O_p(1)$.
+%
+\item\itemlabel{grad_op1_index}
+For some $\delta > 0$,
+$\sup_{\theta \in \thetaball{\delta}}
+    \means \norm{\phigrad{k}(\theta, \xvec_s)}^2_2 = O_p(1)$.
+%
+\end{enumerate}
+%
+\end{defn}
+
+
+Note that a function is BCLT--okay according to \defref{bclt_okay} precisely if
+it is BCLT--okay according to \defref{bclt_okay_index} with index set $\indexset
+= [N]$.  Although $\indexset = [N]$ and $\indexset = [N]\times[N]$ will be the
+only examples of $\indexset$ we will use in the present paper, we believe it is
+clearer to keep the notation general.   
+
+In particular, \thmref{bayes_clt_main} is stated in terms of $\indexset = [N]$,
+but we will prove that it holds for generic index sets of the form
+\defref{bclt_okay_index}.  Formally, we will prove \thmref{bayes_clt_main} under
+the following \assuref{core_bclt_assu}, noting that \assuref{core_bclt_assu} is
+assumed by \thmref{bayes_clt_main} for $\indexset = [N]$.
+
+\begin{assu}\assulabel{core_bclt_assu}
+%
+Assume that $\phi(\theta, \xvec_s)$ is third-order BCLT-okay
+according to \defref{bclt_okay_index}, and that \assuref{bayes_clt} holds.
+%
+\end{assu}

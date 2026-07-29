@@ -1,0 +1,132 @@
+\def\thetagen{\theta_{\mathrm{True}}}
+\def\xbar{\tilde{\x}}
+
+In this section, we illustrate verification of our assumptions and the
+consistency of the IJ covariance with a simple closed form example, that of
+inferring a univariate normal mean with a misspecified variance. More elaborate
+examples can be found in \appref{simple_examples_appendix}, including a Poisson
+model in the presence of overdispersed data and multilinear regression in the
+presence of heteroskedasticity.
+
+For some fixed $\thetagen \in \rdom{}$ and $\sigma^2 \ne 1$, let us
+consider the following data generating process and model:
+%
+\begin{align*}
+%
+\textrm{Data generating process:}\quad&&
+x_n &\iid \normdist(\cdot | \thetagen, \sigma^2) \\
+\textrm{Model:}\quad&&
+x_n \vert \theta &\iid \normdist(\cdot | \theta, 1) &
+\theta &\sim \normdist(\cdot | 0, 1).
+%
+\end{align*}
+%
+We will take $\theta$ to be our quantity of interest, so $\g(\theta) = \theta$.
+Since $\sigma^2 \ne 1$ the model is misspecified, and so we expect the posterior
+variance $\cov{\post}{\theta}$ to differ from $\gcovtrue$, even asymptotically.
+
+For this simple model, the posterior is available in closed form:
+%
+\begin{align*}
+    \post = \normdist\left( \theta \vert \xbar, (N + 1)^{-1} \right)
+    \quad\textrm{where}\quad
+    \xbar :={} \frac{1}{N+1} \sumn \x_n.
+\end{align*}
+%
+From this, we can see that $\thetatrue = \lim_{N \rightarrow \infty}
+\expect{\post}{\theta} = \thetagen$, It happens in this simple example that
+$\thetatrue$ is ``consistent'' for the true mean $\expect{\fdist(\xn)}{\xn}$,
+though in general this need not be the case.  For example, the model's trivial
+``estimate'' of $\var{\fdist(\xn)}{\xn}$ is $1$, which is never equal to the
+true value of $\sigma^2$.
+
+One can readily verify that \assuref{bayes_clt,bclt_okay} are satisfied for this
+model and this particular value of $\thetatrue$. Arguably the most challenging
+condition is the final part of \assuref{bayes_clt} \itemref{strict_opt}, which
+one can show via strong convexity of the log likelihood, together with
+convergence of $\frac{1}{N} \sumn \ellgrad{1}(\x_n \vert \thetatrue) \plim 0$ by
+the ordinary law of large numbers.  Using special structure of a particular
+problem (like strong convexity) to establish a condition like
+\assuref{bayes_clt} \itemref{strict_opt} is common in the literature --- see,
+for example, textbook proofs of the consistency of M-estimators on unbounded
+domains (e.g.~Theorem 9.11 of \citet{keener:2010:theoretical} or Chapter 6.2 of
+\citep{huber:2011:robust}).
+
+We begin by establishing \corref{bayes_expectation_dist} and identifying our target,
+$\gcovtrue$. By the ordinary CLT applied to our closed-form expression for
+$\expect{\post}{\theta}$, we have that
+$$
+\sqrt{N}\left(\expect{\post}{\theta} - \thetatrue\right) \dlim
+\normdist\left(\cdot \vert 0, \sigma^2 \right),
+$$
+from which we see that $\gcovtrue = \sigma^2$.  It happens, in this case, that
+the variance of the limiting distribution is also the limit of the variance,
+since
+$$
+N \var{\xfdist}{\expect{\post}{\theta}} =
+    \frac{N^2}{(N+1)^2}\sigma^2 \rightarrow \sigma^2 \gcovtrue.
+$$
+The asymptotic equivalence between the variance of the limit and the limit of
+the variance occurs in this case because $\var{\xfdist}{\expect{\post}{\theta}}$
+is uniformly integrable as a sequence in $N$ (Theorem 10.3.6 of
+\citet{dudley:2018:realanalysis}).  We emphasize, however, that our theorems do
+not assume uniform integrability, and we aim to estimate the variance of the
+limiting normal distribution, not the limiting value of the variance, as
+discussed in the text surrounding \eqref{gtrue}.
+
+To complete \corref{bayes_expectation_dist}, we need to show that the expression
+for $\gcovtrue$ is correct. In this case, $\ggrad{1}(\theta) = 1$, and the
+remaining quantities are (up to constants not depending on
+$\theta$):
+\begin{align}
+%
+\likhat(\x \vert \theta) ={}&
+    -\frac{1}{2N} \sumn \left(x_n^2 - 2x_n \theta + \theta^2\right) + \textrm{Constant}
+\quad\textrm{and}\quad
+% \nonumber\\
+\log \pi(\theta) ={}& -\frac{1}{2}\theta^2 + \textrm{Constant} \Rightarrow \nonumber \\
+\thetahat ={}& \xbar
+\quad\textrm{,}\quad
+\ellgrad{1}(\x \vert \theta) ={} x_n - \theta
+\quad\textrm{and}\quad
+\likhatk{2}(\x \vert \theta) ={} -1 \Rightarrow \nonumber \\
+\scorecovhat ={}& \meann \left(x_n - \xbar\right)^2
+\quad\textrm{,}\quad
+\infohat ={} 1
+\quad\textrm{and}\quad
+\gcovhat ={} \infohat^{-1} \scorecovhat \infohat^{-1} = \scorecovhat.
+\eqlabel{normal_gcovhat}
+%
+\end{align}
+%
+It is readily verified that $\scorecovhat \plim \sigma^2 = \gcovtrue$,
+so we have verified the conclusion of \corref{bayes_expectation_dist}.
+
+Finally, we manually verify \thmref{ij_consistent}. The influence score is given by:
+%
+\begin{align*}
+%
+\infl_n ={}& N \cov{\post}{
+    \theta, -\frac{1}{2} \left(\x_n^2 - 2\x_n \theta + \theta^2 \right)} \\
+={}&
+ -\frac{1}{2}  N \cov{\post}{\theta, 1} \x_n^2 +
+ N \cov{\post}{\theta, \theta} \x_n  + N  \cov{\post}{\theta, \theta^2}
+={} \frac{N}{N+1} \x_n + \textrm{Constant},
+%
+\end{align*}
+%
+where the constant in the final line is the same for all $\x_n$.  Since the IJ covariance
+depends only on the difference $\infl_n - \bar{\infl}$, quantities that are the
+same for each $n$ can be neglected in the IJ covariance computation. Therefore
+the IJ covariance estimate is given by
+%
+\begin{align*}
+%
+\gcovij ={}& \meann \left(\infl_n - \bar{\infl} \right)^2
+={} \frac{N^2}{(N + 1)^2} \scorecovhat \plim \sigma^2 = \gcovtrue.
+%
+\end{align*}
+%
+Thus $\gcovij$ differs from the $\gcovhat$ given in \eqref{normal_gcovhat} by a
+factor that vanishes asymptotically.  So, like $\gcovhat$, $\gcovij$ is a
+consistent estimator of the asymptotic variance $\gcovtrue$.

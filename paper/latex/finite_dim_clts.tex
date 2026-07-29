@@ -1,0 +1,341 @@
+
+To prove the consistency of the IJ covariance,
+we assume the following conditions on the model
+and data generating process.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{assu}\assulabel{bayes_clt}
+
+%For the model and data generating process,
+For $\delta > 0$, denote the $\delta$--neighborhood of
+$\thetatrue$ as $\thetaball{\delta} :={}
+\left\{\theta: \norm{\theta - \thetatrue}_2 \le \delta \right\}$.
+Assume there exists a $\delta > 0$ such that:
+
+%
+\begin{enumerate}
+%
+\item \itemlabel{finite_dim} The dimension of $\theta$ stays fixed as $N$ changes.
+%
+\item \itemlabel{prior_smooth} The prior density $\prior(\theta)$ is non-zero
+and bounded for all $\theta \in \thetadom$, and four times continuously
+differentiable in $\thetaball{\delta}$.
+%
+\item \itemlabel{prior_proper}
+The prior is proper.%
+%
+\item \itemlabel{loglik_smooth} The functions $\lik(\theta)$ and $\theta \mapsto
+\ell(\xn \vert \theta)$ are four times continuously differentiable in
+$\thetaball{\delta}$, and the interchange of partial differentiation
+with respect to $\theta$ and expectations with respect to $\xfdist$ is
+justified.
+%
+\item \itemlabel{loglik_ulln} There exists a function $M(\xn)$ such that
+%$\deltaulln > 0$ such that
+%
+\begin{align*}
+%
+\sup_{\theta \in \thetaball{\delta}}
+\norm{
+\ellgrad{4}(\xn \vert \theta)
+}_2 \le M(\xn)
+\quad\textrm{and}\quad
+\expect{\fdist(\xn)}{M(\xn)^2} < \infty.
+%
+\end{align*}
+%
+\item \itemlabel{strict_opt}
+The log likelihood has a strict optimum in the following sense:
+    %
+    \begin{itemize}
+    \item
+    A unique maximum
+    $\thetatrue = \mathrm{argmax}_{\theta \in \thetadom} \lik(\theta)$
+    exists.
+    %
+    \item The matrix $\info$ is positive definite.
+    %
+    % \item For any $\delta > 0$, with probability approaching one as $N
+    \item There exists an $\varepsilon > 0$ such that, with probability
+    approaching one as $N \rightarrow \infty$,
+    %
+    %
+    % This formulation is not obviously enough to guarantee that
+    % \thetahat \in \thetaball{\delta} ... but it's required
+    % for R3, since if the prior goes to zero, the likelihood
+    % can blow up outside the delta ball and still have the MAP
+    % be well-behaved.
+    \begin{align*}
+    \sup_{\theta: \thetadom \setminus \thetaball{\delta}}
+    \left( \meann \ell(\x_n \vert \thetatrue) -
+           \meann \ell(\x_n \vert \theta)
+    \right) > \varepsilon.
+    \end{align*}
+    %
+    % $\sup_{\theta: \thetadom \setminus \thetaball{\delta}}
+    % \left( \likhat(\thetatrue) - \likhat(\theta)
+    % \right) > \varepsilon$.
+    %
+    \end{itemize}
+%
+\end{enumerate}
+
+\end{assu}
+%%%%%%%%%%%%%%%%%%%%
+
+% Under \assuref{bayes_clt} \itemref{loglik_ulln}, a ULLN will apply to
+% $\ellgrad{k}(\x_n \vert \theta)$ for $k \in \{0, 1, 2, 3\}$ (see a proof in
+% \lemref{ulln} of \appref{lemmas}).
+
+Under \assuref{bayes_clt}, a BCLT will apply in total variation distance by
+classical results (\citet{van:2000:asymptotic} Chapter 10), but we require an
+expansion of posterior moments to analyze \eqref{ij_heuristic}.  Series
+expansions of posterior moments are studied by
+\citet{kass:1990:posteriorexpansions} (under stricter differentiability
+conditions than ours), but with no control over the data dependence in the error
+when the expectation depends on the data.
+
+We now state conditions on functions $\phi(\theta)$ and $\phi(\theta, \x_n)$
+sufficient to form a controllable series expansion of their posterior
+expectations.
+
+\begin{defn}\deflabel{bclt_okay}
+%
+A vector--valued function $\phi(\theta, \xn)$, possibly depending on a single
+datapoint, is ``$K$-th order BCLT-okay'' if
+%
+\begin{enumerate}
+%
+\item\itemlabel{bclt_okay_as}
+    $\theta \mapsto \phi(\theta, \xn)$
+    is $K$ times continuously differentiable $\fdist$--almost surely.
+%
+\item\itemlabel{prior_op1}
+    $\meann \expect{\prior(\theta)}{\norm{\phi(\theta, \x_n)}^2_2} = O_p(1)$.
+%
+\item\itemlabel{grad_op1}
+For some $\delta > 0$, and for each $k = 1, \ldots, K$,
+$\sup_{\theta \in \thetaball{\delta}}
+    \meann \norm{\phigrad{k}(\theta, \x_n)}^2_2 = O_p(1)$.
+%
+\end{enumerate}
+%
+When the function $\phi(\theta, \x_n) = \phi(\theta)$ does not depend on the
+data (e.g., $\phi(\theta, \x_n) = \g(\theta)$), then \itemref{grad_op1}
+is vacuous, and \itemref{prior_op1} simply becomes
+$\expect{\prior(\theta)}{\norm{\phi(\theta)}^2_2} < \infty$.
+%
+\end{defn}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\begin{thm}\thmlabel{bayes_clt_main}(See proof in \appref{bayes_clt_proof}.)
+%
+Let \assuref{bayes_clt} hold, and assume that $\phi(\theta, \x_n)$ is
+third-order BCLT-okay.  Let $\normfourth$ denote the
+$\thetadim\times\thetadim\times\thetadim\times\thetadim$ array of fourth moments
+of the Gaussian distribution $\normdist(0, \infohat^{-1})$. With
+$\fdist$-probability approaching one, for each $n$,
+%
+\begin{align}
+%
+\expect{\post}{\phi(\theta, \x_n)} - \phi(\thetahat, \x_n)
+={}&
+N^{-1} \left(
+    \frac{1}{2} \phigrad{2}(\thetahat, \x_n) \infohat^{-1} +
+    \frac{1}{6} \phigrad{1}(\thetahat, \x_n) \likhatk{3}(\thetahat) \normfourth
+\right) +
+\nonumber\\&
+\ordlog{N^{-2}} 1_{\phi} \resid{\phi}(\x_n),
+\textrm{ where }\meann \resid{\phi}(\x_n)^2 = O_p(1).
+\eqlabel{bclt_expansion}
+%
+\end{align}
+%
+% where $\meann \resid{\phi}(\x_n)^2 = O_p(1)$.
+
+In \eqref{bclt_expansion}, $\resid{\phi}(\x_n)$ is a scalar,
+$1_{\phi}$ is a vector of ones with the same dimension as $\phi(\theta, \x_n)$, and
+derivatives with
+respect to $\theta$ are summed against the indices of the Gaussian
+arrays.\footnote{Although a slight abuse of notation, these simple conventions
+avoid a tedious thicket of indicial sums. Concretely, we mean that
+%
+\begin{align*}
+% $\expect{\normdist(\tau \vert 0, \infohat^{-1})}{\tau_a \tau_b}$
+\phigrad{2}(\thetahat, \x_n) \infohat^{-1} ={}&
+    \sum_{a,b=1}^{\thetadim}
+    \fracat{\partial^2 \phi(\theta, \x_n)}
+           {\partial\theta_a \partial\theta_b}{\thetahat}
+   (\infohat^{-1})_{ab}
+\\
+\phigrad{1}(\thetahat, \x_n) \likhatk{3}(\thetahat) \normfourth
+={}&
+\sum_{a,b,c,d=1}^{\thetadim}
+\fracat{\partial \phi(\theta, \x_n)}{\partial\theta_a }{\thetahat}
+\fracat{\partial^3 \lik(\theta)}
+       {\partial\theta_b \partial\theta_c \partial \theta_d }{\thetahat}
+       \normfourth_{abcd}
+%
+\end{align*}
+%
+each of which is a vector expression of the same length as $\phi(\theta,
+\x_n)$.
+}
+%
+\end{thm}
+%
+% \begin{proofsketch}{\appref{bayes_clt_proof}}
+% %
+% Our proof of \thmref{bayes_clt_main} follows other classical proofs of the BCLT
+% (e.g. \cite[Theorem 1.4.2]{ghosh:2003:bayesian}) by dividing $\thetadom$ into
+% three regions, only one of which --- a shrinking ball centered at $\thetahat$ ---
+% contributes leading order terms to the posterior expectation. Within this
+% dominant shrinking ball, we can Taylor expand the posterior integrals and
+% collect terms to give the desired result.
+% %
+% Our distinct contribution is to track the data dependence in the residual terms
+% $\resid{\phi}(\x_n)$ such that, when $\phi(\theta, \x_n)$ is third-order
+% BCLT-okay, the residual is square summable with $\fdist$-probability approaching
+% one.
+
+% Specifically \thmref{bayes_clt_main} follows from \lemref{bayes_clt}, which
+% establishes the expansion above with an explicit, non-stochastic  expression for
+% the residual $\resid{\phi}(\x_n)$, and \lemref{resid_op1}, which shows that
+% $\resid{\phi}(\x_n)$ is square-summable.
+% %
+% \end{proofsketch}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+% First a classical FCLT
+To connect \thmref{bayes_clt_main} to the IJ covariance, we first show that
+\assuref{bayes_clt} is sufficient (indeed, stronger than necessary) to prove the
+(known) results of \eqref{fclt_bclt} for third--order BCLT-okay functions. For completeness,
+we state and prove these known results under  our stated assumptions.
+
+
+\begin{assu}\assulabel{bclt_okay}
+    The functions $\g(\theta)$, $\ell(\xn \vert \theta)$, and
+    $\g(\theta) \ell(\xn \vert \theta)$ are all third-order BCLT-okay.
+\end{assu}
+
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+\begin{prop}\proplabel{freq_clt}(See proof in \appref{freq_clt_proof},
+    as well as \cite[Chapter 7]{van:2000:asymptotic})
+%
+Let \assuref{bayes_clt,bclt_okay} hold.
+Then $\thetahat \plim \thetatrue$, and
+%
+\begin{align*}
+\sqrt{N}\left(g(\thetahat) - g(\thetatrue)\right)
+\dlim
+\normdist\left(0, \gcovtrue \right)
+\quad\textrm{where}\quad
+\gcovtrue =
+    \ggrad{1}(\thetatrue)
+    \info^{-1} \scorecov \info^{-1} \ggrad{1}(\thetatrue)^\trans.
+\end{align*}
+%
+\end{prop}
+%
+% \begin{proofsketch}{\appref{freq_clt_proof}}
+% %
+% \Propref{freq_clt} is only a minor variation of the classical proof of
+% asymptotic normality of the maximum likelihood estimator, accounting for the
+% possibility that, under misspecification, we may have $\info^{-1} \ne
+% \scorecov$. \propref{freq_clt} is proven under weaker conditions than ours in,
+% for example, \cite[Chapter 7]{van:2000:asymptotic}.  In \appref{freq_clt_proof}
+% we include our own proof under our stated conditions for completeness.
+% % conditions in the corollary to Theorem 3 of \citet{huber:1967:nonstandard}.
+% %
+% \end{proofsketch}%
+
+
+% The limiting frequentist distribution of $\expect{\post}{g(\theta)}$ under
+% misspecification, proven under weaker conditions than ours in \cite[Theorem
+% 10.8]{van:2000:asymptotic}, follows from \thmref{bayes_clt_main}.  We state and
+% prove the result here, since it establishes the estimand which the IJ covariance
+% is targeting.
+
+The next result shows that
+% it follows from \thmref{bayes_clt_main} and
+% \propref{freq_clt} that
+our target variance is $\gcovtrue$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{cor}\corlabel{bayes_expectation_dist}(\cite[Theorem 10.8]{van:2000:asymptotic})
+%
+Under \assuref{bayes_clt,bclt_okay},
+%
+\begin{align*}
+%
+\sqrt{N} \left( \expect{\post}{g(\theta)} - g(\thetatrue) \right)
+    \dlim \normdist\left(0, \gcovtrue\right).
+%
+\end{align*}
+%
+% where
+% %
+% \begin{align*}
+% \gcovtrue := \ggrad{1}(\thetatrue) \info^{-1} \scorecov
+%             \info^{-1} \ggrad{1}(\thetatrue)^T.
+% \end{align*}
+%
+\begin{proof}
+%
+Under \assuref{bayes_clt,bclt_okay}, \lemref{regular_event} in \appref{bayes_clt_proof}
+yields that
+$\ggrad{1}(\thetahat)$, $\infohat$, and $\likhatk{3}(\thetahat)$ are all
+$O_p(1)$.
+%
+By \thmref{bayes_clt_main} we thus have,
+%
+\begin{align*}
+%
+\sqrt{N} \left( \expect{\post}{g(\theta)} - g(\thetatrue) \right) =&
+\sqrt{N} \left( g(\thetahat) - g(\thetatrue) \right) + O_p(N^{-1/2}),
+%
+\end{align*}
+%
+The distributional limit then follows from \propref{freq_clt} and Slutsky's
+theorem.
+%
+\end{proof}
+\end{cor}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Finally, our main result, the consistency of $\gcovij$, follows from
+\thmref{bayes_clt_main} and \corref{bayes_expectation_dist}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thm}\thmlabel{ij_consistent}(See proof in \appref{ij_consistent}.)
+%
+Under \assuref{bayes_clt,bclt_okay} the infinitesimal jackknife
+variance estimate is consistent.  Specifically,
+%
+\begin{align*}
+    \gcovij ={}&
+        \ggrad{1}(\thetahat) \infohat^{-1}
+            \scorecovhat \infohat^{-1} \ggrad{1}(\thetahat)^\trans +
+        \ordlogp{N^{-1}}
+        \plim \gcovtrue.
+\end{align*}
+%
+\end{thm}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

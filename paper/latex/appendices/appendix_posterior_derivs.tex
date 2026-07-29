@@ -1,0 +1,72 @@
+\def\et#1{\expect{\p(\theta \vert \t)}{#1}}
+\def\etzero#1{\expect{\p(\theta \vert \t_0)}{#1}}
+\def\phibar{\bar{\phi}}
+
+Consider an exponentially tilted distribution,
+%
+\begin{align*}
+%
+\p(\theta \vert \t) :=
+    \frac{\exp\left(
+        \ell(\theta) + \t \phi(\theta)
+        \right)}
+        {\int \exp\left(
+            \ell(\theta') + \t \phi_k(\theta')
+            \right) d\theta'}
+%
+\end{align*}
+%
+which we assume is defined for all $\t$ in a neighborhood of the zero vector.
+When we can exchange the order of integration and differentiation,
+%
+\begin{align*}
+%
+\fracat{d \et{\g(\theta)}}{d \t}{\t}
+={}&
+\et{\g(\theta) \phi(\theta)} - \et{\g(\theta)} \et{\phi(\theta)}.
+%
+\end{align*}
+%
+Applying the previous formula to itself gives
+%
+\begin{align*}
+%
+\fracat{d^2 \expect{\p(\theta \vert \t)}{\g(\theta)}}{d \t^2}{\t}
+={}&
+\et{\g(\theta) \phi(\theta) \phi(\theta)} -
+\et{\g(\theta) \phi(\theta)} \et{\phi(\theta)} -
+\\&
+\et{\g(\theta)} \left(
+    \et{\phi(\theta) \phi(\theta)}  - \et{\phi(\theta)}\et{\phi(\theta)}
+\right) -
+\\&
+\et{\phi(\theta)} \left(
+    \et{\g(\theta) \phi(\theta)} - \et{\g(\theta)} \et{\phi(\theta)}
+\right).
+%
+\end{align*}
+%
+If, for some $\t_0$, we set
+%
+\begin{align*}
+%
+\gbar(\theta) :={} \g(\theta) - \expect{\p(\theta \vert \t_0)}{\g(\theta)} \\
+\phibar(\theta) :={} \phi(\theta) -
+    \expect{\p(\theta \vert \t_0)}{\phibar(\theta)},
+%
+\end{align*}
+%
+then the above formulas simplify at $\t_0$ to
+%
+\begin{align*}
+%
+\fracat{d \et{\g(\theta)}}{d \t}{\t=\t_0} ={}&
+    \etzero{\gbar(\theta) \phibar(\theta)} \quad\textrm{and}\quad
+\fracat{d^2 \expect{\p(\theta \vert \t)}{\g(\theta)}}{d \t^2}{\t=\t_0} ={}
+    \etzero{\gbar(\theta) \phibar(\theta) \phibar(\theta)}.
+%
+\end{align*}
+%
+Importantly, the validity of the preceding expression for the second derivative
+requires that the centering is at a fixed $\t_0$ --- the same $\t_0$ at which
+the derivative is evaluated --- and does not depend on $\t$.

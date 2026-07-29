@@ -1,0 +1,21 @@
+\documentclass[12pt]{article} % JASA and arxiv
+
+\usepackage{etoolbox}
+
+% The arxiv version includes the supplement directly.  This file is only
+% so JASA can have its own standalone supplement.  So the arxiv boolean is
+% always false.
+\newbool{arxiv}
+\boolfalse{arxiv}
+
+\input{_headers.tex}
+
+\externaldocument{main}
+
+\begin{document}
+
+\input{supplement_content.tex}
+
+\printbibliography{}
+
+\end{document}

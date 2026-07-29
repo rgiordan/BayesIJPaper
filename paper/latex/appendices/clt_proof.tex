@@ -1,0 +1,76 @@
+
+
+The proof of \thmref{bayes_clt_main} will be broken up into several parts. Our
+first step is to derive an explicit series expansion for posterior expectations
+of the form $\expect{\post}{\phi(\theta)}$, culminating in \lemref{bayes_clt}.
+In \lemref{resid_op1}, we then consider the dependence of $\phi(\theta)$ on a
+subset of datapoints, writing $\phi(\theta, \xvec_s)$ (recalling
+\defref{index_sets}), and showing that the results of \lemref{bayes_clt} can be
+summed over $\indexset$. The residual of the expansion in \lemref{bayes_clt} is
+designed so that \lemref{resid_op1} follows easily.
+
+To prove \lemref{bayes_clt}, we follow classical proofs of the BCLT, keeping
+explicit track of the residual.  We first express the desired expectation as the
+ratio of integrals with respect to $\tau$.  We then divide the domain of
+integration into three regions according to their distance from $\thetahat$ and
+treat each separately. Finally, we combine the bounds on the integrals over
+different regions for our final result.
+
+Throughout, we will use the change of variable
+%
+\begin{align}
+%
+\theta := \thetahat + \sqrt{N} \tau
+\quad\Leftrightarrow\quad
+\tau = N^{-1/2} (\theta - \thetahat).
+\eqlabel{tau_defn}
+%
+\end{align}
+%
+We will switch the domain of integration between $\tau$ and $\theta$ without
+re-writing the arguments.  For example, for some function $\phi(\theta)$, we
+will write the shorthand $\int \phi(\theta) d\tau$ for the more precise $\int
+\phi\left(\sqrt{N} \tau + \thetahat\right) d\tau$. Similarly, we will overload
+set notation: if $A$ is a set of $\theta$, we will write $\tau \in A$ as a
+shorthand for $\tau \in \left\{\tau: \thetahat + \sqrt{N} \tau \in A \right\}$.
+Although slight abuses of notation, these conventions will keep our expressions
+more compact, as well as serve as a reminder of the $\theta$ domain in which the
+integrand is smooth by assumption.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Ratio of integrals}\seclabel{bclt_ratio}
+\input{appendices/bclt_ratio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Regions}
+\input{appendices/region_division}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Nearly certain events}
+\input{appendices/nearly_certain_events}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Region $R_3$}
+\input{appendices/region_r3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Gaussian definitions}
+\input{appendices/gaussian_defs}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Region $R_2$}
+\input{appendices/region_r2}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Region $R_1$}\seclabel{region_r1}
+\input{appendices/region_r1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Combining the regions}\seclabel{bclt_region_comb}
+\input{appendices/region_comb}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Proof that the BCLT residual is square-summable}\applabel{resid_proofs}
+\input{appendices/resid_proofs.tex}

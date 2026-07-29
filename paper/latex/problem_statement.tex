@@ -1,0 +1,85 @@
+% Data and likelihood notation.
+Suppose we observe $N$ data points, $\xvec = (\x_1, \ldots \x_N)$.  We will
+assume that the entries of $\xvec$ are independently and identically distributed
+(IID) according to a distribution $\fdist$.  In a slight abuse of notation, we
+will write $\xfdist$ for $\prod_{n=1}^N \fdist(\x_n)$.  Throughout, the
+distribution $\fdist$ will be taken as fixed but unknown.  A Bayesian typically
+models the distribution of $\xvec$ by an IID parametric model
+given on some parameters $\theta \in \thetadom \subseteq \rdom{\thetadim}$:
+%
+$$
+\p(\xvec \vert \theta) = \prod_{n=1}^N \p(\x_n \vert \theta) = 
+    \exp\left(\sumn \ell(\x_n \vert \theta) \right)
+\intertxt{where}
+\ell(\x_n \vert \theta) := \log \p(\x_n \vert \theta).
+$$
+%
+In the present work, we admit that the model may be misspecified, i.e., there may be no $\theta
+\in \thetadom$ such that $\p(\x_n \vert \theta)$ is the same distribution as
+$\fdist$.  
+
+We will additionally posit a prior over the parameters
+$\theta$, and assume this prior can be expressed as
+a density $\prior(\cdot)$ with respect to the Lebesgue measure on $\rdom{\thetadim}$.  Then
+we can compute the posterior expectation of a vector-valued quantity $g(\theta)
+\in \rdom{\gdim}$ using Bayes' rule:
+%
+\begin{align}
+%
+\expect{\post}{\g(\theta)} =
+    \frac{
+    \int_{\thetadom} g(\theta)
+        \exp\left(N \meann \ell(\x_n \vert \theta) \right) \prior(\theta)
+                        d\theta}
+         {\int_{\thetadom}
+         \exp\left(N \meann \ell(\x_n \vert \theta) \right) \prior(\theta)
+         d\theta}.
+         \eqlabel{g_post}
+%
+\end{align}
+
+The quantity $\expect{\post}{\g(\theta)}$ is a function of the data $\xvec$,
+through its dependence on the random function $\theta \mapsto \meann \ell(\x_n
+\vert \theta)$.  We will be primarily concerned with the problem of how to
+estimate the variability of $\expect{\post}{\g(\theta)}$ under sampling from
+$\xfdist$, when $N$ is large, using Markov Chain Monte Carlo (MCMC)
+samples from the posterior $\post$, in the presence of possible
+misspecification.
+%
+% Using an estimate of its variability, one can use classical frequentist tests to
+% estimate how much the posterior mean might be expected to have varied were we to
+% have drawn a different sample $\xvec$.
+Specifically, let $\plim$ and $\dlim$ respectively denote convergence in
+probability and distribution under sampling from $\xfdist$. We will
+articulate conditions under which
+% The mean and covariance (if they exist) of $\expect{\post}{\g(\theta)}$ under
+% sampling from $\xfdist$ can be written respectively as
+%
+\begin{align}\eqlabel{gtrue}
+%
+\expect{\post}{\g(\theta)} \plim \gmeantrue < \infty
+\quad\textrm{and}\quad
+\sqrt{N}\left(\expect{\post}{\g(\theta)} - \gmeantrue \right)
+\dlim
+\normdist\left(\cdot \vert 0, \gcovtrue\right)
+% \gcovtrue_{FS} := \cov{\xfdist}{\expect{\post}{\g(\theta)}}.
+%
+\end{align}
+for some constants $\gmeantrue$ and $\gcovtrue$.  Under these conditions, our
+contribution is to form a consistent estimator of $\gcovtrue$ that can be
+computed from a single set of draws from $\post$, and so approximated from a
+single run of MCMC.  We emphasize that our objective of establishing
+\eqref{gtrue} is weaker than estimating the limiting variance of $\sqrt{N}
+\expect{\post}{\g(\theta)}$, which may not even exist, but which would coincide
+with $\gcovtrue$ under an additional assumption of uniform integrability (see,
+e.g., Theorem 10.3.6 of \citet{dudley:2018:realanalysis}).
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Outline of the rest of the paper.
+
+

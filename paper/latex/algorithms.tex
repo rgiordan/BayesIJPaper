@@ -1,0 +1,99 @@
+\begin{figure}
+    % \begin{minipage}[t]{1.0\textwidth}
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    \begin{algorithm}[H]
+        \caption{Sandwich covariance}\algrlabel{sandwich}
+        \textbf{Requires: } Differentiable $\theta \mapsto \likhat(\theta)$
+        % \textbf{Inputs (global variables):}\\
+        % $\theta \mapsto g(\theta)$ \\ %\Comment{Target function}\\
+        % $\theta \mapsto \likhat(\theta)$ \\ %\Comment{Log joint distribution}\\
+        \begin{algorithmic}
+        %
+        \State $\thetahat \gets \argmax_{\theta \in \thetadom} \likhat(\theta)$
+    %        \Comment{(MAP estimate)}
+        \State $\hat{\Sigma}_\theta \gets \infohat^{-1} \scorecovhat \infohat^{-1}$
+     %       \Comment{(sandwich estimate of $\cov{\xfdist}{\sqrt{N} \thetahat}$)}
+        \State \Return $\gcovmaphat \gets \ggrad{1}(\thetahat)
+            \hat{\Sigma}_\theta \ggrad{1}(\thetahat)^\trans$
+      %      \Comment{(delta method estimate of
+       %         $\cov{\xfdist}{\sqrt{N} \g(\thetahat)}$)}
+        % \State \Return $\gcovmaphat$
+        %
+        \end{algorithmic}
+    \end{algorithm}
+    %
+    % \end{minipage}
+    %
+    % \hfill\vline\hfill
+    %
+    % \begin{minipage}[t]{0.33\textwidth}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    \begin{algorithm}[H]
+        \caption{Bootstrap covariance}\algrlabel{boot}
+        % \textbf{Inputs (global variables):}\\
+        % $\xvec = (\x_1, \ldots, \x_N)$ \Comment{Data}\\
+        % $\theta \mapsto g(\theta)$ \Comment{Target function}\\
+        % $M$ \Comment{Number of MCMC samples}\\
+        % $B$ \Comment{Number of bootstrap samples}
+        \textbf{Requires: } Posterior sampler $\xvec^* \mapsto \theta^1,\ldots,\theta^M \sim \p(\theta | \xvec^*)$
+        (e.g. MCMC)
+        \begin{algorithmic}
+        %
+        \For{$b=1,\ldots,B$}
+            \State $\xvec^* \gets$ Sample with replacement from the rows of $\xvec$
+            \State Sample
+                $\theta^1,\ldots,\theta^M \sim \p(\theta | \xvec^*)$
+            % \Comment{Note that $\theta^m \in \rdom{D}$.}
+            \State $\mathscr{G}^b \gets
+                \frac{1}{M} \sum_{m=1}^M g(\theta^m)$
+            % \Comment{$\mathscr{G}^b \approx \expect{p(\theta | \xvec^*)}{\g(\theta)}$.
+                % Note that $\mathscr{G}^b \in \rdom{\gdim}$.}
+        \EndFor
+        \State \Return $\gcovboothat \gets \covhat{b \in [B]}{\sqrt{N} \mathscr{G}^b}$
+        % \Comment{(Bootstrap estimate of $\cov{\xfdist}{\sqrt{N} \expect{p(\theta | \xvec)}{\g(\theta)}}$)}
+        % \State \Return $\gcovboothat$
+        %
+        \end{algorithmic}
+    \end{algorithm}
+    %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    \begin{algorithm}[H]
+        \caption{IJ covariance (our proposal)}\algrlabel{ijalg}
+        \textbf{Requires: } Log likelihood $\theta, \x_n \mapsto \ell(\x_n \vert \theta)$,
+        posterior samples $\theta^1,\ldots,\theta^M \sim \p(\theta | \xvec)$
+        % \textbf{Inputs (global variables):}\\
+        % $\xvec = (\x_1, \ldots, \x_N)$ \Comment{Data}\\
+        % $\theta^1, \ldots, \theta^M$
+        %     \Comment{MCMC samples from $\p(\theta \vert \xvec)$}\\
+        % $\theta \mapsto g(\theta)$ \Comment{Target function}\\
+        % $x_n, \theta \mapsto \ell(\x_n | \theta)$ \Comment{Log likelihood function}\\
+        
+        \begin{algorithmic}
+        % \algrlabel{IJ Covariance From MCMC}
+        %
+        \For{$n=1,\ldots,N$}
+            \State $\hat{\infl}_n \gets N
+                \covhat{m \in [M]}{\ell(\x_n \vert \theta^m), \g(\theta^m)}$
+            % \Comment{Approximate posterior covariance}
+        \EndFor
+        \State \Return $\gcovijhat \gets \covhat{n\in [N]}{\hat{\infl}_n}$
+            % \Comment{Approximate covariance across datapoints}
+        % \State \Return $\gcovijhat$
+        %
+        \end{algorithmic}
+    \end{algorithm}
+    %
+        
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % \end{minipage}
+    
+    \caption{Three algorithms for estimating $\gcovtrue$.}\figlabel{algorithm}
+    \end{figure}

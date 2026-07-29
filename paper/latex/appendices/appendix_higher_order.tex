@@ -1,0 +1,111 @@
+\def\postg{\p(\gamma \vert \xvec)}
+\def\postl{\p(\lambda \vert \xvec, \gamma)}
+
+
+To derive \eqref{resid_term},
+we first derive a general formula for the second derivative with 
+respect to the data weights $\expect{\postw}{\g(\theta)}$, and then
+use the Tower property on the resulting expression.  For compactness,
+let $\ell_n(\theta) = \ell(\x_n \vert \theta)$.  Recall
+that \eqref{infl_deriv} is a special case of the general
+formula
+%
+$$
+\begin{aligned}
+    \fracat{\partial \expect{\postw}{a(\theta)}}{\partial \w_n}{\wvec}
+    ={}&
+    \cov{\postw}{a(\theta), \ell_n(\theta)}
+    \\={}&
+    \expect{\postw}{a(\theta) \ell_n(\theta)} -
+    \expect{\postw}{a(\theta)} \expect{\postw}{\ell_n(\theta)},
+    \eqlabel{first_deriv}
+    \end{aligned}
+$$
+%
+which we can apply recursively to itself using the chain rule as follows.
+
+$$
+\begin{aligned}
+    \MoveEqLeft
+\fracat{\partial^2 \expect{\postw}{a(\theta)}}{\partial \w_n \partial \w_m}{\wvec}
+\\={}&
+    \cov{\postw}{a(\theta) \ell_n(\theta), \ell_m(\theta)} -
+    \\{}&
+    \cov{\postw}{a(\theta), \ell_m(\theta)} \expect{\postw}{\ell_n(\theta)} -
+    \cov{\postw}{\ell_n(\theta), \ell_m(\theta)} \expect{\postw}{a(\theta)}
+\\={}&
+    \expect{\postw}{a(\theta)\ell_n(\theta)\ell_m(\theta)} -
+    \expect{\postw}{a(\theta) \ell_n(\theta)} \expect{\postw}{\ell_m(\theta)} -
+\\{}&
+    \expect{\postw}{a(\theta) \ell_m(\theta)} \expect{\postw}{\ell_n(\theta)} +
+    \expect{\postw}{a(\theta)} \expect{\postw}{\ell_m(\theta)} \expect{\postw}{\ell_n(\theta)} -
+\\{}&
+    \expect{\postw}{\ell_n(\theta) \ell_m(\theta)} \expect{\postw}{a(\theta)} +
+    \expect{\postw}{a(\theta)} \expect{\postw}{\ell_n(\theta)} \expect{\postw}{\ell_m(\theta)}.
+\\={}&
+    \expect{\postw}{a(\theta)\ell_n(\theta)\ell_m(\theta)} +
+    2 \expect{\postw}{a(\theta)} \expect{\postw}{\ell_n(\theta)} \expect{\postw}{\ell_m(\theta)} -
+\\{}&
+    \expect{\postw}{a(\theta) \ell_n(\theta)} \expect{\postw}{\ell_m(\theta)} -
+\\{}&
+    \expect{\postw}{a(\theta) \ell_m(\theta)} \expect{\postw}{\ell_n(\theta)} -
+\\{}&
+    \expect{\postw}{\ell_n(\theta) \ell_m(\theta)} \expect{\postw}{a(\theta)}
+\\={}&
+\expect{\postw}{
+    (a(\theta) - \expect{\postw}{a(\theta)})
+    (\ell_n(\theta) - \expect{\postw}{\ell_n(\theta)})
+    (\ell_m(\theta) - \expect{\postw}{\ell_m(\theta)})
+}.
+\end{aligned}
+$$
+%
+
+Now suppose that $\theta = (\gamma, \lambda)$, and that $a(\theta) = \gamma$.  By applying
+the Tower property to the second derivative,
+
+$$
+\begin{aligned}
+    \fracat{\partial^2 \expect{\postw}{\gamma}}{\partial^2 \w_n}{\onevec}
+={}&
+\expect{\p(\gamma \vert \xvec)}{
+    (\gamma - \expect{\postg}{\gamma})
+    \expect{\postl}{
+        (\ell_n(\gamma, \lambda) - \expect{\post}{\ell_n(\gamma, \lambda)})^2
+    }
+}.
+\end{aligned}
+$$
+
+Note that
+%
+$$
+\begin{aligned}
+\MoveEqLeft
+    \expect{\p(\lambda \vert \gamma, \xvec)}{
+        (\ell_n(\gamma, \lambda) - \expect{\post}{\ell_n(\gamma, \lambda)})^2
+    }
+\\={}&
+\expect{\postl}{
+    (\ell_n(\gamma, \lambda) -
+    \expect{\postl}{\ell_n(\gamma, \lambda)} +
+    \expect{\postl}{\ell_n(\gamma, \lambda)} -
+    \expect{\post}{\ell_n(\gamma, \lambda)})^2
+}
+\\={}&
+\cov{\postl}{\ell_n(\gamma, \lambda)} + 
+\left(\expect{\postl}{\ell_n(\gamma, \lambda)} -  \expect{\post}{\ell_n(\gamma, \lambda)}\right)^2.
+\end{aligned}
+$$
+
+If we assume that the third--order posterior cumulant
+
+$$
+\expect{\p(\gamma \vert \xvec)}{
+    (\gamma - \expect{\postg}{\gamma})
+    \left(\expect{\postl}{\ell_n(\gamma, \lambda)} -  \expect{\post}{\ell_n(\gamma, \lambda)}\right)^2
+}
+$$
+
+is $\ordlogp{N^{-2}}$ --- as it would be if the corresponding moments of $\postg$ obeyed
+an expansion like \thmref{bayes_clt_main} --- then \eqref{resid_term} follows.

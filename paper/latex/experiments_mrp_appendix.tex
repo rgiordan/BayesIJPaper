@@ -1,0 +1,26 @@
+\MRPMAPGraph{}
+
+\MRPLMERGraph{}
+
+\MRPLMERSdGraph{}
+
+In \figref{mrp_map_graph} we see that the MAP estimator provides poor point
+estimates in the MrP model, likely due in part to the large number of random
+effects to fit.  We note that the \texttt{stan::optimizing} function in \texttt{R}
+performed poorly, and we had find the MAP by hand using a careful initialization
+and small step size in order to avoid divergent estimates.
+
+Although it is not strictly speaking a MAP estimate, the natural
+optimization--based competitor for MCMC is not the MAP estimator but
+marginal maximum likelihood estimation, such as the \texttt{lmer} function
+in \texttt{R}.  As shown in \figref{mrp_lmer_graph}, \texttt{lmer} provides
+better point estimates than MAP estimation on the MrP model.  However,
+as shown in \figref{mrp_lmer_sd_graph}, the standard error estimates are
+provided by \texttt{lmer} can differ considerably from the Bayesian posterior
+estimates, and most parameters do not have standard errors reported automatically.
+In principle, one may be able combine the frequentist sampling estimates of each
+parameter to estimate the joint sampling distribution between the fixed
+in order to estimate the sampling variance of $\expect{\post}{\g(\theta)}$,
+but doing so would be quite cumbersome given the information exposed by \texttt{lmer}.
+In contrast, the MCMC and IJ covariance estimates are extremely straightforward
+to compute. 

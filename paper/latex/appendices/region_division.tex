@@ -1,0 +1,66 @@
+For some $\delta_1$ and $\delta_2$ to be determined later, we will divide
+consideration of $I(\phi)$ into the following three disjoint regions.
+
+\begin{defn}\deflabel{region_division}
+%
+For any $\delta_1 > 0$ and $\delta_2 > 0$ and $N$ sufficiently large, define
+the disjoint regions
+%
+\begin{align*}
+R_1 :={}& \left\{\theta:
+    \norm{\theta - \thetahat}_2 < \delta_1 \frac{\log N}{\sqrt{N}} \right\}\\
+R_2 :={}& \left\{\theta:
+    \delta_1 \frac{\log N}{\sqrt{N}} \le
+        \norm{\theta - \thetahat}_2 < \delta_2 \right\} \\
+R_3 :={}& \left\{\theta:
+    \delta_2 \le \norm{\theta - \thetahat}_2  \right\}.
+\end{align*}
+%
+Recalling our slight abuse of set notation, the same regions in the domain of $\tau$
+are,
+%
+\begin{align*}
+\tau \in R_1 \Rightarrow{}& \tau \in \left\{\tau:
+    \norm{\tau}_2 < \delta_1 \log N \right\}\\
+\tau \in R_2 \Rightarrow{}& \left\{\tau:
+    \delta_1 \log N \le
+        \norm{\tau}_2 < \delta_2 \sqrt{N} \right\} \\
+\tau \in R_3 \Rightarrow{}& \left\{\tau:
+    \delta_2 \sqrt{N} \le \norm{\tau}_2  \right\}.
+\end{align*}
+%
+Similarly, we will use the regions as domains of integration for $\tau$ as well
+as $\theta$. Correspondingly, we can define
+%
+\begin{align}
+I_1(\phi) :={}& \int_{R_1} \phi(\theta, \xvec_s)
+   \exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right) d \tau \nonumber\\
+I_2(\phi) :={}& \int_{R_2} \phi(\theta, \xvec_s)
+  \exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right) d \tau \nonumber\\
+I_3(\phi) :={}& \int_{R_3} \phi(\theta, \xvec_s)
+ \exp\left(N \likhat(\theta) - N \likhat(\thetahat)\right) d \tau.
+ \eqlabel{region_integration_functional}
+\end{align}
+%
+\end{defn}
+%
+Since the boundaries of the regions coincide, $I(\phi) = I_1(\phi) + I_2(\phi) +
+I_3(\phi)$ for $N$ when the regions $R_1$, $R_2$, and $R_3$ are disjoint, which
+will occur for $N$ sufficiently large (see \lemref{regular_event} below for more
+discussion of this point). Note that the union $R_1 \bigcup R_2$ is a $\delta_2$
+ball around $\thetahat$, and that $R_1$ shrinks to $\thetahat$ as $N \rightarrow
+\infty$.
+
+Throughout the proof, we will be choosing $\delta_1$ and $\delta_2$ to satisfy
+certain conditions.  Our assumptions will always take the form of assuming that
+$\delta_1$ is \textit{large enough}, and that $\delta_2$ is \textit{small
+enough}.  For any particular $\delta_1$ and $\delta_2$, we then will require
+that $N$ is large enough that the regions are disjoint.
+
+% With the regions so defined, we will be able to choose, independently of $\xvec$,
+% $\delta_1$ to be large enough and $\delta_2$ small enough that we can make the
+% integral $I_1(\phi)$ contain all nonzero terms up to polynomial order in $N$
+% with high probability as $N \rightarrow \infty$.  In other words, only the
+% behavior of the integral $I_1(\phi)$ will matter to leading order.  Because the
+% region $R_1$ is shrinking in size as $N$ grows, the integral $I_1(\phi)$ will be
+% arbitrarily well approximated by a Taylor series expansion around $\thetahat$.

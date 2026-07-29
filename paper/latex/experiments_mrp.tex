@@ -1,0 +1,129 @@
+For a more complex model, we consider an application of
+``multilevel regression and post--stratification,'' or MrP 
+\citep{park:2004:mrp}.  We studied an example from \citet{lopezmartin:2022:mrptutorial}
+in which a subsample of a national survey is used to infer a prediction
+on the entire population.  Since the textbook example involves simulated subsampling,
+a ground truth is available for comparison.
+
+MrP models can be motivated by the following survey sampling problem. Let $\zn$
+denote a vector of regressors, and $\yn$ a binary survey response.  Suppose we
+observe $N_{\survey}$ observations of the form $\x_n = (\z_n, \y_n)$ from a
+``survey population,'' and $N_{\target}$ observations consisting only of $\z_m$
+from a ``target population.''  We assume that $\expect{\p(\yn \vert \zn)}{\yn}$
+is the same in both the survey and target populations, but that the marginal
+distributions of $\zn$ may differ, perhaps due to biased survey sampling.  Let
+$\p_\target(\cdot)$ denote the target population distribution.  We would like to
+use the observed data to estimate $\expect{\p_\target(\yn)}{\yn} =
+\expect{\p_\target(\zn)}{\expect{\p(\yn \vert \zn)}{\yn}}$ in the target
+population.  The approach of MrP is to use the survey data to form a regression
+estimate of $\zn \mapsto \expect{\p(\yn \vert \zn)}{\yn}$ (the ``multilevel
+regression'' part of MrP) and then to average the regression's predictions using
+the target population regressors (the ``post--stratification'' part of MrP).
+
+A typical MrP model assumes that the expectation of the response conditional on
+the regressors is given a finitely parameterized regression model.  For example,
+one might specify a logistic regression model for a binary survey response.  The
+regression model gives an explicit expression for $\expect{}{\y | \z, \theta}$
+which, by assumption, holds in both the survey and target populations.
+Typically, the MrP model also specifies hierarchical, or ``multilevel'' prior
+structure on the parameters, possibly including unknown hyperparameters. For
+compactness of notation we assume that these unknown hyperparameters are also
+included in $\theta$, even if they are not used directly in the computation of
+$\expect{}{\y | \z, \theta}$.  For any particular value of $\theta$ we can form
+the ``poststratified'' estimator of $\expect{\p_\target(\yn)}{\yn}$, which is
+our quantity of interest:
+%
+\begin{align}
+    \g(\theta) = \frac{1}{N_{\target}} \sum_{m=1}^{N_{\target}} \expect{}{\yn | \z_m, \theta}.
+    \eqlabel{mrpg}
+\end{align}
+%
+The expression for $\g(\theta)$ is motivated by the observation that if
+$\expect{}{\yn | \z_m, \theta} = \expect{}{\yn | \z_m}$ at our particular
+$\theta$, then $\g(\theta) \approx \expect{\target(\yn)}{\yn}$ by the law of
+large numbers, since $\z_m$ are drawn marginally from the target distribution of
+regressors.  The Bayesian estimator integrates out our uncertainty in the
+$\theta$, taking $\expect{\post}{\g(\theta)}$ as our posterior estimate of the
+unknown $\expect{\target(\yn)}{\yn}$.  See
+\citet{park:2004:mrp,lopezmartin:2022:mrptutorial} for more details.
+
+To assess our ability to estimate $\gcovtrue$ in MrP models, we replicate a
+semi--simulated analysis from Chapter 1 of the MrP tutorial textbook,
+\citet{lopezmartin:2022:mrptutorial}.  Although this MrP analysis is based on
+real data, the survey population consists of a sample taken uniformly at random
+from a \emph{superpopulation} for which complete data --- both regressors and
+responses --- is available.  The MrP estimator $\expect{\post}{\g(\theta)}$,
+which is formed using response variables only from the sampled survey population,
+can then be compared to the known ground truth: namely, the average response in
+the superpopulation. \citet{lopezmartin:2022:mrptutorial} use the
+superpopulation to assess the accuracy of MrP methods.  In our case, we use
+the superpopulation to estimate the ground truth $\gcovtrue$ by measuring the
+sampling variability of $\expect{\post}{\g(\theta)}$ under repeated independent
+draws of the survey population.
+
+The superpopulation dataset provided by \citet{lopezmartin:2022:mrptutorial}
+consists of $\mrpNTotalobs$ pairs of survey responses and regressors, from which
+we sample $\mrpNobs$ uniformly at random without replacement to form simulated
+survey populations.  The response $\yn$ is an indicator of whether a respondent
+supports coverage of abortions in insurance plans, taken from the 2018
+Cooperative Congressional Election Study \citep{schaffner:2018:cces}.  The
+provided regressors, $\zn$, consist of discretized demographic information
+measuring age, gender, ethnicity, education, and state.  We use the model given
+by Chapter 1 of \citet{lopezmartin:2022:mrptutorial}, which consisted of a
+hierarchical logistic regression with unknown hyperparameter variances.  We let
+our parameter $\theta$ include both logistic regression coefficients and
+hyperprior variances; in total, the dimension of the parameter space was
+$\thetadim = \mrpThetaDim$.
+
+The details of our sampling and estimation procedure were as follows.  A draw of
+the survey data $\xvec$ is produced by selecting $\mrpNobs$ regressor / response
+pairs $\x_n = (\z_n, \y_n)$ uniformly at random without replacement from the
+$\mrpNTotalobs$ observations in the superpopulation.  For each such $\xvec$, we
+can compute $\post$ and so $\expect{\post}{\g(\theta)}$, using the
+$\mrpNTotalobs - \mrpNobs$ remaining superpopulation observations as the target
+population in $\g(\theta)$.\footnote{Technically there will be additional
+variability due to the random selection of the target regressors in
+\eqref{mrpg}, but we are justified in neglecting this variability since the
+superpopulation is so large.} By simulating multiple draws of $\xvec$ and
+computing $\expect{\post}{\g(\theta)}$ for each, we can estimate the ground
+truth $\gcovtrue$.   In this way, we simulated $\mrpNSamples$ different survey
+datasets $\xvec$.  For each dataset, we drew $M=\mrpNMCMC$ MCMC samples from
+each posterior using the \texttt{R} package \texttt{brms}
+\citep{burkner:2018:brms}. We then used these samples to compute an MCMC
+estimate of $\expect{\post}{\g(\theta)}$ on each, the variance of which across
+distinct simulated values of $\xvec$ provides a ground--truth estimate of
+$\gcovtrue$.  On each set of MCMC draws, we computed $\gcovijhat$ and
+$\var{\post}{\g(\theta)}$.  We randomly chose one of the samples as a basis for
+$\mrpNBoot$ bootstrap replicates to compute a bootstrap variance estimate
+$\gcovboothat$.
+
+\MRPGraph{}
+
+As shown in \figref{mrp_graph}, the IJ covariance and bootstrap covariance are
+nearly identical.  In this case, the Bayesian posterior variance also coincides
+with the frequentist variance.  The total computation time for all bootstrap
+samples was $\mrpBootMinutes$ minutes, and the computation for the IJ covariance
+on the same set of MCMC draws used for the bootstraps was $\mrpIJSec$
+seconds.\footnote{ The computation time for the IJ covariance was dominated by a
+single call to \texttt{brms::posterior\_linpred}, which took $\mrpLinpredSec$ of
+the $\mrpIJSec$ seconds. The function \texttt{brms::posterior\_linpred} is only
+computing the log odds for each observation and each MCMC draw, but is doing so
+with a sequence of nested loops rather than vectorized operations, due to the
+idiosyncrasies of \texttt{rstan} data objects.  In a different MCMC environment,
+this computation could presumably be done much more efficiently.}
+
+As we show in \appref{experiments_mrp_appendix}, on this problem the MAP
+estimate provides a poor estimate of the posterior expectation, likely due to
+the relatively high dimensionality of $\theta$ and the nonlinearity of the
+model, particularly through estimation of the random effect variances.
+Nevertheless, since $N / \thetadim \approx \mrpNperD$, it is plausible that the
+posterior is concentrated enough in the nuisance parameters to avoid the
+challenges for IJ in the high--dimensional regime we discussed in
+\secref{data_weights}. In \appref{experiments_mrp_appendix}, we also compare
+with marginal maximum likelihood estimates provided by the \texttt{R} function
+\texttt{lmer} \citep{bates:2015:lme4}, noting that \texttt{lmer} does not
+naturally provide estimates of $\gcovtrue$ for a complicated quantity depending
+jointly on the random and fixed effects.
+
+
+

@@ -1,0 +1,137 @@
+In this section, we briefly connect the IJ covariance to some related
+literature on local sensitivity, outlier detection, and
+the von Mises calculus.  The connections are illuminated by the following
+``weighted posterior expectation''
+%
+\begin{align}
+    %
+    \expect{\postw}{\g(\theta)} =
+        \frac{
+        \int_{\thetadom} g(\theta)
+            \exp\left(N \meann \w_n \ell(\x_n \vert \theta) \right) \prior(\theta)
+                            d\theta}
+             {\int_{\thetadom}
+             \exp\left(N \meann \w_n \ell(\x_n \vert \theta) \right) \prior(\theta)
+             d\theta},
+             \eqlabel{weighted_post}
+    %
+\end{align}
+%
+where $\wvec = (\w_1, \ldots, \w_N) \in \rdom{N}$ is a length--$N$ vector
+of scalar--valued weights, one for each datapoint.  Comparing
+\eqref{g_post} with \eqref{weighted_post}, we see that
+$\expect{\postw}{\g(\theta)} = \expect{\post}{\g(\theta)}$ when
+$\wvec = \onevec$, where $\onevec$ is the length--$N$ vector containing
+all ones.  When we can apply the dominated convergence theorem to
+exchange posterior integration and differentiation
+(see, e.g., Theorem 1 of \citet{giordano:2018:covariances}), it follows that
+%
+\begin{align}
+    \fracat{\partial \expect{\postw}{\g(\theta)}}{\partial \w_n}{\wvec = \onevec} =
+    \cov{\post}{\g(\theta), \ell(\x_n \vert \theta)} = \frac{1}{N} \infl_n.
+    \eqlabel{infl_deriv}
+\end{align}
+%
+Our ``influence scores'' are thus the values of the
+``empirical influence function'' of the statistical functional $\expect{\post}{\g(\theta)}$,
+and our $\gcovij$ the classical IJ covariance estimator
+(see, e.g., \citet{mises:1947:asymptotic,reeds:1976:thesis,efron:1982:jackknife,hampel:2011:robustbook}, or
+\citet{serfling:1980:approximation} for a textbook treatment).  Equivalently,
+the empirical influence function can be understood as an instance of
+``local sensitivity analysis'' to perturbations of data weights
+\citep{gustafson:1996:localposterior,giordano:2018:covariances}, which
+motivates application of the empirical influence function
+to a wider variety of problems than variance estimation.
+The related literature is too large to survey here, but
+some examples are cross--validation
+\citep{koh:2017:blackboxinfluence,giordano:2019:swiss}, identification
+of outliers \citep{pregibon:1981:logistic,mcculloch:1989:localbayesianmodelinfluence,belsley:1980:regression},
+identification of influential subsets \citep{giordano:2026:amip1,giordano:2026:amip2},
+and interpretation of Bayesian posteriors
+\citep{thomas:2018:reconcilingcurvatureandis,iba:2023:wkernel}.  The
+present work rigorously connects Bayesian posterior expectations to this
+large literature, and we anticipate applications beyond variance estimation.
+
+However, the interpretation of $\infl_n$ as a local approximation, together
+with the form of \eqref{weighted_post}, provides a cautionary warning
+in the Bayesian context.  Though our experiments of \secref{experiments}
+motivate the IJ covariance estimator as a way to avoid pathologies associated
+with MAP estimation, the most common use of MCMC is to integrate out
+high--dimensional posterior parameters that do not obey a BCLT.  The following
+simple argument suggests that the IJ covariance may not work in such a case,
+even for parameters that do obey a BCLT marginally.
+
+Suppose, for example, that $\theta$ is the concatenation of two sets of
+parameters: a finite--dimensional set of ``global'' parameters $\gamma$, and a
+high--dimensional set of ``local'' parameters, $\lambda$.  A common such example
+is where $\gamma$ are ``fixed effects'' and $\lambda$ ``random effects'' in a
+panel data setting, and the full parameter set is the concatenation $\theta =
+(\gamma, \lambda)$ (see, e.g.~\citet[Chapter 7]{davidson:2004:econometric},
+though in a Bayesian context the distinction between fixed and random effects is
+not always meaningful \citep[Chapter 11]{gelman:2006:arm}).  Suppose that
+$\cov{\post}{\gamma} = \ordlogp{N^{-1}}$ but $\cov{\post}{\lambda}$ remains
+bounded away from zero.  Take $\g(\theta) = \gamma$. Differentiating
+\eqref{infl_deriv} again with respect to $\w_n$ and applying the tower property
+and delta method gives:
+%
+\begin{align}
+    \fracat{\partial^2 \expect{\postw}{\gamma}}{\partial \w_n^2}{\wvec = \onevec} =
+    % \expect{\post}{
+    %     \gammabar \ellbar(\x_n \vert \gamma, \lambda)^2
+    %     }
+    % =
+    \cov{\p(\gamma \vert \xvec)}{
+        \gamma,
+        \cov{\p(\lambda \vert \gamma, \xvec)}{\ell_n(\gamma, \lambda)}
+    } + \ordlogp{N^{-2}}
+    \eqlabel{resid_term}
+\end{align}
+%
+% where for compactness we have written $\gammabar = \gamma - \expect{\post}{\gamma}$
+% and $\ellbar(\x_n \vert \theta) = \ell(\x_n \vert \theta) - \expect{\post}{\ell(\x_n \vert \theta)}$
+%
+where the $\ordlogp{N^{-2}}$ term assumes that third--order posterior cumulants
+of $\p(\gamma \vert \xvec)$ are $\ordlogp{N^{-2}}$, as they would typically be
+for a posterior which concentrates at root $N^{-1/2}$. By the tower property,
+the first derivative is also a posterior covariance with respect to  $\p(\gamma
+\vert \xvec)$:
+%
+\begin{align}
+    \fracat{\partial \expect{\postw}{\gamma}}{\partial \w_n}{\wvec = \onevec} =
+    \cov{\p(\gamma \vert \xvec)}{
+        \gamma,
+        \expect{\p(\lambda \vert \xvec, \gamma)}{\ell(\x_n \vert \gamma, \lambda)}
+    }.
+    \eqlabel{global_local_first_order}
+\end{align}
+%
+See \appref{weights_higher_order} for details on the derivation of
+\eqref{resid_term,global_local_first_order}.
+
+
+If the function $\gamma \mapsto \cov{\p(\lambda \vert \gamma,
+\xvec)}{\ell_n(\gamma, \lambda)}$ does not vanish as $N \rightarrow \infty$, it
+follows from \eqref{resid_term,global_local_first_order} that both the first and
+second derivatives are posterior covariances of non--vanishing functions of
+$\gamma$, and so of the same order as $N \rightarrow \infty$.  Since the second
+derivative is of the same order as the first derivative, the empirical influence
+function's linear approximation to provide a poor approximation even to the
+effect of leaving out a single datapoint.
+
+Note that this counterexample
+does not contradict our results from \thmref{ij_consistent}: if a BCLT applies
+to $\lambda$ as well as to $\gamma$, then $\cov{\p(\lambda \vert \xvec,
+\gamma)}{\ell(\x_n \vert \gamma, \lambda)} = \ordlogp{N^{-1}}$ inside the
+covariance of \eqref{resid_term}, and the second derivative is
+$\ordlogp{N^{-2}}$, as suggested by \thmref{bayes_clt_main}.
+%
+This intuition is rigorously developed and supported using von Mises expansions
+in \citet{giordano:2024:oldbayesij}, which at the time of writing is still in
+progress.
+In light of this example, and of the analysis of
+\citet{giordano:2024:oldbayesij} for the high--dimensional regime, we recommend
+caution when employing the IJ covariance estimator --- or any method depending
+on the empirical influence function ---  in settings where a BCLT may not apply
+to the full posterior $\post$.
+
+
