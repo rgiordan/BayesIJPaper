@@ -5,6 +5,8 @@
 
 library(tidyverse)
 
+repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
+setwd(file.path(repo_dir, "src/mrp"))
 
 cces_all <- read_csv("datasets/cces18_common_vv.csv")
 poststrat_raw_df <- read_csv('datasets/poststrat_df.csv')
@@ -74,4 +76,4 @@ poststrat_df <-
   #mutate(state=recode_fips(state)) %>%
   left_join(statelevel_predictors_df, by="state")
 
-save(cces_all_df, poststrat_df, file="cces18_common_vv.Rdata")
+save(cces_all_df, poststrat_df, file="datasets/cces18_common_vv.Rdata")
