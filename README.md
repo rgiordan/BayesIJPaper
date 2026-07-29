@@ -1,4 +1,8 @@
+[![DOI](https://zenodo.org/badge/1117049868.svg)](https://doi.org/10.5281/zenodo.19672519)
+
+
 # The Bayesian Infinitesimal Jackknife for Variance
+
 
 This is a public repository containing the code to reproduce
 the experiments for our paper,
