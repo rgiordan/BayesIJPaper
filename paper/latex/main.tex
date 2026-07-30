@@ -19,30 +19,23 @@
     \externaldocument{supplement}
 }
 
+
+\author{\paperauthor}
+\title{My Paper}
+
 \begin{document}
 
 \title{The Bayesian Infinitesimal Jackknife for Variance}
 
-\ifbool{arxiv}{
-    \author{
-        Ryan Giordano \\ \texttt{rgiordano@berkeley.edu}
-        \and
-        Tamara Broderick \\ \texttt{tbroderick@mit.edu}
-      }
-} {
-    % JASA
-    \title{The Bayesian Infinitesimal Jackknife for Variance}
-    \ifbool{blind} { 
-        \author{(ANONYMIZED)}
+\author{
+    \ifbool{blind} {
+        (ANONYMIZED)
     } {
-        \author{
-            Ryan Giordano \\ \texttt{rgiordano@berkeley.edu}
-            \and
-            Tamara Broderick \\ \texttt{tbroderick@mit.edu}
-            }        
+    Ryan Giordano \\ \texttt{rgiordano@berkeley.edu}
+    \and
+    Tamara Broderick \\ \texttt{tbroderick@mit.edu}
     }
 }
-
 
 
 \maketitle
@@ -149,6 +142,7 @@
 
 \ifbool{arxiv} {
     \newpage
+    \section*{The Bayesian Infinitesimal Jackknife for Variance: Supplemental information and proofs}
     \input{supplement_content.tex}
 }
 
