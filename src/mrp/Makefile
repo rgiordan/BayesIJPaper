@@ -99,6 +99,8 @@ $(SRC_DIR)/$(ORIGINAL_PP): $(SRC_DIR)/$(ORIGINAL) $(SRC_DIR)/$(DATASET)
 # time-intensive, so it also respects RUN_LOCALLY: local via the existing
 # generic pattern rule (Rscript per file), or SLURM via
 # postprocess_mcmc_slurm.sh (one array job covering all RESAMPLE_N seeds).
+
+# TODO: this matching on %.Rdata will fail
 ifeq ($(RUN_LOCALLY),true)
 $(SRC_DIR)/%_mrp_postprocessed.Rdata: $(SRC_DIR)/%.Rdata $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./postprocess_mcmc.R \
