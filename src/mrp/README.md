@@ -41,7 +41,18 @@ Full Bayesian logistic regression on the original dataset.
 ./run_mcmc.R --base_dir=$(pwd) --original --seed=134432
 ```
 
-Produces: `bootstrap_data/mrp_original_seed134432_samples5000.Rdata`
+Produces: `bootstrap_data/mrp_original_seed134432.Rdata`
+
+All `run_mcmc.R` calls (original/lmer/map/bootstrap/subsample) also accept
+`--num_samples` (default 5000), threaded from the Makefile's
+`NUM_MCMC_SAMPLES` (e.g. `make sanity_check NUM_MCMC_SAMPLES=600` for a
+faster local run). It has no effect on filenames — only on how many MCMC
+samples each fit draws. `--num_warmup_samples` stays fixed at its own
+default (500), so keep `NUM_MCMC_SAMPLES` comfortably above 500 or the
+sampler will error (warmup ≥ iter) or yield ~zero post-warmup draws. The
+SLURM path (`run_mcmc_slurm.sh`) doesn't take this override — it always
+samples at `run_mcmc.R`'s own default, so `NUM_MCMC_SAMPLES` only speeds
+up `RUN_LOCALLY=true` runs.
 
 **Step 5: `run_mcmc.R` — lmer fit**
 
@@ -51,7 +62,7 @@ Fits the same model using `lme4::glmer()` for comparison.
 ./run_mcmc.R --base_dir=$(pwd) --original --lmer --seed=134432
 ```
 
-Produces: `bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata`
+Produces: `bootstrap_data/mrp_originallmer_seed134432.Rdata`
 
 **Step 6: `run_mcmc.R` — MAP estimate**
 
@@ -61,7 +72,7 @@ Computes Maximum A Posteriori estimate via Stan optimization.
 ./run_mcmc.R --base_dir=$(pwd) --original --map --seed=134432
 ```
 
-Produces: `bootstrap_data/mrp_originalmap_seed134432_samples5000.Rdata`
+Produces: `bootstrap_data/mrp_originalmap_seed134432.Rdata`
 
 
 **Step 7: `analyze_map.R`**
@@ -94,7 +105,7 @@ fire-and-forget, same as running `sbatch run_mcmc_slurm.sh` directly — wait
 for the array job to finish before moving to Stage 3. Local execution is
 possible but slow (see runtime estimate below).
 
-Produces: `bootstrap_data/mrp_{subsample,bootstrap}_seed*_samples5000.Rdata` files.
+Produces: `bootstrap_data/mrp_{subsample,bootstrap}_seed*.Rdata` files.
 
 ---
 
@@ -116,7 +127,7 @@ moving to Stage 4.
 
 Note that you can postprocess a single file directly with
 ```bash
-./postprocess_mcmc.R --base_dir=$(pwd) --mcmc_file=bootstrap_data/mrp_original_seed134432_samples5000.Rdata
+./postprocess_mcmc.R --base_dir=$(pwd) --mcmc_file=bootstrap_data/mrp_original_seed134432.Rdata
 ```
 
 Produces: `bootstrap_data/mrp_*_mrp_postprocessed.Rdata` for each MCMC output file
@@ -160,9 +171,9 @@ Rscript postprocess_for_paper.R --combined_file=bootstrap_data/mrp_combined_mrp.
 Reads:
 - `bootstrap_data/mrp_combined_mrp.Rdata` (`--combined_file`)
 - `datasets/cces18_subset.Rdata`
-- `bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata` (seed from `--seed`)
-- `bootstrap_data/mrp_original_seed134432_samples5000.Rdata` (seed from `--seed`)
-- `bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata` (seed from `--seed`)
+- `bootstrap_data/mrp_original_seed134432_mrp_postprocessed.Rdata` (seed from `--seed`)
+- `bootstrap_data/mrp_original_seed134432.Rdata` (seed from `--seed`)
+- `bootstrap_data/mrp_originallmer_seed134432.Rdata` (seed from `--seed`)
 - `bootstrap_data/custom_map_analysis.Rdata`
 
 Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata` (`--output_filename`)
@@ -172,8 +183,9 @@ Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata` (`--output_filenam
 ## Local sanity check (no SLURM)
 
 ```bash
-make sanity_check                  # RESAMPLE_N=5, RUN_LOCALLY=true
-make sanity_check RESAMPLE_N=10    # override the replicate count
+make sanity_check                                       # RESAMPLE_N=5, RUN_LOCALLY=true
+make sanity_check RESAMPLE_N=10                          # override the replicate count
+make sanity_check NUM_MCMC_SAMPLES=600                   # also shrink each individual fit
 ```
 
 Runs Stages 2-4 entirely locally with a small `RESAMPLE_N`, through to

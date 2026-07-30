@@ -15,15 +15,22 @@ RESAMPLE_N  ?= 101
 # stages. Defaults to false, matching today's SLURM-only behavior.
 RUN_LOCALLY ?= false
 
+# NUM_MCMC_SAMPLES controls run_mcmc.R's --num_samples (brm()'s `iter`,
+# which includes warmup -- --num_warmup_samples stays fixed at its own
+# default of 500, not controlled by this flag, so keep NUM_MCMC_SAMPLES
+# comfortably above 500). Unlike RESAMPLE_N, this has no effect on any
+# filename -- run_mcmc.R's output filenames no longer encode sample count.
+NUM_MCMC_SAMPLES ?= 5000
+
 # Paths relative to SRC_DIR, matching the conventions in run_mcmc.R and
 # postprocess_mcmc.R (which use --base_dir=$(SRC_DIR) and relative mcmc_file paths).
 DATASET         := datasets/cces18_subset.Rdata
 CLEANED_DATA    := datasets/cces18_common_vv.Rdata
-ORIGINAL        := bootstrap_data/mrp_original_seed$(SEED)_samples5000.Rdata
-ORIGINAL_LMER   := bootstrap_data/mrp_originallmer_seed$(SEED)_samples5000.Rdata
-ORIGINAL_MAP    := bootstrap_data/mrp_originalmap_seed$(SEED)_samples5000.Rdata
+ORIGINAL        := bootstrap_data/mrp_original_seed$(SEED).Rdata
+ORIGINAL_LMER   := bootstrap_data/mrp_originallmer_seed$(SEED).Rdata
+ORIGINAL_MAP    := bootstrap_data/mrp_originalmap_seed$(SEED).Rdata
 CUSTOM_MAP      := bootstrap_data/custom_map_analysis.Rdata
-ORIGINAL_PP     := bootstrap_data/mrp_original_seed$(SEED)_samples5000_mrp_postprocessed.Rdata
+ORIGINAL_PP     := bootstrap_data/mrp_original_seed$(SEED)_mrp_postprocessed.Rdata
 
 # Deterministic (no timestamp) so it can be a stable Make dependency target;
 # compile_postprocessing.R's --output_filename is always passed explicitly
@@ -39,8 +46,8 @@ PAPER_OUTPUT    := $(PAPER_DIR)/mrp_postprocessed.Rdata
 # so production (RESAMPLE_N=101) and reduced sanity-check runs share one
 # mechanism.
 LOCAL_SEEDS     := $(shell seq 0 $$(($(RESAMPLE_N)-1)))
-RAW_BOOT        := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_bootstrap_seed$(s)_samples5000.Rdata)
-RAW_SUB         := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_subsample_seed$(s)_samples5000.Rdata)
+RAW_BOOT        := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_bootstrap_seed$(s).Rdata)
+RAW_SUB         := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_subsample_seed$(s).Rdata)
 MCMC_FILES      := $(RAW_BOOT) $(RAW_SUB)
 POSTPROCESSED   := $(patsubst %.Rdata,%_mrp_postprocessed.Rdata,$(MCMC_FILES))
 
@@ -118,16 +125,20 @@ endif
 # Stage 2: Bootstrap/subsample replicates
 # -----------------------------------------------------------------------
 ifeq ($(RUN_LOCALLY),true)
-$(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR)
+$(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%.Rdata: $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --num_samples=$(NUM_MCMC_SAMPLES)
 
-$(SRC_DIR)/bootstrap_data/mrp_subsample_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --subsample
+$(SRC_DIR)/bootstrap_data/mrp_subsample_seed%.Rdata: $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --subsample --num_samples=$(NUM_MCMC_SAMPLES)
 
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
 else
 # Fire-and-forget, as today: submits the array job and returns. Wait for
-# it to finish before running `make bootstrap_postprocess`.
+# it to finish before running `make bootstrap_postprocess`. Note the
+# SLURM path doesn't take NUM_MCMC_SAMPLES -- run_mcmc_slurm.sh always
+# samples at run_mcmc.R's own default. Since filenames no longer encode
+# sample count, this is just a "SLURM path doesn't get faster" gap, not a
+# correctness issue.
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET)
 	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc_slurm.sh
 endif
@@ -142,21 +153,24 @@ $(SRC_DIR)/$(ORIGINAL): $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./run_mcmc.R \
 	    --base_dir=$(SRC_DIR) \
 	    --original \
-	    --seed=$(SEED)
+	    --seed=$(SEED) \
+	    --num_samples=$(NUM_MCMC_SAMPLES)
 
 $(SRC_DIR)/$(ORIGINAL_LMER): $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./run_mcmc.R \
 	    --base_dir=$(SRC_DIR) \
 	    --original \
 	    --lmer \
-	    --seed=$(SEED)
+	    --seed=$(SEED) \
+	    --num_samples=$(NUM_MCMC_SAMPLES)
 
 $(SRC_DIR)/$(ORIGINAL_MAP): $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./run_mcmc.R \
 	    --base_dir=$(SRC_DIR) \
 	    --original \
 	    --map \
-	    --seed=$(SEED)
+	    --seed=$(SEED) \
+	    --num_samples=$(NUM_MCMC_SAMPLES)
 
 $(SRC_DIR)/$(CUSTOM_MAP): $(SRC_DIR)/$(ORIGINAL)
 	cd $(SRC_DIR) && Rscript ./analyze_map.R

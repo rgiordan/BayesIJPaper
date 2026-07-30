@@ -31,8 +31,12 @@ Both steps are controlled by the Makefile's `RUN_LOCALLY` flag — `true`
 `cluster/submit_slurm_scripts_rstanarm.py`. `RESAMPLE_N` (default 200)
 controls the number of bootstrap replicates per model; it does **not**
 affect the number of models fit — that's `NUM_MODELS` (default 65,
-override with `make NUM_MODELS=N ...`). Output files with suffix
-`0924_cluster` already exist; skip unless regenerating.
+override with `make NUM_MODELS=N ...`). `NUM_MCMC_SAMPLES` (default 2000)
+controls `--default_num_samples` for both base and bootstrap fits (local
+and SLURM paths alike — unlike mrp/singular_simulations, this experiment's
+SLURM submission script also accepts it) and has no effect on filenames.
+Output files with suffix `0924_cluster` already exist; skip unless
+regenerating.
 
 **Step 3a: Base MCMC — `cluster/run_base_mcmc_rstanarm.R`**
 
@@ -110,8 +114,9 @@ Produces: `paper/experiment_data/arm/arm_results_postprocessed.Rdata` (`--output
 ## Local sanity check (no SLURM)
 
 ```bash
-make sanity_check                  # RESAMPLE_N=5, RUN_LOCALLY=true, all 65 models
-make sanity_check RESAMPLE_N=10    # override the bootstrap count
+make sanity_check                                       # RESAMPLE_N=5, RUN_LOCALLY=true, all 65 models
+make sanity_check RESAMPLE_N=10                         # override the bootstrap count
+make sanity_check NUM_MCMC_SAMPLES=200                  # also shrink each individual fit
 ```
 
 Runs the full pipeline locally with a small `RESAMPLE_N` (all 65 models are

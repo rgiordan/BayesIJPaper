@@ -23,6 +23,13 @@ RUN_LOCALLY ?= true
 # --prefix option (blank default, unchanged convention).
 PREFIX      ?=
 
+# NUM_MCMC_SAMPLES controls run_mcmc.R's --num_draws (total MCMC
+# iterations including warmup). Doesn't affect any filename. Only the
+# local (RUN_LOCALLY=true) path respects it -- run_sims_mcmc.sh (SLURM)
+# is left unedited and always samples at run_mcmc.R's own default,
+# matching the existing SEED/RE_DIM/OBS_PER_RE/PREFIX gap for that script.
+NUM_MCMC_SAMPLES ?= 5000
+
 DESC        := $(if $(PREFIX),$(PREFIX)_,)redim$(RE_DIM)_obsperre$(OBS_PER_RE)_seed$(SEED)
 
 BASE_RESULT  := $(OUTPUT_DIR)/super_simple_simulation_base_results_$(DESC).Rdata
@@ -74,6 +81,7 @@ $(OUTPUT_DIR)/super_simple_simulation_sim%_results_$(DESC).Rdata:
 	    --re_dim=$(RE_DIM) \
 	    --obs_per_re=$(OBS_PER_RE) \
 	    --prefix=$(PREFIX) \
+	    --num_draws=$(NUM_MCMC_SAMPLES) \
 	    --base_dir=$(REPO_ROOT)
 
 sim_files: $(SIM_FILES)
@@ -91,4 +99,5 @@ $(BASE_RESULT):
 	    --re_dim=$(RE_DIM) \
 	    --obs_per_re=$(OBS_PER_RE) \
 	    --prefix=$(PREFIX) \
+	    --num_draws=$(NUM_MCMC_SAMPLES) \
 	    --base_dir=$(REPO_ROOT)

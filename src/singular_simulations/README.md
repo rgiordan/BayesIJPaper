@@ -62,10 +62,15 @@ make sim_files RUN_LOCALLY=false RESAMPLE_N=100        # SLURM array job, fire-a
 ```
 
 The SLURM path (`sbatch --array=1-RESAMPLE_N run_sims_mcmc.sh`) doesn't read
-`SEED`/`RE_DIM`/`OBS_PER_RE`/`PREFIX` from the Makefile — it relies on
-`run_mcmc.R`'s own defaults, which match the Makefile's defaults. If you
-override those away from their defaults, use `RUN_LOCALLY=true` instead
-(known limitation, not fixed, to keep `run_sims_mcmc.sh` unedited).
+`SEED`/`RE_DIM`/`OBS_PER_RE`/`PREFIX`/`NUM_MCMC_SAMPLES` from the Makefile
+— it relies on `run_mcmc.R`'s own defaults, which match the Makefile's
+defaults. If you override those away from their defaults, use
+`RUN_LOCALLY=true` instead (known limitation, not fixed, to keep
+`run_sims_mcmc.sh` unedited).
+
+`NUM_MCMC_SAMPLES` (default 5000) controls `run_mcmc.R`'s `--num_draws`
+(total MCMC iterations including warmup, for both `--base` and `--sim`
+fits) and has no effect on any filename.
 
 Produces: `output/super_simple_simulation_sim<N>_results_redim100_obsperre100_seed100.Rdata`
 for N = 1..`RESAMPLE_N`
@@ -148,8 +153,9 @@ make RUN_LOCALLY=false        # SLURM for the sim-replicate stage instead of loc
 ## Local sanity check (no SLURM)
 
 ```bash
-make sanity_check                  # RESAMPLE_N=5, RUN_LOCALLY=true
-make sanity_check RESAMPLE_N=10    # override the replicate count
+make sanity_check                                       # RESAMPLE_N=5, RUN_LOCALLY=true
+make sanity_check RESAMPLE_N=10                         # override the replicate count
+make sanity_check NUM_MCMC_SAMPLES=500                  # also shrink each individual fit
 ```
 
 Runs the full pipeline locally with a small `RESAMPLE_N`, through to

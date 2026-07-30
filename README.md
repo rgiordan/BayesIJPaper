@@ -31,11 +31,15 @@ case, the final script to run, which produces output that can be processed
 to produce the final paper, is called `postprocess_for_paper.R`.  The analysis
 pipeline runs backwards from that point.
 
-Each experiment's `Makefile` (and the top-level `Makefile`) exposes two flags:
-`RESAMPLE_N` (number of bootstrap/subsample/simulation replicates; defaults to
-the full production count) and `RUN_LOCALLY` (`true`/`false`, selects local
-`Rscript` execution vs. submitting to SLURM via `sbatch`). See each
-experiment's README for the exact targets.
+Each experiment's `Makefile` (and, for `RESAMPLE_N`, the top-level
+`Makefile` too) exposes three flags: `RESAMPLE_N` (number of
+bootstrap/subsample/simulation replicates; defaults to the full production
+count), `RUN_LOCALLY` (`true`/`false`, selects local `Rscript` execution
+vs. submitting to SLURM via `sbatch`), and `NUM_MCMC_SAMPLES` (number of
+MCMC samples per individual fit; defaults to each experiment's production
+value). See each experiment's README for the exact targets and any
+per-experiment caveats (e.g. mrp's `NUM_MCMC_SAMPLES`/warmup interaction,
+or which flags the SLURM paths do or don't respect).
 
 ### Local sanity check (no SLURM)
 
@@ -73,6 +77,6 @@ minimal steps to reproducing the paper.  The key tasks that AI helped with were:
 - Consistently documenting the steps for reproduction, and creating makefiles based on these
   instructions.
 
-With the exception of the makefiles, and minor formatting changes (e.g. changing
-the name of an R package), AI was primarily used to make code suggestions that were
-checked and implemented by hand.
+With the exception of the makefiles, and minor changes (e.g. changing the name
+of an R package, adding command line arguments to files), AI was primarily used
+to make code suggestions that were checked and implemented by hand.

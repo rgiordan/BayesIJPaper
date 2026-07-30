@@ -22,6 +22,10 @@ RESAMPLE_N  ?= 200
 # stages. Defaults to true, matching today's local-only Makefile behavior.
 RUN_LOCALLY ?= true
 
+# NUM_MCMC_SAMPLES controls --default_num_samples on both the base and
+# bootstrap fits. Doesn't affect any filename.
+NUM_MCMC_SAMPLES ?= 2000
+
 COMPILED     := $(OUTPUT_DIR)/compiled_results_1116.Rdata
 PAPER_OUTPUT := $(PAPER_DIR)/arm_results_postprocessed.Rdata
 
@@ -80,6 +84,7 @@ $(OUTPUT_DIR)/.stamp_base_%:
 	    --base_dir=$(REPO_ROOT) \
 	    --model_list_ind=$$model_ind \
 	    --save_filename=$(OUTPUT_DIR)/$${model_desc}_base_mcmc_$(DESC).Rdata \
+	    --default_num_samples=$(NUM_MCMC_SAMPLES) \
 	    --save_draws \
 	    --force
 	touch $@
@@ -93,6 +98,7 @@ $(OUTPUT_DIR)/.stamp_boot_%: $(OUTPUT_DIR)/.stamp_base_%
 	    --model_list_ind=$$model_ind \
 	    --save_filename=$(OUTPUT_DIR)/$${model_desc}_boot_mcmc_$(DESC).Rdata \
 	    --default_num_boots=$(RESAMPLE_N) \
+	    --default_num_samples=$(NUM_MCMC_SAMPLES) \
 	    --force
 	touch $@
 
@@ -108,6 +114,7 @@ base_mcmc:
 	    --base_dir=$(REPO_ROOT) \
 	    --analysis=base \
 	    --description=$(DESC) \
+	    --num_samples=$(NUM_MCMC_SAMPLES) \
 	    --force
 
 boot_mcmc:
@@ -116,5 +123,6 @@ boot_mcmc:
 	    --analysis=bootstrap \
 	    --description=$(DESC) \
 	    --num_boots=$(RESAMPLE_N) \
+	    --num_samples=$(NUM_MCMC_SAMPLES) \
 	    --force
 endif

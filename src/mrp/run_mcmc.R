@@ -117,9 +117,9 @@ if (opt$lmer) {
 
 if (is.null(opt$save_filename)) {
   save_filename <- file.path(
-    opt$base_dir, 
-    sprintf("bootstrap_data/mrp_%s_seed%d_samples%d.Rdata", 
-            analysis_type, opt$seed, opt$num_samples))
+    opt$base_dir,
+    sprintf("bootstrap_data/mrp_%s_seed%d.Rdata",
+            analysis_type, opt$seed))
 } else {
   save_filename <- opt$save_filename
 }

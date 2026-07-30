@@ -42,6 +42,7 @@ parser.add_argument('--no-force', dest='force', action='store_false')
 parser.add_argument('--no_save_rstan_fit', dest='no_save_rstan_fit', action='store_true')
 parser.add_argument('--sim_ground_truth', type=str)
 parser.add_argument('--num_boots', type=int, default=200)
+parser.add_argument('--num_samples', type=int, default=2000)
 parser.add_argument('--analysis', type=str,
                     help='Analysis to perform in ' + str(_VALID_ANALYSES))
 parser.set_defaults(submit=True)
@@ -128,6 +129,7 @@ for model_ind in range(len(model_list)):
          ).format(**this_config)
     if args.force:
         command_string += ' --force '
+    command_string += ' --default_num_samples={} '.format(args.num_samples)
 
     # Append analysis-specific arguments.
     # For base MCMC:
