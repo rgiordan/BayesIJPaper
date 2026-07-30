@@ -1,0 +1,96 @@
+Suppose we observe scalar data, $\x_n \in \rdom{}$, for $n=1,\ldots,N$.
+We assume that $\x_n$ and $\x_n^2$ obey laws of large numbers, and that
+$\x_n$ itself obeys a central limit theorem, with
+%
+\begin{align*}
+%
+\hat{\mu} := \meann x_n \plim& \mu\\
+\hat{V}_{x} := \meann (x_n - \hat{\mu})^2 \plim& V_x\\
+\sqrt{N}(\hat{\mu} - \mu) \dlim& \normdist\left(\cdot \vert 0, V_x \right).
+%
+\end{align*}
+%
+Suppose we use the data to compute a Bayesian posterior using
+the following model, with fixed prior parameter $\sigma_\theta$, and
+a fixed variance $\sigma^2$:
+%
+\begin{align*}
+%
+\theta &\sim \normdist(\cdot | 0, \sigma_\theta^2)\\
+\x_n | \theta & \iid \normdist(\cdot | \theta, \sigma^2).
+%
+\end{align*}
+%
+We will take our parameter of interest to be $\theta$ itself, so $g(\theta) =
+\theta$.  The posterior has a closed form, given by
+%
+\begin{align*}
+%
+\hat\theta :={}&
+    \frac{\sigma^{-2} \sumn \x_n}{N \sigma^{-2} + \sigma_\theta^{-2}} =
+    \frac{N}{N + \sigma^2 / \sigma_\theta^2} \hat{\mu}\\
+p(\theta \vert \xvec) ={}& \normdist\left(
+        \cdot | \hat\theta, \frac{\sigma^2}{N + \sigma^2 / \sigma_\theta^2}
+    \right).
+%
+\end{align*}
+%
+Consequently,
+%
+\begin{align*}
+%
+N \var{\post}{\theta} \plim& \sigma^2\\
+\sqrt{N}\left(\expect{\post}{\theta} - \mu \right) \dlim&
+    \mathcal{N}\left(\cdot | 0, V_x \right).
+%
+\end{align*}
+%
+In this case, if $V_x \ne \sigma^2$---that is, if the model is misspecified---
+then the limiting variance of the frequentist and Bayesian distributions
+are different.
+
+How does the IJ perform in this context?  In this case, the log likelihood is
+given up to constants in $\theta$ by
+%
+\begin{align*}
+%
+\ell(\x_n \vert \theta) =
+    -\frac{1}{2} \sigma^{-2} \left(\x_n^2 - 2 \x_n \theta + \theta^2\right) +
+    Constant.
+%
+\end{align*}
+%
+So the influence scores are given by
+%
+\begin{align*}
+%
+\infl_n ={}&
+    -N \frac{1}{2} \sigma^{-2} \cov{\post}{\theta, - 2 \x_n \theta + \theta^2} \\
+={}& N \sigma^{-2} \cov{\post}{\theta} \x_n -
+    N \frac{1}{2} \sigma^{-2} \cov{\post}{\theta, \theta^2}.
+%
+\end{align*}
+%
+To evaluate the second covariance, use the fact that, by normality,
+%
+\begin{align*}
+%
+\expect{\post}{(\theta - \hat\theta)^3} ={}& 0 \quad\quad\textrm{and}\quad\quad
+\theta^2 = (\theta - \hat\theta)^2 + 2 \hat\theta \theta - \hat\theta^2 \Rightarrow\\
+\cov{\post}{\theta, \theta^2} ={}& 2 \hat\theta \cov{\post}{\theta}.
+%
+\end{align*}
+%
+Combining the results, we see that
+%
+\begin{align*}
+%
+\infl_n ={}& N \sigma^{-2} \cov{\post}{\theta} (\x_n - \hat\theta)\\
+={}& \frac{N}{N + \sigma^2 / \sigma_\theta^2}
+    \left(\x_n - \frac{N}{N + \sigma^2 / \sigma_\theta^2} \hat{\mu}\right).
+%
+\end{align*}
+%
+Since $N / (N + \sigma^2 / \sigma_\theta^2) \rightarrow 1$, the sample variance
+of $\infl_n$ converges to $V_x$ as desired, despite the fact that the underlying
+model was misspecified.

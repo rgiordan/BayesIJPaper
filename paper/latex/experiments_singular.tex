@@ -1,0 +1,138 @@
+As we describe in \secref{three_methods}, the IJ covariance is particularly
+well-motivated in settings when the MAP $\thetahat$ is either unavailable or
+unreliable, and one must turn to MCMC to integrate out a large number of
+nuisance parameters.  In this section we present a simple simulated example of
+such a case.
+% A similar example on a real dataset can be found in PUT IN PILOTS
+% can be found in REF APPENDIX.
+
+Consider the following simple random effects model with responses. For the data,
+we assume we have responses $y_n \in \rdom{}$, regressors $r_n \in \rdom{}$, and
+group indicator vectors $z_n \in \{0, 1\}^K$, for $n=1,\ldots,N$ and some fixed
+number of groups $K$.  We assume that all three are conditionally IID, so $\x_n
+= (y_n, r_n, z_n)$, and draw according to the model
+%
+\begin{align}
+\varepsilon_n \indep \normdist(\cdot \vert 0, 1)
+\quad\quad
+r_n \indep \normdist(\cdot \vert 0, 1)
+\quad\quad
+y_n = r_n + r_n^2 \varepsilon_n.\eqlabel{simple_sim_dgp}
+\end{align}
+%
+In our experiments we used $K = \simNumRe$ and $N = \simNumObs$.
+
+Suppose we now form a misspecified model of this data. Define the regression
+parameter $\beta \in \rdom{}$, random effect vector $\mu \in \rdom{K}$, and
+variances $\sigma_y^2$ and $\sigma_\mu^2$.  We will take the priors on $\mu_k$
+to be independent given $\sigma_\mu$, and the priors on $\beta$, $\sigma_\y$ and
+$\sigma_\mu$ to be diffuse; we will shortly be using the default diffuse priors
+provided by \texttt{rstanarm}. Then we can model
+%
+\begin{align}\eqlabel{simple_sim_model}
+%
+y_n | z_n, r_n, \beta, \mu, \sigma_y^2 \indep&
+    \normdist(\cdot | \beta r_n + z_n^T \mu, \sigma_y^2)
+    \quad\textrm{ and }\quad
+\mu_k | \sigma_\mu \indep
+    \normdist(\cdot | 0, \sigma_\mu^2).
+%
+\end{align}
+%
+The model in \eqref{simple_sim_model} is misspecified because it does not model the
+heteroskedasticity induced by $r_n^2 \varepsilon_n$ in \eqref{simple_sim_dgp}.
+Note also that the group indicators $\z_n$ have no effect on the real data
+generating process, and so estimates of very small $\sigma_\mu$ should be
+supported by the data --- and the log likelihood should be degenerate at the
+point $\sigma_\mu$, as we describe in detail below.
+
+How good is the MAP estimate for this model?  The answer depends on which
+variables are marginalized in the definition of $\theta$.  Suppose, for example,
+we form the ``global'' MAP, optimizing over all the parameters,
+including the random effects:
+%
+\def\badmap{\textrm{glob}}
+\begin{align*}
+%
+\hat\beta^{\badmap}, \hat\sigma_y^{\badmap},
+\hat\sigma_\mu^{\badmap}, \hat\mu^{\badmap} :=
+    \argmax \ell(\xvec | \beta, \sigma_y, \sigma_\mu, \mu) +
+            \log \pi(\mu | \sigma_\mu) +
+            \log \pi(\beta, \sigma_y, \sigma_\mu).
+%
+\end{align*}
+%
+Optimizing over all parameters including the random effects is prone to
+under-estimate the variance $\sigma_y$, particularly when $K$ is large relative
+to $N$.  A simplified version of this phenomenon is the known as the
+Neyman-Scott paradox \citep{freedman:2005:neymanscott}.  For this reason, one
+does not typically optimize over $\mu$ for such a model.  Rather, one optimizes
+the marginal posterior (or an approximation thereof):
+%
+\begin{align}\eqlabel{singular_map}
+%
+\hat\beta, \hat\sigma_y, \hat\sigma_\mu :=
+    \argmax & \log \int p(\xvec | \beta, \sigma_y, \sigma_\mu, \mu)
+        \pi(\mu | \sigma_\mu) d\mu  +
+       \log \pi(\beta, \sigma_y, \sigma_\mu)
+      \nonumber\\
+= \argmax & \sum_{k=1}^K \ell(\xvec_k | \beta, \sigma_y, \sigma_\mu) +
+\log \pi(\beta, \sigma_y, \sigma_\mu),
+%
+\end{align}
+%
+where $\xvec_k$ denotes $\{\x_n: z_{nk} = 1\}$, the observations in group $k$.
+For Gaussian models such as this one, the needed integral in
+\eqref{singular_map} can be computed in closed form. In the general case, there
+exist non-MCMC methods such as marginal maximum likelihood estimation (MMLE) use
+the Laplace approximation to approximate the integral
+\citep{bates:2015:fitting}. However, it is possible to generate data $\xvec$ so
+that even the MAP of \eqref{singular_map} estimates $\hat\sigma_\mu = 0$ for
+sufficiently non-informative priors
+\citep{chung:2012:avoiding,eager:2017:mixedterrible}.
+
+In this case, we have designed the model and data generating process so that the
+MMLE package \texttt{lme4} results in a numerically singular fit
+($\hat\sigma_\mu = 0$) approximately half the time. When $\hat\sigma_\mu = 0$,
+the second derivative of the log posterior is degenerate at the optimum, and
+classical methods for approximating frequentist variances cannot be directly
+applied.  In a random effects model for which even MMLE methods fail, MCMC is a
+natural recourse. If an estimate of the frequentist variability of the posterior
+mean is required, the IJ covariance is then a natural choice.
+
+
+% Further, the heteroskedasticity in the residual
+% variance, together with the modeling assumption of homoskedasticity, means that
+% the Bayesian and frequentist covariances are expected to be different.
+
+
+% In short, if we take $g(\theta) = \theta := \beta$ in this problem, then
+% \eqref{nonsingular_map} gives us reason to believe that $\thetahat \approx
+% \expect{\post}{\theta}$ and that both are approximately normally distributed,
+% due to the concentration of the marginal log likelihood $\sumn \ell(\x_n |
+% \theta)$.  However, we cannot easily compute the objective function or its
+% derivatives, since $\ell(\x_n | \theta)$ involves an intractable integral.
+% Nevertheless, we can run MCMC on all the parameters and use the IJ to
+% approximate the frequentist variance of the limiting distribution of
+% $\expect{\post}{\theta}$.  It is in precisely such cases that the IJ covariance
+% is most useful.
+
+\SingularResultsGraph{}
+
+We simulated a single dataset for which the \texttt{lme4} fit happened to be
+singular, and computed $\simNumMCMCDraws$ MCMC draws from the model of
+\eqref{simple_sim_model} using \texttt{rstanarm}.  With these samples, we
+computed the Bayesian posterior covariance and the IJ covariance.  We then
+simulated $\simNumSims$ different datasets, ran the same MCMC procedure for
+each, computed the posterior mean for each simulation, and computed the
+covariance of the posterior means over the simulations.  Ideally, we expect the
+IJ covariance to provide a good approximation to the simulation-based covariance
+estimate.
+
+The results are shown in \figref{simple_sim_result}.  As shown in the left plot,
+the posterior variances of $\log \sigma_y$ and of $\beta$ are dramatically
+less than the frequentist variances of $\expect{\post}{\log \sigma_y}$ and
+$\expect{\post}{\beta}$.  The posterior of the log random effect variance, $\log
+\sigma_\mu$, is extremely non-normal, and the IJ may not expected to perform
+well, theoretically.  Nevertheless, we show that the IJ covariance is correct
+despite the posterior variance being extremely inflated.

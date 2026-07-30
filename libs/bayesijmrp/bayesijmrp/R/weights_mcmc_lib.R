@@ -38,10 +38,9 @@ GetLogitMCMCWeights <- function(logit_post, survey_df, pop_df, pop_w=NULL,
     # The log likelihood derivative for the n^th datapoint is just the theta^T x_n
     # TODO: optionally return the linpred for further diagnostics
     ll_grad_draws_logit <- posterior_linpred(logit_post, newdata=survey_df)
-    # w_logit <- cov(mrp_draws_logit, ll_grad_draws_logit)[1,]
 
     result_list <- list(
-        mrp_draws=mrp_draws_logit,
+        mrp_draws=mrp_draws_logit
     )
 
     if (save_preds) {

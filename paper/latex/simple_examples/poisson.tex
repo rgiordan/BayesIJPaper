@@ -1,0 +1,92 @@
+Let us now consider another simple non-normal misspecified model, an
+over-dispersed Poisson distribution.
+%
+\begin{align*}
+%
+\textrm{Model:}\quad&&
+\theta &\sim \mathrm{Gamma}(a, b)\\
+&&x_n &\iid \mathrm{Poisson}(\theta)\\
+\textrm{Data generating process (reality):}\quad&&
+\theta &= \thetatrue\\
+&&\expect{\xfdist}{x_n} &= \thetatrue \\
+&&\var{\xfdist}{x_n} &= \sigma^2 > \thetatrue.
+%
+\end{align*}
+%
+The posterior has a closed form:
+%
+\begin{align*}
+%
+\bar{\x} :={}& \meann x_n\\
+\hat{\sigma}^2 :={}& \meann x_n^2 - \bar{\x}^2\\
+\expect{\post}{\theta} ={}& \frac{N\bar{\x} + a}{N + b}\\
+\var{\post}{\theta} ={}& \frac{N\bar{\x} + a}{(N + b)^2} \Rightarrow\\
+\var{\xfdist}{\expect{\post}{\theta}} ={}& \frac{N \sigma^2}{(N + b)^2}.
+%
+\end{align*}
+%
+Because $\x_n$ is over-dispersed, the posterior variance does not match
+the frequentist variance $\var{\xfdist}{\expect{\post}{\theta}}$,
+even asymptotically.
+
+%
+\begin{align*}
+%
+N \var{\xfdist}{\expect{\post}{\theta}} \plim& \sigma^2\\
+N \var{\post}{\theta} \plim& \thetatrue < \sigma^2.
+%
+\end{align*}
+%
+The model and MAP are given by
+%
+\begin{align*}
+%
+\likhat(\x \vert \theta) ={}&
+    \meann \left(x_n \log \theta - \theta \right) + C\\
+\log \pi(\theta) ={}& (a - 1) \log \theta - b\theta \Rightarrow \\
+\thetahat ={}& \frac{N \bar{\x} + a - 1}{N + b}\\
+\ellgrad{1}(\x \vert \theta) ={}& \frac{\x_n}{\theta} - 1 \\
+\likhatk{2}(\x \vert \theta) ={}& -\frac{\bar{\x}}{\theta^2}.
+%
+\end{align*}
+%
+Here, the MAP and posterior expectation differ by a factor of $1 / (N + b)$,
+though, as expected, the difference is $o_p(N^{-1/2})$. We
+can now compute the sandwich covariance estimator:
+%
+\begin{align*}
+%
+\scorecovhat ={}& \frac{\hat\sigma^2}{\thetahat^{2}} \\
+\infohat ={}& -\likhatk{2}(\x \vert \thetahat) = \frac{\bar{\x}}{\thetahat^2}\\
+\gcovhat ={}& \infohat^{-1} \scorecovhat \infohat^{-1}
+= \frac{\thetahat^2}{\bar{\x}^2} \hat\sigma^2
+= \left(\frac{N \bar{\x} + a - 1}{(N + b)\bar{\x}}\right)^2 \hat\sigma^2.
+%
+\end{align*}
+%
+As expected, the limits of $N \var{\xfdist}{\expect{\post}{\theta}}$ and
+$\gcovhat$ are the same.
+
+The influence function is given by
+%
+\begin{align*}
+%
+\infl(\x_n) ={}& N \cov{\post}{\theta, x_n \log \theta - \theta}\\
+ ={}& N x_n \cov{\post}{\theta, \log \theta} - N \var{\post}{\theta} \\
+ ={}& \frac{N}{N + b} x_n + C.
+%
+\end{align*}
+%
+where $C$ is the same for every $\x_n$, and where we have used the posterior
+covariance $\cov{\post}{\theta, \log \theta}$ for the Gamma distribution, which
+can be found by taking the mixed second-order partial derivative of the log
+partition function.  It follows that
+%
+\begin{align*}
+%
+\gcovij = \meann \infl(\x_n)^2 - \bar{\infl}^2
+    = \frac{N^2}{(N + b)^2} \hat\sigma^2,
+%
+\end{align*}
+%
+which is also a consistent estimator of $\sigma^2 = \gcovtrue$.

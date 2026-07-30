@@ -1,10 +1,12 @@
 # rstanarm Pipeline: Steps to Run postprocess_for_paper.R
 
+
 ## Stage 0: Prerequisites
 
 **Step 1: ARM example-models data**
 
-The `example-models/ARM/` directory must exist with ARM dataset files. It is checked into the repository. If missing, clone from https://github.com/stan-dev/example-models.
+The `example-models/ARM/` directory must exist with ARM dataset files. It is checked into
+the repository. If missing, clone from https://github.com/stan-dev/example-models.
 
 **Step 2: `configs/generate_rstanarm_configs.R`** (optional — output is already committed)
 
@@ -99,3 +101,13 @@ Reads:
 Produces: `paper/experiment_data/arm/arm_results_original_data_061721.Rdata`
 
 ---
+
+
+# Rough runtime estimate
+
+Stage 1 is computationally expensive; in total, the initial fits took
+roughly one hour total, and the bootstraps took roughly 267 hours total,
+though the jobs can be run in parallel on a cluster. The MCMC time is dominated
+by a small number of relatively slow models.
+
+The other stages should run quickly, on the order of minutes.

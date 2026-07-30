@@ -1,0 +1,73 @@
+
+
+Throughout our proofs, we will be forming and manipulating higher-order
+Taylor expansions of functions of $\theta$.  The arrays of derivatives
+in these expressions will always be summed against a direction, typically
+$\tau = \sqrt{N}(\theta - \thetahat)$.  In order to avoid cumbersome
+summation notation for all such terms, we will implicitly sum derivative arrays
+against $\tau$ or $\theta$.  or example, for
+a function $\psi(\theta, \x_n) \in \rdom{D_\psi}$, we will write
+%
+\begin{align*}
+\psigrad{3}(\thetahat, \x_n)\tau^3 =
+\sum_{a=1}^D \sum_{b=1}^D \sum_{c=1}^D
+    \fracat{\partial^3 \psi(\theta, \x_n)}
+           {\partial\theta_{a} \partial\theta_{b} \partial\theta_{c}}
+           {\thetahat} \tau_{a} \tau_{b} \tau_{c}.
+\end{align*}
+%
+Occasionally we will need to sum several derivative arrays against $\tau$,
+particularly in \secref{region_r1}.  Since the directions $\tau$ will always be
+the same, we will combine the $\tau$ in such expressions with no ambiguity. For
+example, for the term involving $\likhatk{3}(\thetahat)$ in the statement of
+\thmref{bayes_clt_main}, we will write
+%
+\begin{align*}
+%
+\psigrad{1}(\thetahat, \x) \likhatk{3}(\thetahat) \tau^4 =
+\sum_{a=1}^{D} \sum_{b=1}^{D} \sum_{c=1}^{D} \sum_{d=1}^{D}
+    \psigrad{1:a}(\thetahat, \x) \likhatk{3:b,c,d}(\thetahat)
+    \tau_a \tau_b \tau_c \tau_d.
+%
+\end{align*}
+%
+
+When necessary, higher
+derivatives will be indexed in the parentheses.  For example,
+$\psigrad{2:i,j}(\theta, \x_n)$ will denote the length--$D_\psi$ vector
+%
+\begin{align*}
+%
+\fracat{\partial^2 \psi(\theta, \x_n)}
+    {\partial\theta_i \partial\theta_j}{\theta, \x_n}.
+%
+\end{align*}
+%
+%\end{defn}
+
+We denote by $\ind{A}$ the indicator function taking value $1$ when the
+event $A$ occurs and $0$ otherwise.
+
+% Order notation
+We will use order notation to describe the behavior of quantities as $N
+\rightarrow \infty$.  For example, we will use $z = O(\phi(N))$ to mean there
+exists an $N^*$ and an $A > 0$ such that $N > N^* \Rightarrow z < A \phi(N)$. In
+our notation, $A$ and $N^*$ in this definition will never depend on the data,
+$\xvec$, though they may depend on unobserved population quantities.
+%
+Dependence on the data $\xvec$ in order notation will always be represented with
+$O_p$ notation.  For example, $z = O_p(\phi(N))$ will mean that there exists an
+$A > 0$ such that for any $\epsilon > 0$, there is a corresponding $N^*$ and
+such that
+%
+\begin{align*}
+%
+N > N^* \quad\Rightarrow\quad
+    \expect{\xfdist}{\ind{z < A \phi(N)}} > 1 - \epsilon.
+%
+\end{align*}
+%
+Here, $A$ does not depend on $\epsilon$.  The meaning is that the event $z =
+O(\phi(N))$ occurs with arbitrarily high probability as $N$ goes to infinity.
+The notation $\tilde{O}$ and $\tilde{O}_p$ will have the same meaning as $O$ and
+$O_p$ notation respectively, but with factors of $\log N$ possibly ignored.

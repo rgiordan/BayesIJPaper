@@ -1,0 +1,174 @@
+Our entire analysis will be conditioned on the occurrence of several events,
+each of which occurs with probability approaching one as $N$ goes to infinity.
+Outside of these events we provide no guarantees.  As a consequence, the
+residuals of our approximation can be used to show convergence in probability
+or distribution (via Slutsky's theorem), but not convergence in expectation
+nor almost sure convergence.
+
+% \begin{defn}\deflabel{regular_event}
+%
+
+% \end{defn}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{lem}\lemlabel{regular_event}
+    %
+For any $\epsilon_U > 0$, let $\regevent$
+denote the event that all of the following occur
+for a particular $N$, $\delta_1$, $\delta_2$.
+(``R'' is for ``regular''.)
+%
+\begin{enumerate}
+%
+\item \eventlabel{disjoint_regions} The regions $R_1$, $R_2$, and $R_3$ are
+disjoint, and $I(\phi) = I_1(\phi) + I_2(\phi) + I_3(\phi)$.
+%
+\item \eventlabel{thetahat_close}
+$\norm{\thetahat - \thetatrue}_\infty < \epsilon_U$.
+%
+\item \eventlabel{prior_close}
+    $|\prior(\thetahat) - \prior(\thetatrue)| < \epsilon_U$.
+%
+\item \eventlabel{ulln} For any scalar-valued function $\rho(\theta, \x_n)$
+with $ \expect{\fdist(\xn)}{\rho(\theta, \xn)} = 0$
+satisfying a ULLN with $\delta = \deltaulln$, we have
+%
+%\begin{align*}
+%
+$\sup_{\theta \in R_1 \bigcup R_2} \meann
+\abs{\rho(\theta, \x_n)}
+    \le \epsilon_U$.
+%
+\item \eventlabel{infoev} $\infoevhat > \infoev / 2$.
+%
+\item \eventlabel{strict_opt} There exists $\epsilon_L > 0$ such that
+%
+%\begin{align*}
+$\sup_{\theta \in R_3}
+\left( \sumn \ell(\x_n \vert \thetahat) -
+       \sumn \ell(\x_n \vert \theta)
+\right) > N \epsilon_L$.
+%\end{align*}
+\end{enumerate}
+
+Let \assuref{bayes_clt} hold. For any $\delta_1 > 0$, any $\pi_0 \in (0,1)$, and
+any $\delta_2 > 0$ and $\epsilon_U > 0$ satisfying  $\deltaulln > \epsilon_U +
+\delta_2$ and $\delta_2 / 2 \ge \epsilon_U$, there exists an $N^*$ such $N >
+N^*$ implies that event $\regevent$ occurs with $\fdist$-probability at least $1 -
+\pi_0$.
+%
+\begin{proof}
+%
+\Eventref{disjoint_regions} follows from the fact that, for any positive
+$\delta_1$ and $\delta_2$, eventually $\delta_2 \sqrt{N} > \delta_1 \log N$.
+
+\Eventref{thetahat_close} follows from \lemref{thetahat_consistent}.
+
+\Eventref{prior_close} follows from the fact that the prior density is
+continuous by \assuref{bayes_clt} \itemref{prior_smooth} and,
+by \lemref{thetahat_consistent}, we can take
+$\thetahat$ to be arbitrarily close to $\thetatrue$.
+
+For \eventref{ulln}, observe that $\norm{\thetahat - \thetatrue}_2 < \epsilon_U$
+implies that
+%
+\begin{align*}
+%
+\theta \in& R_1 \bigcup R_2 \Rightarrow\\
+\norm{\theta - \thetahat}_2 \le& \delta_2 \Rightarrow\\
+\norm{\theta - \thetatrue}_2 \le&
+    \norm{\theta - \thetahat}_2 + \norm{\thetahat - \thetatrue}_2
+\le \delta_2 + \epsilon_U \le \deltaulln.
+%
+\end{align*}
+%
+Therefore,
+%
+\begin{align*}
+%
+\sup_{\theta \in R_1 \bigcup R_2} \meann \abs{\rho(\theta, \x_n)} \le&
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \meann \abs{\rho(\theta, \x_n)} \plim 0.
+%
+\end{align*}
+%
+\Eventref{infoev} follows from \lemref{thetahat_consistent}.
+
+
+For \eventref{strict_opt}, write
+%
+\begin{align*}
+%
+\MoveEqLeft
+\frac{1}{N} \sup_{\theta \in R_3}
+\left( \sumn \ell(\x_n \vert \thetahat) -
+       \sumn \ell(\x_n \vert \theta)
+\right)
+=\\&
+\likhat(\thetahat) - \logprior(\thetahat) -
+\sup_{\theta \in R_3} \left(\likhat(\theta) - \logprior(\theta)\right)
+=\\&
+\likhat(\thetahat) - \likhat(\thetatrue) +
+    \sup_{\theta \in R_3}
+        \left(\likhat(\thetatrue) - \likhat(\theta)\right).
+%
+\end{align*}
+%
+Since $\norm{\thetahat - \thetatrue}_2 \le \epsilon_U \le \delta_2 / 2$
+by assumption of the present lemma,
+%
+\begin{align*}
+%
+\theta \in& R_3 \Rightarrow\\
+\norm{\theta - \thetahat + \thetahat - \thetatrue}_2 \ge & \delta_2 \Rightarrow\\
+\norm{\theta - \thetahat}_2 + \norm{\thetahat - \thetatrue}_2
+    \ge& \delta_2 \Rightarrow\\
+\norm{\theta - \thetahat}_2 \ge& \delta_2 - \frac{\delta_2}{2} = \frac{\delta_2}{2},
+%
+\end{align*}
+%
+so the set $R_3$, is contained in $\thetadom \setminus \thetaball{\delta_2 /
+2}$. Consequently, by \assuref{bayes_clt} \itemref{strict_opt}, there exists an
+$\epsilon_L$ such that
+%
+\begin{align*}
+%
+\sup_{\theta: \norm{\theta - \thetahat}_2 \ge \delta_2}
+    \left(\likhat(\thetatrue) - \likhat(\theta)\right) \le&
+\sup_{\theta \in \thetadom \setminus \thetaball{\delta_2 / 2}}
+    \left(\likhat(\thetatrue) - \likhat(\theta)\right) \le
+-2 \epsilon_L.
+%
+\end{align*}
+%
+By the continuity of $\lik$, and a ULLN applied to $\likhat(\theta)$, we can
+take $\norm{\thetahat - \thetatrue}_2$ sufficiently small that that
+$|\likhat(\thetahat) - \likhat(\thetatrue)| < \epsilon_L$.  It follows that,
+with probability approaching one,
+%
+\begin{align*}
+%
+\frac{1}{N} \sup_{\theta: \norm{\theta - \thetahat}_2 \ge \delta_2}
+\left( \sumn \ell(\x_n \vert \thetahat) -
+       \sumn \ell(\x_n \vert \theta)
+\right) \le \epsilon_L - 2 \epsilon_L = -\epsilon_L.
+%
+\end{align*}
+%
+The result follows by multiplying both sides of the inequality by $N$.
+%
+\end{proof}
+%
+\end{lem}
+
+Note that \lemref{regular_event} requires $\delta_2$ to be sufficiently small (so that
+$\deltaulln > \delta_2$), which in turn requires $\epsilon_U$ to be small (so
+that $\deltaulln > 3 \epsilon_U$).  For any particular $\deltaulln > \delta_2$,
+we can always apply \lemref{regular_event} with arbitrarily small $\epsilon_U$, at the
+cost of requiring a large enough $N^*$ so that the probability convergence
+results apply.
+%
+Throughout, we will choose $\epsilon_U$ \textit{small enough} that we obtain our
+desired results.

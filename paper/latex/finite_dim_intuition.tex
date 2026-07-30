@@ -1,0 +1,116 @@
+Before we state our formal results in \secref{finite_dim_clts}, we will present
+some high-level intuition to motivate the IJ covariance estimate, as well as our
+data-dependent Bayesian central limit theorem of \secref{finite_dim_clts}.
+%   Additionally, we
+% will now motivate why the $O_p$-style bounds of existing Bayesian central limit
+% theorems are insufficient to prove the consistency of the IJ covariance
+% estimate.
+
+For simplicity let us for the moment take the quantity of interest,
+$g(\theta)$, to simply be $\g(\theta) = \theta$.
+% Our
+% formal results will be stated for generic $\g(\theta)$ and will follow
+% from this
+% the delta method for general differentiable $g(\theta)$.
+%
+% Classical CLT results, and the target variance.
+Following \citet{kleijn:2012:bvm}, for example, we might informally expect the
+following central limit theorem results to hold:
+%
+\begin{align}
+%
+N \cov{\post}{\theta} =&{} \info^{-1} + O_p(N^{-1})
+    &\textrm{Bayesian CLT (BCLT)} \nonumber \\
+% \sqrt{N}\left(\expect{\post}{\theta} - \thetahat \right) \plim& 0
+%     &\textrm{(Bayesian CLT)}\\
+\expect{\post}{\theta} =&{} \thetahat + O_p(N^{-1}).
+    &\textrm{Bayesian CLT (BCLT)} \nonumber \\
+\sqrt{N}\left(\thetahat - \thetatrue\right) \dlim&{}
+    \normdist\left(\cdot | 0, \info^{-1} \scorecov \info^{-1} \right).
+    &\textrm{Frequentist CLT (FCLT)}
+    \eqlabel{fclt_bclt}
+%
+\end{align}
+%
+Here and throughout the paper, we somewhat loosely use the term ``Bayesian CLT''
+(BCLT) to refer to results concerning the asymptotic properties of the posterior
+measure, and ``Frequentist CLT'' (FCLT) for results concerning properties under
+the data sampling measure.  Both BCLT and FCLT results are typically proven
+using frequentist tools.
+
+Given the work of \citet{kleijn:2012:bvm}, we know that the limiting covariance we
+are trying to estimate is the sandwich covariance matrix, $\gcovtrue =
+\info^{-1} \scorecov \info^{-1}$. Since $N \cov{\post}{\theta}$ converges to
+$\info^{-1}$, but $\info^{-1} \ne \info^{-1} \scorecov \info^{-1}$
+in general unless the model is correctly specified, $\gcovtrue$ cannot,
+in general, be accurately approximated by the Bayesian posterior covariance.
+%
+% We could just use the plug-in estimator if it were available.
+A natural estimator of the sandwich covariance is the plug-in estimator $\gcovhat
+:= \infohat^{-1} \scorecovhat \infohat^{-1}$, which consistently estimates
+$\gcovtrue$.  However, computing $\gcovhat$ requires the MAP $\thetahat$, which is not
+typically computable directly from MCMC samples.
+
+% The IJ covariance
+% estimator is motivated by circumstances when it is not easy or desirable to
+% compute $\thetahat$, but when one can compute or approximate the posterior
+% expectations required to compute the IJ covariance estimator $\gcovij$.
+
+% Taylor expanding is the trick
+The reason that $\gcovij$ might be expected to approximate $\gcovtrue$
+asymptotically can be seen by applying the delta method and the
+CLT results of \eqref{fclt_bclt} to the
+influence score $\infl_n$ defined in \eqref{ij_terms}.  Specifically,
+for any particular $n$, we expect that
+%
+\begin{align}\eqlabel{infl_heuristic}
+    \infl_n = N \cov{\post}{\theta, \ell(\x_n \vert \theta)} =
+    \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) + O_p(N^{-1}).
+\end{align}
+%
+% (See \appref{bclt_uses} for a more detailed derivation.)
+If \eqref{infl_heuristic} holds sufficiently uniformly in $n$
+(in a sense that we analyze precisely below), then \eqref{infl_heuristic}
+implies the asymptotic equivalence of $\gcovij$ and $\gcovtrue$:
+%
+\begin{align}
+%
+% \bar{\infl} \approx{}& \info^{-1} \meann \ellgrad{1}(\x_n \vert \thetahat) = 0
+% \quad\quad \textrm{and} \nonumber\\
+\infl(\x_n) \approx{}& \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)
+\quad\Rightarrow\quad
+\gcovij ={} \meann \infl_n \infl_n^T - \bar{\infl} \, \bar{\infl}^T
+% \nonumber\\
+% \approx{}&
+%     \infohat^{-1} \left( \meann
+%         \ellgrad{1}(\x_n \vert \thetahat)
+%         \ellgrad{1}(\x_n \vert \thetahat)^T \right)
+%     \infohat^{-1}
+% \nonumber\\
+\approx{} \infohat^{-1} \scorecovhat \infohat^{-1}, \eqlabel{ij_heuristic}
+% = \gcovhat \plim \gcovtrue.
+%
+\end{align}
+%
+and we know that $\infohat^{-1} \scorecovhat \infohat^{-1} = \gcovhat \plim
+\gcovtrue$.
+
+
+However, in general, the $\ordp{N^{-1}}$ term in \eqref{infl_heuristic}
+depends on $\x_n$, and the IJ covariance depends on {\em every} $\infl(\x_n): n \in
+[N]$, some of which may be pathologically behaved, especially under
+misspecification.
+%
+A rigorous analysis of the IJ covariance requires
+understanding whether the approximation in \eqref{infl_heuristic} holds
+sufficiently strongly for us to apply the reasoning of \eqref{ij_heuristic}.
+In particular, we must establish that we can safely sum the squares of the $\ordp{N^{-1}}$
+terms of \eqref{infl_heuristic}.  It is to this technical task that we
+now turn.
+
+% Furthermore, it is not reasonable to assume that
+% the BCLT residual is uniformly small for all datapoints $\x_n$. After all, the
+% most extreme datapoints in a growing dataset might be quite extreme indeed.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,0 +1,23 @@
+We define and analyze the IJ covariance estimate of the frequentist variance of
+Bayesian posterior expectations.  The IJ covariance is computationally
+appealing, since it can be computed easily from only a single set of MCMC draws,
+in contrast to the bootstrap, which, in general, requires many distinct MCMC
+chains.  In finite dimensional problems obeying a central limit theorem, we show
+that the IJ covariance is consistent, since it consistently estimates the
+sandwich covariance.  Our work rigorously connects Bayesian posterior inference
+with a large and growing literature on applications of the empirical influence
+function.
+
+We caution that our proofs are asymptotic, based on finite-dimensional
+posteriors, and unfortunately come with no accompanying guarantees for any
+particular dataset.  Based on our experience, we are confident recommending the
+IJ covariance as a rough but computationally efficient check for worryingly high
+levels of frequentist sampling variance. However, in applications where precise
+frequentist coverage is crucial, we recommend supplementing the IJ covariance
+with more computationally expensive procedures such as the bootstrap or
+conformal intervals \citep{huggins:2022:bayesbag,fong:2021:conformal}.
+Furthermore, as we discuss in \secref{data_weights} above, a simple argument
+suggests that the IJ covariance will be inaccurate in high-dimensional
+posteriors, and the IJ should be used with extreme caution in such cases.
+Forming diagnostics to alert the user when IJ covariance may be inaccurate is an
+exciting and important avenue for future work.

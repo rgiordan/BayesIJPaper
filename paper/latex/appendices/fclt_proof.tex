@@ -1,0 +1,198 @@
+Finally, we prove known results on the frequentist behavior
+of key quantities using our own assumptions and notation.
+
+%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%
+\begin{lem}\lemlabel{thetahat_consistent}
+%
+Under \assuref{bayes_clt}, $\thetahat \plim \thetatrue$, and
+$\norm{\infohat^{-1}}_{op} < 2 \infoev^{-1}$ , with probability approaching one.
+%
+\begin{proof}
+%
+% For any $\epsilon >0$, let $A_\delta$ denote the event
+% $\norm{\thetahat - \thetatrue}_2 > \delta$.
+% By \assuref{bayes_clt} \itemref{strict_opt}, $\thetahat \in \thetaball{\delta}$
+% with probability approaching one for any $\delta > 0$.
+
+First, by strict optimality of the log likelihood (\assuref{bayes_clt}
+\itemref{strict_opt}) and the boundedness of the prior density
+(\assuref{bayes_clt} \itemref{prior_smooth}), we must have $\thetahat \in
+\thetaball{\delta}$ with probability approaching one as $N\rightarrow \infty$,
+since
+%
+\begin{align*}
+\MoveEqLeft
+\sup_{\theta \in \thetadom \setminus \thetaball{\delta}}
+    \likhat(\thetatrue) - \likhat(\theta)
+\\&=
+\sup_{\theta \in \thetadom \setminus \thetaball{\delta}}
+    \meann \ell(\x_n \vert \thetatrue) - \meann \ell(\x_n \vert \theta) +
+    \frac{1}{N} \logprior(\thetatrue) - \frac{1}{N} \logprior(\theta)
+\\&\ge
+\sup_{\theta \in \thetadom \setminus \thetaball{\delta}}
+    \meann \ell(\x_n \vert \thetatrue) - \meann \ell(\x_n \vert \theta) -
+    \frac{2}{N} \sup_{\theta \in \thetadom } \abs{\logprior(\theta)}
+\\&\ge
+    \varepsilon +
+    \frac{2}{N} \sup_{\theta \in \thetadom } \abs{\logprior(\theta)}
+    & \textrm{(\assuref{bayes_clt} \itemref{strict_opt})}
+\\&\ge
+    \varepsilon + \ord{N^{-1}}.
+    & \textrm{(\assuref{bayes_clt} \itemref{prior_proper})}
+\end{align*}
+%
+By definition of $\thetahat$, $\likhat(\thetatrue) - \likhat(\thetahat) \le 0$,
+and so $\thetahat \notin \thetadom \setminus \thetaball{\delta}$ for
+sufficiently large $N$.  It therefore suffices to consider the behavior of
+$\thetahat \in \thetaball{\delta}$.
+
+By \assuref{bayes_clt} \itemref{strict_opt}, $\info$ is positive definite with
+$\norm{\info^{-1}}_{op} = \norm{\likk{2}(\thetatrue)}_{op} = \infoev^{-1}$.
+Choose $\delta$ small enough that $\likk{2}(\theta)$ is continuous by
+\assuref{bayes_clt} \itemref{loglik_smooth}, then choose $\delta$ smaller still
+so that, by continuity of the operator norm,
+%
+\begin{align*}
+%
+\sup_{\theta \in \thetaball{\delta}}
+    \norm{\likk{2}(\theta)^{-1}}_{op} < \sqrt{2} \infoev^{-1}.
+%
+\end{align*}
+%
+Next, choose $\delta$ sufficiently small that, by the ULLN of
+\assuref{bayes_clt} \itemref{loglik_ulln} and \lemref{ulln},
+%
+\begin{align*}
+%
+\sup_{\theta \in \thetaball{\delta}}
+    \norm{\likhatk{2}(\theta)^{-1}}_{op} < 2 \infoev^{-1},
+%
+\end{align*}
+%
+with probability approaching one.  For the remainder of the proof,  we will
+condition on the event that the preceding display holds.
+
+Using \lemref{taylor_residual} to Taylor expand $\likhatk{1}$ around
+$\thetahat$ and evaluate at $\thetatrue$ gives
+%
+\begin{align}\eqlabel{likscore_taylor_expansion}
+%
+\likhatk{1}(\thetatrue) ={}&
+    \likhatk{1}(\thetahat) +
+    \tresid{2}{\likhat, \thetahat, \thetatrue} (\thetahat - \thetatrue).
+\end{align}
+%
+
+Combining the above results, the minimum eigenvalue of the
+matrix $\tresid{2}{\likhat, \thetahat, \thetatrue}$ is controlled by
+%
+\begin{align*}
+%
+\inf_{v: \norm{v}_2=1}
+    v^T \tresid{2}{\likhat, \thetahat, \thetatrue} v ={}&
+\inf_{v: \norm{v}_2=1}
+    \int_0^1 (1 - t)
+        v^T \likhatk{2}(\thetahat + t (\thetatrue - \thetahat)) v dt \\
+\ge&
+    \inf_{v: \norm{v}_2=1}
+    \inf_{\theta \in \thetaball{\delta}} v^T \likhatk{2}(\theta) v \\
+\ge& \frac{\infoev}{2}.
+%
+\end{align*}
+%
+Consequently, the matrix $\tresid{2}{\likhat, \thetahat, \thetatrue}$ is invertible
+with $\norm{\tresid{2}{\likhat, \thetahat, \thetatrue}^{-1}}_{op} \le
+2 \infoev^{-1}$. Applying to the Taylor expansion
+\eqref{likscore_taylor_expansion}, and using the fact that
+$\likhatk{1}(\thetahat) = 0$, gives that
+%
+\begin{align*}
+%
+\norm{\thetahat - \thetatrue}_2 \le 4 \infoev^{-1} \norm{\likhatk{1}(\thetatrue)}_2.
+%
+\end{align*}
+%
+Finally, by a LLN applied to $\likhatk{1}$, we have
+$\likhatk{1}(\thetatrue) \plim \likk{1}(\thetatrue) = 0$, concluding the proof.
+%
+\end{proof}
+%
+\end{lem}
+%%%%%%%%%%%%%%%%%%%%%
+
+
+\paragraph{Proof of \propref{freq_clt}.}
+\begin{proof}
+%
+The proof uses \eqref{likscore_taylor_expansion} in the proof of
+\lemref{thetahat_consistent}.  First, let $\delta_N := \norm{\thetahat - \thetatrue}_2$,
+so that, by \lemref{thetahat_consistent}, $\delta_N \plim 0$.
+
+Then, observe that
+%
+\begin{align*}
+%
+\MoveEqLeft
+\norm{\tresid{2}{\likhat, \thetahat, \thetatrue} - \likk{2}(\thetatrue)}_2
+\\={}&
+\norm{\int_0^1 (t - 1)
+\left(
+    \likhatk{2}(t (\thetatrue - \thetahat) + \thetahat) dt - \likk{2}(\thetatrue)
+\right) dt
+}_2
+\\ \le&
+\sup_{\theta \in \thetaball{\delta_N}}
+    \norm{\likhatk{2}(\theta) - \likk{2}(\thetatrue)}_2
+\\ \le&
+\sup_{\theta \in \thetaball{\delta_N}}
+    \norm{\likhatk{2}(\theta) - \likhatk{2}(\thetatrue)}_2 +
+\sup_{\theta \in \thetaball{\delta_N}}
+    \norm{\likhatk{2}(\thetatrue) - \likk{2}(\thetatrue)}_2
+\\ &\plim 0,
+%
+\end{align*}
+%
+where the limit to zero follows from continuity of $\likhatk{2}$ via
+\assuref{bayes_clt} \itemref{loglik_smooth} for the first term and the ULLN via
+\assuref{bayes_clt} \itemref{loglik_ulln} and \lemref{ulln} for the second term.
+It follows that
+%
+\begin{align*}
+%
+\tresid{2}{\likhat, \thetahat, \thetatrue}^{-1} \plim
+    \likk{2}(\thetatrue)^{-1} = -\info^{-1}.
+%
+\end{align*}
+
+Next, by \assuref{bayes_clt} \itemref{loglik_ulln} and \lemref{ulln},
+$\expect{\fdist(\x)}{\norm{\ellgrad{1}(\x \vert \thetatrue)}^2_2}$ is finite
+with probability approaching one, so $\cov{\fdist(\x)}{\ellgrad{1}(\x \vert
+\thetatrue)} = \scorecov$ is finite. By smoothness of $\lik$
+(\assuref{bayes_clt} \itemref{loglik_smooth}) and the definition of
+$\thetatrue$, $\expect{\fdist(\x)}{\ellgrad{1}(\x \vert \thetatrue)} = 0$. The
+$\x_n$ are IID, so, by a central limit theorem,
+%
+\begin{align*}
+%
+\sqrt{N} \likhatk{1}(\thetatrue) =
+    \frac{1}{\sqrt{N}} \sumn \ellgrad{1}(\x_n \vert \thetatrue)
+\dlim \normdist(\cdot | 0, \scorecov).
+%
+\end{align*}
+%
+By \eqref{likscore_taylor_expansion} in the proof of
+\lemref{thetahat_consistent}, with probability approaching one,
+%
+\begin{align*}
+%
+\sqrt{N}(\thetahat - \thetatrue) ={}&
+    \tresid{2}{\likhat, \thetahat, \thetatrue}^{-1}
+        \sqrt{N} \likhatk{1}(\thetatrue) \\
+&\dlim \normdist(\cdot | 0, \info^{-1} \scorecov \info^{-1}),
+%
+\end{align*}
+%
+where the final line follows from Slutsky's theorem.
+%
+\end{proof}

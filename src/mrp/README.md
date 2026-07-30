@@ -174,3 +174,21 @@ Reads:
 - `bootstrap_data/custom_map_analysis.Rdata`
 
 Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata`
+
+
+
+
+# Rough runtime estimate
+
+The runtime is dominated by the MCMC fits, each of which takes
+roughly 25 minutes.  After the single MCMC run of stage 1,
+stage 2 can be run in parallel, and can be expected to
+take a total of roughly 200 * 25 minutes ~ 83 hours in total.
+
+Each postprocessing call (step 8) also takes roughly a minute
+due to the need to compute the array of predicted responses
+as part of computing the MrP estimates.  Again, these
+postprocessing steps can be run in parallel, for a total
+of roughly 200 minutes of computation.
+
+The other stages should run quickly, on the order of minutes.

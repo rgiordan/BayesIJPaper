@@ -1,0 +1,142 @@
+We will begin by defining some notation. Given a distribution $\p(t)$ and an
+integrable function $\phi(t)$, we will use the expectation operator as a formal
+shorthand for the integral
+%
+%\begin{align*}
+$\expect{\p(t)}{\phi(t)} = \int \phi(t) \p(dt)$.
+%\end{align*}
+%
+Any quantities not explicitly part of the distribution beneath the expectation
+operator should be thought of as fixed. Covariances and variances are treated
+similarly, i.e.\,
+%
+%\begin{align*}
+%
+$\cov{\p(t)}{\phi(t), \psi(t)} =
+    \expect{\p(t)}{\phi(t) \psi(t)^T} -
+        \expect{\p(t)}{\phi(t)} \expect{\p(t)}{\psi(t)}^T$.
+%
+%\end{align*}
+%
+We will denote sample covariances over an index $n \in \{1,
+\ldots, N \} = [N]$ as $\covhat{n \in [N]}{\cdot, \cdot}$.
+% %
+% \begin{align*}
+% %
+% \covhat{n \in [N]}{s_n, t_n} :={}& \frac{1}{N}
+%     \sumn s_n t_n - \left( \meann s_n \right) \left( \meann t_n \right)^T.
+% %
+% \end{align*}
+
+We denote partial derivatives with respect to $\theta$ with bracketed
+subscripts.  For example, for a function $\psi(\theta)$ taking values in
+$\rdom{D_\psi}$, let $\psigrad{k}(\theta)$ denote the array of $k$-th order
+partial derivatives with respect to $\theta$, i.e.,
+%
+%\begin{align*}
+%
+$
+\psigrad{k}(\theta) :=
+    \fracat{\partial^k \psi(\theta)}{\partial\theta^k}{\theta}.
+$
+%
+%\end{align*}
+%
+If $\psi$ depends on any variables other than $\theta$, those variables will be
+taken as fixed in the partial differentiation.
+%
+In general, $\psigrad{k}(\theta)$ is an array with $D_\psi \thetadim^k$ entries, and we
+will introduce special notation as needed when summing over the array's entries.
+But we will mostly be able to avoid such special notation by interpreting the
+following special cases in standard matrix notation:
+%
+% \begin{itemize}
+% %
+% \item When $D_\psi = 1$ and $k = 1$, $\psigrad{1}(\theta)$ is taken to be a
+% $\thetadim$-column vector.
+% %
+% \item When $D_\psi > 1$ and $k = 1$, $\psigrad{1}(\theta)$ is taken to be a
+% $D_\psi \times \thetadim$ matrix.
+% %
+% \item When $D_\psi = 1$ and $k=2$, $\psigrad{2}(\theta)$ is taken to be a $\thetadim
+% \times \thetadim$ matrix.
+% %
+% \item When $k = 0$, $\psigrad{0}(\theta)$ is just $\psi(\theta)$.
+% %
+% \end{itemize}
+%
+when $D_\psi = 1$ and $k = 1$, $\psigrad{1}(\theta)$ is taken to be a
+$\thetadim$-column vector; when $D_\psi > 1$ and $k = 1$, $\psigrad{1}(\theta)$
+is taken to be a $D_\psi \times \thetadim$ matrix; when $D_\psi = 1$ and $k=2$,
+$\psigrad{2}(\theta)$ is taken to be a $\thetadim \times \thetadim$ matrix; and
+when $k = 0$, $\psigrad{0}(\theta)$ is just $\psi(\theta)$.
+
+
+% Define likelihood and related quantities
+Our proposal and existing methods for estimating $\gcovtrue$ will depend on some key
+quantities to which we give symbols in \defref{loglik_def}.  In the left hand
+column of \defref{loglik_def} we have finite-sample quantities, and on the right
+hand side we have the corresponding population quantities. In \secref{bayes_clt}
+below we will state precise conditions under which all the quantities of
+\defref{loglik_def} are well-defined.  We will use $\xn$ to denote a generic
+single datapoint, in contrast to specific observed datapoints, $\x_n$.
+%
+\begin{defn}\deflabel{loglik_def}
+\setlength{\abovedisplayskip}{0pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\begin{align*}
+&\textrm{Finite-sample quantity} && \textrm{Population quantity}\\
+%
+\likhat(\theta) :={}&
+   \frac{1}{N} \sumn \ell(\x_n \vert \theta) +
+   \frac{1}{N} \logprior(\theta)
+&
+\quad \lik(\theta) :={}& \expect{\fdist(\xn)}{\ell(\xn \vert \theta)}
+\\
+\thetahat :={}& \argmax_{\theta \in \thetadom} \likhat(\theta)
+&
+\thetatrue :={}& \argmax_{\theta \in \thetadom} \lik(\theta)
+\\
+\scorecovhat :={}&
+   \frac{1}{N} \sumn \ellgrad{1}(\x_n \vert \thetahat)
+                     \ellgrad{1}(\x_n \vert \thetahat)^T
+&
+\scorecov :={}&
+    \cov{\fdist(\xn)}{\ellgrad{1}(\xn \vert \thetatrue)}
+\\
+% \infohat :={}& -\fracat{\partial^2 \likhat(\theta)}
+%                      {\partial\theta \partial\theta^T}{\thetahat}
+\infohat :={}& -\likhatk{2}(\thetahat)
+&
+\info :={}& - \expect{\fdist(\xn)}{\ellgrad{2}(\xn \vert \thetatrue)} \qedhere
+%
+\end{align*}
+\end{defn}
+%
+
+% We are studying fixed frequentist properties.
+We will take the population quantities in the right column of
+\defref{loglik_def} to be fixed (though, in general, unknown) and study the
+sampling behavior of quantities in the left column. That is, we will study the
+asymptotic behavior of formal Bayesian posterior quantities as a function of a
+fixed data generating process, following much of the literature on the
+frequentist behavior of Bayesian estimators (e.g., \citet{van:2000:asymptotic}).
+% Note that the numeric vector $\thetatrue$ is
+% conceptually distinct from the random variable $\theta$ of the Bayesian
+% posterior, despite also existing in $\thetadom$.
+%
+Our notation for stochastic convergence reflects these assumptions.  In
+particular, order notation $O(\cdot)$ applies as $N \rightarrow \infty$, and
+probabilistic order notation $O_p(\cdot)$ denotes order in probability over
+$\fdist(\xn)$.  Tilde order notation $\ordlogp{\cdot}$ neglects factors that are
+sub-polynomial in $N$.
+
+Let $\norm{\cdot}_1$, $\norm{\cdot}_2$, and $\norm{\cdot}_\infty$ denote the
+usual vector norms.  When applied to an array of derivatives, the norms refer to
+the vector norm applied to the vectorized version of the array.
+
+
+
+% The notation
+% $\normdist(\theta | \mu, \Sigma)$ will denote a normal distribution on the
+% random variable $\theta$ with mean $\mu$ and covariance $\Sigma$.

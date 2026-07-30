@@ -1,0 +1,135 @@
+
+We will now evaluate the performance of the IJ covariance on a number of
+real-world models and datasets taken from \citet{gelman:2006:arm}.  We limited
+our analysis to models for which data was available in the Stan examples
+repository \citep{stan-examples:2017}, and for which \texttt{rstanarm}
+\citep{rstanarm} was able to run in a reasonable amount of time. Since these are
+real-world datasets, the ground truth sampling distribution is not available
+from simulations, so, as an imperfect proxy, we compare the IJ covariance to the
+(computationally expensive) bootstrap variance instead.
+
+% What are our parameters of interest?
+All models we considered from \citet{gelman:2006:arm} were instances of
+generalized linear models, including both ordinary and logistic regression as
+well as models with only fixed effects and models that include random effects.
+Model details, including the number of estimated quantites of each type, are
+given in \tabref{arm_models} of \appref{experiment_arm_appendix}.  For
+parameters of interest, $g(\theta)$, we took all fixed-effect regression
+parameters, the log of the residual variance (when applicable), and the log of
+the random effect variance (when applicable). We did not examine random effects,
+nor the random effect covariances for the few models with multiple random
+effects, out of concern that a BCLT might not be expected to hold for these
+parameters.  Below, when we refer to a ``parameter,'' we refer to a scalar
+parameter of interest in a particular model for a particular dataset; there were
+a total of $\armNumCovsEstimated$ such parameters.
+
+For each model and dataset, we fix a number of MCMC samples, $M =
+\armNumMCMCSamples$ to draw for each posterior sample, and a number of
+bootstraps samples to draw, $B = \armNumBootstraps$. The total computation time
+summed across all models for the initial MCMC and IJ computation was
+$\armTotalMCMCTimeMins$ minutes, and the total bootstrap compute time summed
+across all models and bootstrap samples was $\armTotalBootTimeHours$
+hours.\footnote{Naively, one would expect the total bootstrap compute time to be
+roughly $B = \armNumBootstraps$ times the compute time of the single MCMC run,
+but the total bootstrap time was in fact longer than this. We conjecture that
+the bootstrap time scaled super-linearly due to the fact that some bootstrap
+samples led to posteriors that were less well-conditioned than the original
+datasets, and so incurred more rejections during the MCMC procedure.}
+%
+For each parameter of interest, we use a single run of MCMC
+to compute the IJ covariance estimate, $\gcovijhat$.  Using \algrref{boot}, we
+draw $B$ different bootstrap samples, compute $M$ MCMC samples for each, and
+finally compute the bootstrap variance estimate, $\gcovboothat$.
+
+All together, this procedure produces comparisons between $\armNumCovsEstimated$
+distinct covariance estimates from $\armNumModels$ different models using
+$\armNumDatasets$ distinct datasets. The median number of observations amongst
+the models was $\armMedianNumObs$, and the range was from $\armMinNumObs$ to
+$\armMaxNumObs$ exchangeable observations.  Since we fit our models in
+\texttt{rstanarm}, we were able to use the function \texttt{rstanarm::log\_lik}
+to compute $\ell(\x_n \vert \theta)$, so $\gcovijhat$ required essentially no
+additional coding.  We used the default priors provided by \texttt{rstanarm}.
+
+
+
+
+\ARMGraphDiff{}
+
+
+\ARMGraphZ{}
+
+
+% Why do we need summary metrics
+With $\armNumCovsEstimated$ covariances to report, we must summarize our results
+into a few model--agnostic high-level accuracy summaries.  To this end, for each
+parameter $j$ in each model $i$, we computed the following measure of both the
+``practical significance'' and ``statistical significance'' of the IJ covariance
+covariance as a proxy for the bootstrap variance:
+%
+\begin{align}
+%
+\normdiffij_{ij} :=
+     \frac{\gcovijhat_{ij} - \gcovboothat_{ij}}
+     {\left| \gcovboothat_{ij} \right| + \seboot_{ij}}
+\quad\textrm{and}\quad
+\zdiff_{ij} :=
+\frac{\gcovijhat_{ij} - \gcovboothat_{ij}}
+     {\sqrt{(\seij_{ij})^2 + (\seboot_{ij})^2}}.
+\eqlabel{arm_metrics}
+%
+\end{align}
+%
+In \eqref{arm_metrics}, the quantities $\seij$ and $\seboot$ are measures of
+the Monte Carlo error in the corresponding covariance estimates
+(see \appref{experiments_sampling_error} for details).
+
+The metric $\normdiffij_{ij}$ is a (noisy) measure of the proportional
+difference between $\gcovijhat_{ij}$ and $\gcovboothat_{ij}$. The term
+$\seboot_{ij}$ is included to retain a meaningful notion of scale when
+$\gcovboothat_{ij}$ is nearly zero due to chance alone.
+%
+The metric $\zdiff_{ij}$ is the z-statistic which we would compute to test
+equality between $\gcovijhat_{ij}$ and $\gcovboot_{ij}$ using our estimates of
+the sampling error.  Despite this interpretation, the z-statistics for different
+parameters within a given model are based on the same MCMC samples and so are
+not independent, and we should be cautious in interpreting the collection of
+$\zdiff_{ij}$ as the basis of any kind of formal hypothesis test. Rather, we
+recommend thinking of $\zdiff_{ij}$ as heuristics whose marginal distributions
+summarize the error $\gcovijhat - \gcovboot$ relative to Monte Carlo error.
+
+
+% \footnote{Note that the relative errors $\normdiffij$ and
+% $\normdiffbayes$ do not attempt to remove or account for Monte Carlo error.  One
+% might imagine computing the relative error after deconvolving the Monte Carlo
+% error and covariance estimates using, say, nonparametric empirical Bayes.  We
+% investigated such an approach, but the resulting procedure was complicated and
+% the results qualitatively similar to \figref{normerr_graph} below, so we will
+% report only the relatively simple metrics $\normdiffij$ and $\normdiffbayes$.}
+%
+The distributions of $\normdiffij_{ij}$ and $\zdiff_{ij}$ across models,
+datasets, and parameters are shown in \figref{normerr_graph,relerr_graph}
+respectively.
+%
+For models with more data, the IJ provides a reasonable approximation to the
+much more computationally expensive bootstrap, with roughly half of the IJ
+covariance estimates falling well within 50\% of the bootstrap covariance
+estimates, and rejecting the hypothesis test of equivalence at roughly the
+nominal rate.  For models with less data, IJ estimates do not appear to
+systematically deviate from the bootstrap estimates, but are more variable.
+Recall that we expect, theoretically, only that the IJ and bootstrap variances
+coincide as $N \rightarrow \infty$.
+
+The distribution of $\zdiff_{ij}$ suggests that the apparent differences between
+the IJ and bootstrap can be accounted for by Monte Carlo error alone in the
+large models but not necessarily the small ones.  Recalling that both the
+bootstrap and the IJ covariances are distinct approximations of the same
+quantity which are close to one another only asymptotically, we conjecture that
+the needed asymptotics have not yet kicked in for models with fewer datapoints.
+
+% In \appref{experiment_arm_appendix}, we show that the Bayesian posterior
+% covariance is a poor approximation for the bootstrap in larger datasets,
+% particularly for covariances involving at least one scale parameter. We
+% conjecture that the gap between the IJ covariance and the posterior covariance
+% for log scale parameters may be driven by misspecification, though a more
+% careful investigation is beyond the scope of the present work.
+

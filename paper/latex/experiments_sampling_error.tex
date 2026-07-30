@@ -1,0 +1,83 @@
+
+
+Since our experiments use a finite $M$,
+$\gcovbayeshat$ and $\gcovijhat$ are MCMC estimators of $\gcovbayes$ and
+$\gcovij$, respectively.  Similarly, our $B$ bootstrap samples are thought of as
+a random draw from the set of $B_{max} := N^N / N!$ possible bootstrap samples,
+and so $\gcovboothat$ is a ``doubly Monte-Carlo'' estimator of $\gcovboot :=
+\lim_{B \rightarrow B_{max}} \lim_{M \rightarrow \infty} \gcovboothat$.  In
+general, for $B < B_{max}$, we expect bootstrap sampling variability to remain
+even in $\lim_{M \rightarrow \infty} \gcovboothat$. Similarly, for $M < \infty$,
+we expect MCMC sampling variability to remain even in $\lim_{B \rightarrow
+B_{max}} \gcovboothat$.  We will shortly discuss how to estimate these Monte
+Carlo errors.
+
+Even when the conditions of \thmref{ij_consistent} are met and the IJ covariance
+is consistent, we do not expect $\gcovij = \gcovboot$ even with $B = B_{max}$
+and $M = \infty$, since we have a finite number $N$ of data points, and the
+bootstrap and IJ covariance are formally distinct (though each consistent)
+estimators of $\gcovtrue$.  The difference $\gcovij - \gcovboot$ should decrease
+as $N$ grows, but, for any finite $N$, the difference can be expected to exceed
+Monte Carlo error for sufficiently large $M$ and $B$. Similarly, even in the
+correctly specified case, we do not expect $\gcovbayes = \gcovhat$, as, again,
+these are distinct (though consistent) estimators of $\info^{-1}$.
+
+One might attempt to additionally account for frequentist sampling variability
+of the original data from the target population in $\gcovij$ or $\gcovboot$ as
+estimators of $\gcovtrue$, or of $\gcovbayes$ as an estimator of $\info^{-1}$.
+However, we expect the quantities $\gcovij$, $\gcovboot$, and $\gcovbayes$ to be
+highly correlated under random sampling of the data from the population
+distribution, and it is necessary to take this correlation into account when
+computing the variability of, say, the IJ ``error'' $\gcovijhat - \gcovboothat$.
+The authors do not see a simple, computationally tractable way to account for
+this correlation, so we neglect this error in our experiments, and account only
+for the Monte Carlo error of the preceding paragraph.  Since we consider the IJ
+covariance  to succeed when the difference $\gcovijhat - \gcovboothat$ is small
+relative to random variability, neglecting the frequentist sampling error is
+conservative.
+
+To estimate the Monte Carlo standard errors, we model the individual entries of
+the matrices $\gcovbayeshat$, $\gcovijhat$, and $\gcovboothat$ as normal
+distributions with Monte Carlo standard deviations given by the matrices
+$\sebayes$, $\seij$, and $\seboot$, respectively.\footnote{Since both
+$\gcovbayeshat$ and $\gcovijhat$ are based on the same MCMC samples, their Monte
+Carlo errors are correlated, typically positively.  However, to avoid cumbersome
+exposition of the experimental results, we will report standard errors for
+$\gcovbayeshat$ and $\gcovijhat$ as if they were independent, since accounting
+for this correlation will tend to reduce the standard errors of the difference
+$\gcovbayeshat - \gcovijhat$, and the difference $\gcovbayeshat - \gcovijhat$
+tends to be large in our experiments, even relative to the conservative estimate
+of independent standard errors.
+% Estimated standard errors of the difference
+% $\gcovbayeshat - \gcovijhat$ taking this correlation into account are available
+% in the online code for our experiments CITE GIT REPO.
+}
+%
+To estimate $\sebayes$ and $\seij$, we block bootstrap the MCMC chains using
+block sizes that are large relative to estimates of the MCMC mixing times.
+Note that block bootstrapping here requires only re-arranging the original MCMC
+chains, which is fast, and does not require drawing any new MCMC samples.  To
+estimate $\seboot$, we use the fact that each bootstrap sample $\mathscr{G}^b$
+from \algrref{boot} contains independent MCMC errors, and so the marginal
+distribution of the $\mathscr{G}^b$ can be used to estimate the variability both
+of the bootstrap sampling and the MCMC.  We do so using the delta method, as
+follows.  For any two scalar random variables, $t_1$ and $t_2$ drawn according
+to a joint distribution $p(t_1, t_2)$, we can define $h(a, b, c) :={} a - bc$
+and write
+%
+\begin{align*}
+%
+\cov{p(t_1, t_2)}{t_1, t_2} &={}
+    \expect{p(t_1, t_2)}{t_1 t_2} -
+    \expect{p(t_1, t_2)}{t_1}\expect{p(t_1, t_2)}{t_2}\\
+&={} h\left(\expect{p(t_1, t_2)}{t_1 t_2},
+     \expect{p(t_1, t_2)}{t_1},
+     \expect{p(t_1, t_2)}{t_2} \right).
+%
+\end{align*}
+%
+By applying the delta method to the function $h$, we can estimate the sampling
+variability of $\cov{p(t_1, t_2)}{t_1, t_2}$ from the covariance of the vector
+$(t_1 t_2, t_1, t_2)$, which, in turn, can be estimated from draws of $t_1$ and
+$t_2$.  We apply the delta method in this way to each entry of the matrix
+$\gcovboothat$.

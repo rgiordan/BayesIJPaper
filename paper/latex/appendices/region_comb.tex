@@ -1,0 +1,174 @@
+
+We now combine the results of the previous three sections to evaluate
+$I(\phi)$.
+The accuracy of our BCLT expansion of $\expect{\post}{\phi(\theta, \xvec_s)}$ will
+depend on the following residual function.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{defn}\deflabel{bclt_resid}
+%
+Let $\infoev > 0$ denote the minimum eigenvalue of $\info$, and let $\delta > 0$
+be an arbitrarily small number. For a function $\phi(\theta, \xvec_s)$ that
+is third-order BCLT-okay, define the residual function
+%
+\begin{align*}
+%
+\resid{0}(\xvec_s) :={}&
+    1 +
+    \norm{\phi(\thetahat, \xvec_s)}_2 +
+    \norm{\phigrad{1}(\thetahat, \xvec_s)}_2 +
+    \norm{\phigrad{2}(\thetahat, \xvec_s)}_2
+\\
+%
+\resid{1}(\xvec_s) :={}&
+    \expect{\normresid{\infoev / 2}{R_1}(\tau)}{
+        \norm{\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2}
+\\
+%
+\resid{2}(\xvec_s) :={}&
+    \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}{\norm{\phi(\theta, \xvec_s)}_2}
+\\
+%
+\resid{3}(\xvec_s) :={}& \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}_2}
+%
+\\
+\resid{\phi}(\xvec_s) :={}&
+    \resid{0}(\xvec_s) + \resid{1}(\xvec_s) + \resid{2}(\xvec_s) + \resid{3}(\xvec_s).
+%
+\end{align*}
+%
+\end{defn}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\begin{lem}\lemlabel{bayes_clt}
+%
+Let \assuref{bayes_clt} hold, and assume that $\phi$ is third-order BCLT-okay.
+With $\fdist$-probability approaching one,
+%
+\begin{align*}
+%
+\MoveEqLeft
+\expect{\post}{\phi(\theta, \xvec_s)} - \phi(\thetahat, \xvec_s) =
+\\&
+N^{-1} \left(
+    \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \expect{\normhat}{\tau^2} +
+    \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
+        \expect{\normhat}{\tau^4} \right) +
+\\&
+\ordlog{N^{-2}} \resid{\phi}(\xvec_s),
+%
+\end{align*}
+%
+where $\resid{\phi}(\xvec_s)$ is given in \defref{bclt_resid}.
+%
+\begin{proof}
+%
+First, combine the results of \lemref{region_r3, region_r2, region_r1_final_bound},
+consolidating higher orders into lower orders and expanding the domain of
+integration in the residual $\resid{\phi}(\xvec_s)$.
+%
+\begin{align}
+%
+I(\phi) ={}&
+    \phi(\thetahat, \xvec_s)
+    \int_{R_1} \exp\left(
+        N \likhat(\theta) - N \likhat(\thetahat)
+    \right) d\tau +
+\nonumber\\ &\quad
+    N^{-1} \normalizer \left(
+        \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \expect{\normhat}{\tau^2} +
+        \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
+            \expect{\normhat}{\tau^4} \right) +
+\nonumber\\ &\quad
+    \ordlog{N^{-2}} \resid{\phi}(\xvec_s).
+\eqlabel{i_phi_expansion}
+%
+\end{align}
+%
+For convenience in the final bound of \thmref{bayes_clt_main} we have included the
+term $\norm{\phi(\thetahat, \xvec_s)}_2$ in the definition of the residual even
+though it does not occur in \lemref{region_r1_final_bound}.
+
+The final expectation is given by the ratio
+%
+\begin{align*}
+\expect{\post}{\phi(\theta, \xvec_s)} ={}& \frac{I(\phi)}{I(1)}.
+\end{align*}
+%
+For the remainder of this proof, for compactness of notation, we define
+%
+\begin{align*}
+%
+\zeta :={}&
+    \int_{R_1} \exp\left(N \likhat(\theta) - N \likhat(\thetahat) \right) d\tau \\
+={}& \normalizer + \ordlog{N^{-1}} \\
+={}& \normalizer (1 + \ordlog{N^{-1}}),
+%
+\end{align*}
+%
+which follows from \lemref{r1_normalizer_expansion} and the fact that
+$\normalizer$ is bounded away from zero when $\regevent$ occurs. When
+$\phi(\theta, \xvec_s) \equiv 1$, then $\resid{0}(\xvec_s) = \resid{1}(\xvec_s) = 0$,
+so by \lemref{region_r3, region_r2},
+%
+\begin{align*}
+%
+I(1) = \zeta\left(1 + \ord{N^{-3}}\right).
+%
+\end{align*}
+%
+We now use the expansion, valid for $|z| < 1$ as $z \rightarrow 0$,
+%
+\begin{align}\eqlabel{inverse_expansion}
+    \frac{1}{1 + z} = 1 - z + O(z^2).
+\end{align}
+%
+Using \eqref{i_phi_expansion} for $I(\phi)$ and
+applying \eqref{inverse_expansion} to $1 / I(1)$ and to $1 / \zeta$
+gives
+%
+\begin{align*}
+%
+\frac{I(\phi)}{I(1)} ={}&
+\frac{I(\phi)}{\zeta( 1 + \ord{N^{-3}})} \\
+={}& \frac{I(\phi)}{\zeta} + \ord{N^{-3}} I(\phi) \\
+={}&
+\phi(\thetahat, \xvec_s) +
+N^{-1} \frac{\normalizer}{\zeta} \left(
+    \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \expect{\normhat}{\tau^2} +
+    \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
+        \expect{\normhat}{\tau^4} \right) +
+\\&
+\ordlog{N^{-2}} \resid{\phi}(\xvec_s)
+\\={}&
+\phi(\thetahat, \xvec_s) +
+N^{-1} \left(
+    \frac{1}{2} \phigrad{2}(\thetahat, \xvec_s) \expect{\normhat}{\tau^2} +
+    \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
+        \expect{\normhat}{\tau^4} \right) +
+\\&
+\ordlog{N^{-2}} \resid{\phi}(\xvec_s).
+%
+\end{align*}
+%
+Note that we have absorbed terms from the expansion of $I(\phi)$ that are linear
+in $|\phi(\thetahat, \xvec_s)|$, $\norm{\phigrad{2}(\thetahat, \xvec_s)}$, and
+$\norm{\phigrad{3}(\thetahat, \xvec_s)}$ into the residual $\resid{\phi}(\xvec_s)$.
+To do so we have used the fact that, when $\regevent$ occurs,
+$\likhatk{3}(\thetahat) = \likhatk{3}(\thetatrue) + O(1)$.
+
+Finally, the expansion holds with $\fdist$-probability approaching one by
+\lemref{regular_event}.
+%
+\end{proof}
+%
+\end{lem}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

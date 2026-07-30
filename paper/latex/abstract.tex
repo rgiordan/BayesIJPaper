@@ -1,0 +1,20 @@
+The frequentist variability of Bayesian posterior expectations can provide
+meaningful measures of uncertainty even when models are
+misspecified. However, standard methods to approximate the frequentist
+covariance of posterior expectations — namely, those using the MAP estimator or
+the nonparametric bootstrap — can be practically inconvenient. In particular,
+the MAP estimator may behave poorly in moderate dimensions, and the bootstrap
+requires computing the posterior for many different bootstrap datasets.  We
+develop another method, the infinitesimal jackknife (IJ), for
+estimating the frequentist variability of posterior expectations.  The IJ is a
+method for computing asymptotic frequentist covariances of smooth
+functionals of exchangeable data using the ``influence function'' of
+robust statistics.  We show that the influence function for posterior
+expectations is given by a simple posterior covariance, and that the IJ
+covariance estimate is easily computed from a single set of posterior
+samples. Under conditions similar to those required for a Bayesian central limit
+theorem, we prove that the IJ covariance estimate is
+asymptotically equivalent to that given by the sandwich covariance and the
+bootstrap, but avoids reliance on an accurate MAP estimate or on bootstrap
+samples. We demonstrate the accuracy and computational benefits of the IJ
+covariance estimates with simulated and real-world experiments.

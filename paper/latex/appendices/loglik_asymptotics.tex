@@ -1,0 +1,323 @@
+The proofs below repeatedly rely on two key ideas: Taylor series
+expansions, and uniform asymptotic control on the terms that arise.
+In this section, we introduce these ideas and prove two key
+lemmas.  The first, \lemref{taylor_residual}, gives the form
+of a Taylor series expansion.  The second, \lemref{ulln},
+controls the asymptotic behavior of the log likelihood
+and its derivatives in a neighborhood of $\thetatrue$.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsubsection{Taylor series expansions}
+
+Our analysis is based strongly on Taylor series expansions.
+We will use the following two minor variants of standard analysis tools.
+The first is a multivariate version of the integral form of the Taylor series
+residual for a vector-valued function.
+
+\begin{defn}\deflabel{taylor_residual}
+%
+For a $k$-times differentiable function $\phi(\theta)$, a fixed $\thetahat$, and
+and $\theta$, define the residual functional
+%
+\begin{align*}
+%
+\tresid{k}{\phi, \thetahat, \theta} :=
+    \frac{1}{(k-1)!} \int_0^1 (1 - t)^{k-1}
+        \phigrad{k}(\thetahat + t (\theta - \thetahat)) dt.
+%
+\end{align*}
+%
+\end{defn}
+%
+The residual $\tresid{k}{\phi, \thetahat, \theta}$ is an array of the same
+dimension as the $k$-th order derivative, $\phigrad{k}(\theta)$.  Observe that,
+for any norm $\norm{\cdot}$,
+%
+\begin{align*}
+    %
+    \norm{\tresid{k}{\phi, \thetahat, \theta}} \le
+        \frac{1}{(k-1)!} \sup_{\thetatil: \norm{\thetatil - \thetahat}_\infty \le
+                                          \norm{\theta - \thetahat}_\infty}
+                            \norm{\phigrad{k}(\thetatil)}.
+    %
+\end{align*}
+%
+\begin{lem}\lemlabel{taylor_residual}
+%
+A $K$-times continuously differentiable function $\phi(\theta)$ has Taylor
+series residual
+%
+\begin{align*}
+\phi(\theta) =
+    \sum_{k=0}^{K-1} \frac{1}{k!} \phigrad{k}(\thetahat) (\theta - \thetahat)^k +
+    \tresid{K}{\phi, \thetahat, \theta} (\theta - \thetahat)^K.
+\end{align*}
+%
+\begin{proof}
+%
+Let $\phi_d(\theta)$ denote the $d$-th component of the vector $\phi(\theta)$
+(contrast this notation with for the $d$-th order derivative
+$\phigrad{d}(\theta)$). Consider the scalar to scalar map $t \mapsto
+\phi_d(\thetahat + t (\theta - \thetahat))$. Taking the integral remainder form
+of the $K - 1$-th order Taylor series expansion of this scalar map
+\cite[Appendix B.2]{dudley:2018:analysis} and stacking the result into a vector
+gives the desired result.
+%
+\end{proof}
+%
+\end{lem}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Log likelihood asymptotics}
+
+To use \lemref{taylor_residual} to study $\likhat(\theta)$, we will need to
+expand \defref{loglik_def} with the following quantities.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{defn}\deflabel{loglik_details_def}
+\begin{align*}
+%
+\likhatk{k}(\theta) :={}&
+   \frac{1}{N} \sumn \ellgrad{k}(\x_n \vert \theta) +
+    %\frac{1}{N} \frac{\prior_{(k)}(\theta)}{\prior(\theta)} % NOT CORRECT
+    \frac{1}{N} \logpriorgrad{k}(\theta)
+&
+\likk{k}(\theta) :={}& \int \ellgrad{k}(\xn \vert \theta) d\fdist(\xn)
+\\
+\infoev :={}& \textrm{The minimum eigenvalue of }\info &
+\infoevhat :={}& \textrm{The minimum eigenvalue of }\infohat
+%
+\end{align*}
+%
+Note that, following our convention, $\likhatk{k}(\theta)$ is the $k$--th
+partial derivative of $\likhat(\theta)$ with respect to $\theta$.
+
+The term $\likk{k}(\theta)$ is a potential abuse of notation, since it is only
+the partial derivative of $\lik(\theta)$ under the assumption that we can
+interchange integration and differentiation.  Though we will in fact be assuming
+sufficient conditions for this interchange (\assuref{bayes_clt}
+\itemref{loglik_ulln}), our proofs will simply use the above definition of
+$\likk{k}(\theta)$ directly.
+\end{defn}
+%
+Using \lemref{taylor_residual}, we can then form a Taylor series expansion
+around $\thetahat$, an expression that we will analyze carefully in
+\appref{bayes_clt_proof}:
+%
+\begin{align}
+\likhat(\theta) ={}&
+    \likhat(\thetahat) +
+    \likhatk{1}(\thetahat)(\theta - \thetahat) +
+    \frac{1}{2}\likhatk{2}(\thetahat)(\theta - \thetahat)^2 +
+\nonumber
+\\&
+    \frac{1}{6}\likhatk{3}(\thetahat)(\theta - \thetahat)^3 +
+    \tresid{4}{\likhat, \thetahat, \theta} (\theta - \thetahat)^4.
+    \eqlabel{loglik_series_example}
+\end{align}
+%
+
+We now turn to the task of controlling the kinds of terms that arise in
+\eqref{loglik_series_example}. One of our key tools in the proof of
+\lemref{ulln} will be \emph{uniform laws of large numbers} (ULLNs), a concept
+which we make concrete in \defref{ulln}. Typically, ULLNs require that the
+sample average $\meann \phi(\x_n, \theta)$ converge to
+$\expect{\fdist(\xn)}{\phi(\x_n, \theta)}$ uniformly over $\theta$ in some
+compact set.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{defn}\deflabel{ulln}
+%
+Recall the definition of $\thetaball{\delta}$ from \assuref{bayes_clt}. We say a
+``uniform law of large numbers'', or ``ULLN'', holds for a function
+$\phi(\theta, \xn)$ if, for some $\delta > 0$,
+%
+\begin{align*}
+%
+\sup_{\theta \in \thetaball{\delta}}
+\norm{\meann \phi(\theta, \x_n) -
+\expect{\fdist(\xn)}{\phi(\theta, \xn)}}_2
+\plim 0,
+%
+\end{align*}
+%
+where $\expect{\fdist(\xn)}{\phi(\theta, \xn)}$ is finite.
+%
+\end{defn}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In general, a ULLN requires that the set of functions $\left\{\theta \mapsto
+\phi(\theta, \xvec): \norm{\theta - \thetatrue}_2 < \delta \right\}$ be a
+``Glivenko-Cantelli class'' with finite covering number (Chapter 19 of
+\citet{van:2000:asymptotic}, \citet{vaart:2013:empiricalprocesses}). A simple
+condition for a uniform law of large numbers to hold is that $\phi(\theta, \xn)$
+be dominated by an absolutely integrable function of $\xn$ alone in a compact
+neighborhood of $\thetatrue$ (Example 19.7 of \citet{van:2000:asymptotic}).
+
+We now state a key lemma controlling the asymptotic behavior of the log
+likelihood and its derivatives.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{lem}\lemlabel{ulln}
+%
+Suppose that there exists $\deltaulln > 0$, $M(\xn)$, and $K \ge 1$ such that
+%
+\begin{align}
+%
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\ellgrad{K}(\xn \vert \theta)}_2 \le M(\xn)
+\quad\textrm{with}\quad
+\expect{\fdist(\xn)}{M(\xn)^2} \le \infty.
+\eqlabel{bounded_lipschitz}
+%
+\end{align}
+%
+Addionally assume that $\pi(\theta)$ is non-zero and $K-1$ times
+continuously differentiable in $\thetaball{\deltaulln}$.
+%
+Then the following results hold.  First, for $k \in \{0, \ldots, K\}$,
+%
+\begin{align}
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \meann \norm{\ellgrad{k}(\x_n \vert \theta)}_2^2
+     &={} \ordp{1}
+% \nonumber\\&\hspace{-3em}
+     \eqlabel{means_op1}.
+%
+\end{align}
+%
+Then, for $k \in \{0, \ldots, K - 1\}$,
+%
+\begin{align}
+%
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\meann \left( \ellgrad{k}(\x_n \vert \theta) -
+           \expect{\fdist(\xn)}{\ellgrad{k}(\xn \vert \theta)} \right)
+           }_2 &\plim{} 0
+         \eqlabel{glivenko_cantelli} \\
+%
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\frac{1}{\sqrt{N}} \sumn \left( \ellgrad{k}(\x_n \vert \theta) -
+           \expect{\fdist(\xn)}{\ellgrad{k}(\xn \vert \theta)}\right)
+           }_2 &={} \ordp{1}
+           \eqlabel{donsker} \\
+%
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\likhatk{k}(\theta) - \likk{k}(\theta)}_2 &\plim{} 0.
+         \eqlabel{ulln}
+%
+\end{align}
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{proof}
+%
+First, note that
+%
+\begin{align*}
+%
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \meann \norm{\ellgrad{K}(\x_n \vert \theta)}_2^2 \le{}&
+\meann \sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\ellgrad{K}(\x_n \vert \theta)}_2^2
+\quad\textrm{and}\\
+\expect{\fdist(\xn)}{
+    \sup_{\theta \in \thetaball{\deltaulln}}
+        \norm{\ellgrad{K}(\xn \vert \theta)}^2_2
+} \le{}& \expect{\fdist(\xn)}{M(\xn)^2} < \infty,
+%
+\end{align*}
+%
+so \eqref{means_op1} holds for $k = K$ by the strong law of large numbers.
+
+We now prove the remaining relations inductively. For a scalar--valued,
+differentiable function $f(\theta)$, and any two $\theta, \theta'$ in
+$\thetaball{\deltaulln}$, we can write
+%
+\begin{align*}
+%
+\abs{f(\theta) - f(\theta')} ={}&
+\abs{
+    \int_0^1 \fracat{\partial f(\theta' + \t (\theta - \theta'))}
+                    {\partial \t}{\t} d\t
+}
+\\={}&
+\abs{
+    \int_0^1 f_{(1)}(\theta' + \t (\theta - \theta')) (\theta - \theta') d\t
+}
+\\\le{}&
+    \norm{\theta - \theta'}_2
+    \sup_{\thetatil \in \thetaball{\deltaulln}}
+        \norm{f_{(1)}(\thetatil)}_2.
+%
+\end{align*}
+%
+Applying the previous formula componentwise to $\ellgrad{K-1}(\xn \vert
+\theta)$, and loosening the right hand side to contain all of
+$\norm{\ellgrad{K}(\xn \vert \thetatil)}_2$ rather than only a particular
+component, gives
+%
+\begin{align}
+%
+\norm{\ellgrad{K-1}(\xn \vert \theta)}_\infty \le{}&
+    \norm{\theta - \theta'}_2
+    \sup_{\thetatil \in \thetaball{\deltaulln}}
+        \norm{\ellgrad{K}(\xn \vert \thetatil)}_2
+\nonumber \\\le{}&
+\norm{\theta - \theta'}_2 M(\xn). \eqlabel{ellgrad_linf_bound}
+%
+\end{align}
+%
+It follows that each component of $\ellgrad{K-1}(\xn \vert \theta)$ is both
+Glivenko-Cantelli and Donsker, and so \eqref{glivenko_cantelli,donsker} hold for
+$k = K - 1$ (see \cite[Example 19.7]{van:2000:asymptotic},
+as well as the discussion in \defref{ulln} above).  Further,
+%
+\begin{align*}
+%
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\ellgrad{K-1}(\xn \vert \theta)}_2
+\le{}&
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \sqrt{\thetadim} \norm{\ellgrad{K-1}(\xn \vert \theta)}_\infty
+\le{}
+    2 \sqrt{\thetadim}  \deltaulln M(\xn),
+%
+\end{align*}
+%
+where the final line applies \eqref{ellgrad_linf_bound} and
+$
+\sup_{\theta, \theta' \in \thetaball{\deltaulln}} \norm{\theta - \theta'}_2 \le 2 \deltaulln.
+$
+It follows that \eqref{means_op1} holds for $k = K - 1$.
+
+Since \eqref{bounded_lipschitz} holds for $k=K-1$, the remaining results follow
+by proceeding inductively on $K-1$, $K-2$, and so on.
+
+Finally, by continuity of $\prior(\theta)$
+(\assuref{bayes_clt} \itemref{prior_smooth}) and compactness of
+$\thetaball{\deltaulln}$, we have that, as $N \rightarrow \infty$,
+$$
+\frac{1}{N} \sup_{\theta \in \thetaball{\deltaulln}} \norm{\logpriorgrad{k}(\theta)}_2^2  \rightarrow 0.
+$$
+Then \eqref{ulln} follows from the preceding display, Cauchy-Schwarz, and \eqref{glivenko_cantelli}.
+%
+\end{proof}
+%
+
+\end{lem}

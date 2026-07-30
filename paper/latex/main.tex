@@ -1,66 +1,149 @@
 \documentclass[12pt]{article} % JASA and arxiv
-%\documentclass[unnumsec,webpdf,contemporary,medium,namedate]{oup-authoring-template} % JRSS-B
-
 
 \usepackage{etoolbox}
-\usepackage{microtype}
-\usepackage{graphicx}
-\usepackage{subfigure}
-\usepackage{booktabs} % for professional tables
-\usepackage{xcolor}
-\usepackage{xargs}[2008/03/08]
 
-\usepackage{enumitem} % For unseparated item bullets
+% Set this toggle true to compile a version for the arxiv, and
+% false to compile for the currently configured conference.
+%
+% Note that if arxiv is true, then the supplement and main file
+% are combined into a single pdf, but if it is false, then
+% the supplement and main file are compiled separately.
+\newbool{arxiv}
 
-% Documentation
-% http://ftp.math.purdue.edu/mirrors/ctan.org/macros/latex/contrib/refstyle/refstyle.pdf
-\usepackage{refstyle}
-\usepackage{varioref} % Use refstyle instead of varioref directly.
+%\booltrue{arxiv}
+\boolfalse{arxiv}
 
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{amsfonts}
-\usepackage{amsthm}
-\usepackage{mathrsfs} % For mathscr
-\usepackage{mathtools}
-\usepackage{bm} % For bold math symbols
-\usepackage{thmtools} % For QED after examples
-\usepackage{accents} % For fancier accents to notate limiting values
+\input{_headers.tex}
 
-% For algorithms
-\usepackage{algorithm}
-% http://tug.ctan.org/macros/latex/contrib/algorithmicx/algorithmicx.pdf
-\usepackage{algpseudocode}
-\usepackage{pdfpages}
+\notbool{arxiv} {
+    \externaldocument{supplement}
+}
 
 
-\usepackage{setspace}
-\renewcommand*{\bibfont}{\singlespacing} % single spaced bib
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-% This picks up the knitr boilerplate, allowing us to \input partial knitr
-% documents.
-\input{_knitr_header.tex}
-
-\input{_defs.tex}
-\input{_theorem_defs.tex}
-
-\input{figures_knitr.tex}
-
-
-% \usepackage{lineno}
-% \linenumbers
-
+\author{\paperauthor}
+\title{My Paper}
 
 \begin{document}
 
+\title{The Bayesian Infinitesimal Jackknife for Variance}
+
+\author{
+    \ifbool{blind} {
+        (ANONYMIZED)
+    } {
+    Ryan Giordano \\ \texttt{rgiordano@berkeley.edu}
+    \and
+    Tamara Broderick \\ \texttt{tbroderick@mit.edu}
+    }
+}
 
 
+\maketitle
+
+\notbool{arxiv} {
+    % JASA
+
+    \begin{abstract}
+    %
+    \input{abstract.tex}
+    %
+    \end{abstract}        
+    
+    % Only include keywords for the journal
+    \noindent%
+    {\it Keywords:}  Influence function, sandwich covariance,
+        infinitesimal jackknife, Bernstein-von Mises theorem,
+        Bayesian robustness
+    \vfill    
+
+    
+    \newpage
+    %\spacingset{1.9} % DON'T change the spacing!
+
+    % It says don't change the spacing, but then the rendering
+    % does not produce the maximum allowed 26 lines per page
+    \spacingset{1.8} % DON'T change the spacing!
+}
+
+
+% What is the frequentist variance and why would you care.
+% The Laplace approximation and bootstrap have shortcomings that the IJ
+% does not.
+\section{Introduction}\seclabel{introduction}
+\input{introduction.tex}
+
+\section{Setup and Motivation}\seclabel{basics}
+
+%\subsection{Formal problem statement}
+\input{problem_statement.tex}
+
+\subsection{Notation}\seclabel{notation}
+\input{notation.tex}
+
+\subsection{Three methods for estimating $\gcovtrue$}\seclabel{three_methods}
+\input{three_methods.tex}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+\section{Theoretical results}
+\seclabel{finite_dim}
+
+\seclabel{bayes_clt}
+\input{finite_dim_intuition.tex}
+
+\subsection{Consistency theorem}
+\seclabel{finite_dim_clts}
+\input{finite_dim_clts.tex}
+
+\subsection{Discussion of the proof and results}
+\seclabel{theory_discussion}
+\input{theory_discussion.tex}
+
+
+
+\subsection{Data weights and the influence function}
+\seclabel{data_weights}
+\input{weights.tex}
+
+\subsection{Related Work}\seclabel{related_work}
+\input{related_work.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Experiments}
+\seclabel{experiments}
+\input{experiment_methodology.tex}
+
+\subsection{A degenerate joint MAP approximation with simulated data}
+\applabel{singular_example}
+\input{experiments_singular.tex}
+
+\subsection{Applied regression modeling examples}
+\seclabel{arm_experiments}
+\input{experiments_arm.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Conclusion}
+\input{conclusion.tex}
+
+\notbool{blind} { 
+    \section{Acknowledgements}
+    \input{acks.tex}
+}
+
+\section{Data Availability Statement}
+\input{data_availability_statement.tex}
+
+\printbibliography{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ifbool{arxiv} {
+    \newpage
+    \section*{The Bayesian Infinitesimal Jackknife for Variance: Supplemental information and proofs}
+    \input{supplement_content.tex}
+}
 
 \end{document}

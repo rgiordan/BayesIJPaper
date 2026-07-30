@@ -1,0 +1,36 @@
+
+For regions $R_1$ and $R_2$, and the combination of the regions, we will make
+use of the following compact notation for key Gaussian densities.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{defn}\deflabel{gaussian_defs}
+
+Write the Gaussian density with mean $0$  and covariance $\infohat^{-1}$
+and its normalizing constant as
+\begin{align*}
+\normhatarg{\tau} :={}&
+    \normalizer^{-1} \exp\left(-\frac{1}{2} \infohat \tau^2 \right)
+    = \normdist(\tau \vert 0, \infohat^{-1}) \quad\textrm{ where }\quad
+\normalizer :={} \det\left(2\pi \infohat^{-1} \right)^{1/2}.
+\end{align*}
+%
+Additionally,
+let $\normresid{\lambda}{S}(\tau)$ denote the $\normdist\left(\tau | 0,
+\lambda^{-1} I_{\thetadim} \right)$ distribution truncated to the set $S$,
+where $I_{\thetadim}$ denotes the $\thetadim \times \thetadim$ identity matrix.
+Specifically,
+%
+\begin{align*}
+%
+\normresid{\lambda}{S}(\tau) :=
+\frac{
+    \exp\left( - \frac{\lambda}{2} \norm{\tau}_2^2 \right)
+}{
+    \int_{S}
+        \exp\left( - \frac{\lambda}{2} \norm{\tau}_2^2 \right) d\tau
+}.
+%
+\end{align*}
+%
+\end{defn}

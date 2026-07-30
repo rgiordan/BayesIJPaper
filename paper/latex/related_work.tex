@@ -1,0 +1,103 @@
+Several other papers have studied the estimation of frequentist variability of
+posterior expectations.  \citet{efron:2015:frequentist} provides results similar
+to ours, but is limited to the special case of exponential families. The
+frequentist sampling variability of Bayesian posterior expectations under
+misspecification is studied in \citet{kleijn:2012:bvm} from a theoretical point
+of view, motivating the form of the sandwich covariance.
+\Citet{huggins:2020:bayesbag,huggins:2022:bayesbag} proved the consistency of
+the bootstrap as estimate of the frequentist sampling variability of posterior
+expectations that obey a BCLT (the preprint and published paper are different
+enough that we believe both warrant citation).  Both \citet{vehtari:2024:psis}
+and \citet{lee:2017:frequentistbayesse} consider importance sampling estimates
+to the effect of dropping datapoints, with \citet{lee:2017:frequentistbayesse}
+explicitly considering estimation of frequentist variability of the posterior
+under an assumption of correct specification. However, importance sampling
+estimates of frequentist variability can be expected to have very low sampling
+efficiency even in moderate dimensional problems, since frequentist re--sampling
+is expected to produce changes of the posterior mean on the same order as the
+posterior standard deviation (see Example 9.2 of \citet{owen:2014:mcbook}).
+Furthermore, misspecification can result in frequentist sampling variances that
+are different than the posterior variance, which can further degrade importance
+sampling efficiency as a function of dimension (see Example 9.3 of
+\citet{owen:2014:mcbook}).
+
+Our key result, \thmref{bayes_clt_main} is distinguished from previous BCLT
+results primarily by tracking the data dependence in the residual of the series
+expansion, though we also differ from some classical work by admitting
+misspecification.  Our method of proof hews closely to the classical BCLT proofs
+found in  Chapter 10 of \citet{van:2000:asymptotic}, Theorem 1.4.2 of
+\citet{ghosh:2003:bayesian}, and \citet{lehman:1983:pointestimation}, all of
+which study the asymptotic regime for a single posterior quantity under the
+assumption of correct specification.  A series expansion for posterior
+expectations similar to \thmref{bayes_clt_main} is established by
+\citet{kass:1990:posteriorexpansions}, under stricter differentiability
+conditions than ours, and only for a single posterior quantity of interest,
+which is (implicitly) assumed not to depend on the dataset. A number of recent
+papers have, like us, studied the asymptotic behavior of finite--dimensional
+Bayesian posteriors under misspecification, though without explicitly
+controlling data dependence
+\citep{kleijn:2006:misspecification,miller:2021:bclt,kasprzak:2022:laplace}.
+
+Our work is an application of the classical IJ estimator, which has been
+extensively studied in the frequentist literature, but which to the best of the
+authors' knowledge has not been applied to Bayesian posterior expectations (see,
+e.g., \citet{jaeckel:1972:infinitesimal}, \citet{efron:1982:jackknife},
+\citet{shao:2012:jackknife}, \citet{efron:2014:estimation},
+\citet{wager:2014:confidence},
+\citet{peng:2021:biasconsistencyalternativeperspectives},
+\citet{ghosal:2022:infinitesimaljackknifecombinationsmodels}).
+As we discuss more explicitly in \secref{data_weights}, the IJ covariance can be
+viewed as the first term in a von Mises expansion of the Bayesian posterior
+(\citet{mises:1947:asymptotic}, \citet{reeds:1976:thesis},
+\citet{serfling:1980:approximation}), though we prove consistency directly
+rather than via a functional series expansion.
+\Citet{giordano:2024:oldbayesij} prove consistency of the IJ for posterior
+expectations using von Mises expansions directly under stronger theoretical
+assumptions, using results from the present paper.
+
+As we discuss in the introduction, IJ estimation can be thought of as a
+particular measure of local data robustness --- specifically, robustness to
+random resampling of the data. We make this connection even more explicit in
+\secref{data_weights} below. Viewing IJ estimators as local data robustness
+connects our work to a large literature on ``local case influence,'' which
+refers to a broad class of techniques that using derivatives to approximate the
+effect of a datapoint or datapoints on a statistic of interest.  Local case
+influence is an idea with a long history in frequentist and Bayesian statistics.
+The literature is too vast to review systematically here, but some notable
+references include
+\citet{belsley:1980:regression,cook:1977:detectionofinfluential,
+cook:1982:residualsandinfluenceinregression, cook:1986:assessment,
+kempthorne:1986:decision,kass:1989:approximatebayesiansensitivity,
+carlin:1991:expectedutilityinfluence,
+zhu:2007:perturbation,koh:2017:blackboxinfluence,
+thomas:2018:reconcilingcurvatureandis}.
+The relationship between posterior covariances and derivatives has been noted
+numerous times in the Bayesian robustness literature (e.g.
+\citet{diaconis:1986:bayesconsistency}, \citet{gustafson:1996:localposterior},
+\citet{basu:1996:local}, \citet{efron:2015:frequentist},
+\citet{giordano:2018:covariances}). As we note in \secref{bayes_clt},
+consistency of the IJ requires a kind of uniform guarantee over a large number
+of local approximations, but most of the local case influence work focuses on a
+datapoint or a small set of datapoints. Notable exceptions include
+\citet{giordano:2019:swiss} in the frequentist literature and
+\citet{zhu:2012:bayesiancaseinfluence} in the Bayesian literature, though we
+note that Theorem 2 of \citet{zhu:2012:bayesiancaseinfluence} is stated in terms
+of a fixed set of dropped datapoints.
+
+Following the posting of the present work on the arXiv, a number of interesting
+subsequent papers have proposed extensions and variants and applications of the
+Bayesian IJ. \Citet{nguyen:2024:sensitivitymcmcbasedanalysessmalldata} applies
+the IJ to the adversarial data--dropping work of
+\citet{giordano:2026:amip1,giordano:2026:amip2} in MCMC settings.
+\Citet{iba:2023:wkernel} connects the IJ covariance to kernel methods, and
+\citet{iba:2023:posteriorweighted} apply ideas closely related to the Bayesian
+IJ covariance to information criteria and model selection.  Two papers,
+\textcite{ji:2025:ValidStandardErrors2025,luo:2026:RobustStandardErrors2026},
+have systematically evaluated the Bayesian IJ covariance for use in the social
+sciences in the presence of model misspecification. We hope that our approach
+continues to motivate and inform connections between the frequentist and
+Bayesian case influence literature.
+
+
+
+

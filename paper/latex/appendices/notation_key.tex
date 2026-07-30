@@ -1,0 +1,60 @@
+For ease of reference, we provide here a table of key quantities
+defined and used through the course of our proofs.
+
+\begin{table}[!h]
+\begin{tabular}{|c|c|c|}
+\hline
+Symbol & Description & Definition \\
+\hline
+$\infl_n$ & Influence score of the $n$--th observation & \eqref{ij_terms}\\
+\hline
+$\indexset$ & A set of sets of data indices & \defref{index_sets} \\
+\hline
+$\xvec_s$ & The observations corresponding to $s \in \indexset$ & \defref{index_sets} \\
+\hline
+$\phi(\theta, \xvec_s)$ &
+    A function of interest depending on $\theta$ and a set of datapoints &
+    \defref{bclt_okay_index} \\
+\hline
+$\thetaball{\delta}$ & A $\delta$-ball around $\thetatrue$ & \assuref{bayes_clt} \\
+\hline
+$\tresid{k}{\phi, \thetahat, \theta}$ & The $k$--th order Taylor series residual term for $\phi$ &
+    \defref{taylor_residual} \\
+\hline
+$\normhatarg{\tau}$ & Gaussian density with covariance $\infohat^{-1}$  & \defref{gaussian_defs} \\
+\hline
+$\normresid{\lambda}{S}(\tau)$ &
+    Isotropic Gaussian density with precision $\lambda$ truncated to set $S$ &
+    \defref{gaussian_defs} \\
+\hline
+$\normalizer$ & Normalizing constant for $\normhatarg{\tau}$& \defref{gaussian_defs} \\
+\hline
+$\infoev,\infoevhat$ & Minimum eigenvalues of $\info$, $\infohat$ & \defref{loglik_details_def} \\
+\hline
+$\tau$ & Centered and scaled parameter $\sqrt{N}(\theta - \thetahat)$ & \eqref{tau_defn} \\
+\hline
+$R_1,R_2,R_3$ & Inner, middle, and outer regions of integration & \defref{region_division} \\
+\hline
+$\delta_1$ & Scale of boundary between $R_1$ and $R_2$ & \defref{region_division} \\
+\hline
+$\delta_2$ & Scale of boundary between $R_2$ and $R_3$ & \defref{region_division} \\
+\hline
+$I(\phi)$ & The integration functional of $\phi$ & \eqref{integral_funcational} \\
+\hline
+$I_k(\phi)$ & Integration functional restricted to region $R_k$ &
+    \eqref{region_integration_functional} \\
+\hline
+$\regevent$ & The event that the problem is ``regular'' & \lemref{regular_event} \\
+\hline
+$\epsilon_U$ & Arbitrarily small accuracy parameter for the regular event & \lemref{regular_event} \\
+\hline
+$\epsilon_L$ & Log likelihood lower bound in regular event & \lemref{regular_event} \\
+\hline
+$\resid{\phi}(\xvec_s)$ & The BCLT residual for $\expect{\post}{\phi(\theta, \xvec_s)}$ &
+    \defref{bclt_resid} \\
+\hline
+$\resid{k}(\xvec_s)$ & The $k$--th component of the BCLT residual & \defref{bclt_resid} \\
+\hline
+\end{tabular}
+\caption{Notation key}\label{tab:notation_key}
+\end{table}

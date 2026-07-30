@@ -1,0 +1,200 @@
+We now consider multivariate regression with unknown variance.  This will
+provide a simple multivariate example, draw a connection with robust frequentist
+estimators, and allow us to discuss a point about conditioning on part of
+the exchangeable unit.
+
+The model and data generating process are
+%
+\begin{align*}
+%
+\textrm{Model:}\quad
+&&\sigma^{-2} &\sim \mathrm{Gamma}(a, b)\\
+&&\beta &\sim \normdist(\cdot | 0, \sigma_\beta^2 I_D)\\
+&&y_n &\iid \normdist(\cdot | \beta^T z_n, \sigma^2)\\
+\textrm{Data generating process (reality):}\quad
+&&&\textrm{The moments of }
+    y_n z_n \textrm{, } z_n z_n^T \textrm{, and } y_n^2 z_n z_n^T\\
+&&&\textrm{are finite and obey a LLN, with}\\
+&&&\textrm{invertible }\expect{\xfdist}{z_n z_n^T}.
+%
+\end{align*}
+%
+Here, $\theta = (\beta, \sigma)$ and $\x_n = (y_n, z_n)$.  We will consider
+$g(\theta) = \beta$.  The full posterior has a closed form, but we will only
+require the conditional posterior $p(\beta \vert \x, \sigma)$.
+%
+\begin{align*}
+%
+\hat{S}_z :={}& \meann z_n z_n^T + \frac{\sigma_\beta^2}{N} I_D\\
+\hat\beta :={}& \hat{S}_z^{-1} \left(\meann z_n y_n\right)\\
+p(\beta \vert \x, \sigma) ={}&
+    \normdist\left(\beta \vert \hat\beta, \sigma^2 \hat{S}_z \right)\\
+\expect{\post}{\beta} ={}& \hat\beta\\
+\cov{\post}{\beta} ={}& \frac{\sigma^2}{N} \hat{S}_z^{-1}.
+%
+\end{align*}
+
+In order to consider the frequentist variance of $\expect{\post}{\beta}$, we
+have to specify what is random.  Since $\x_n = (z_n, y_n)$, the analysis of
+this paper appears to require that both $z_n$ and $y_n$ are random. However, the
+generative process for the regressors $z_n$ are not part of the Bayesian model
+given above.  Indeed, the generating process for the regressors is hardly
+ever specified in Bayesian regression because the data generating
+process for $z_n$ is ancillary to the parameters of interest, $\theta$.
+However, precisely because $p(z_n)$ is ancillary for $\theta$, one could resolve
+this apparent inconsistency by imagining including any data generating process
+$p(z_n)$ to the Bayesian model, and observing that the Bayesian posterior is
+unchanged no matter what $p(z_n)$ is.
+
+Asymptotically, the difference between random $z_n$ and fixed $z_n$ does not
+matter since sample moments over $z_n$ converge to their population
+counterparts.  However, in finite sample, the difference can be important, and
+it is easier to bootstrap pairs $(z_n, y_n)$ than keep $z_n$ fixed and resample
+only $y_n$.  (We will not consider methods such as the residual bootstrap here.)
+Unless otherwise stated, we will thus take the view in the present paper that
+the full exchangeable pair is random.
+
+Because of the term $\hat{S}_z^{-1}$ and the randomness of $z_n$, the variance
+$N \var{\xfdist}{\expect{\post}{\beta}}$ does not have a closed form. However,
+by a CLT applied to $\sqrt{N} \meann z_n (y_n - \hat\beta^T z_n)$ and Slutsky's
+theorem, the variance is consistently estimated by
+%
+\begin{align}
+%
+\hat\epsilon_n :={}& y_n - \hat\beta^T z_n \nonumber\\
+N \var{\xfdist}{\expect{\post}{\beta}} \approx&
+    \hat{S}_z^{-1} \left(
+        \meann \hat\epsilon_n^2 z_n z_n^T \right)
+    \hat{S}_z^{-1}.
+    \eqlabel{regression_robust_cov}
+%
+\end{align}
+%
+If the model is correctly specified, and $\sigma = \sigma_0$, then
+%
+\begin{align*}
+%
+\meann z_n z_n^T \hat\epsilon_n^2 \plim \sigma_0^2 \expect{\xfdist}{z_n z_n^T},
+%
+\end{align*}
+%
+and $N \var{\xfdist}{\expect{\post}{\beta}}$ coincides asymptotically with
+$N \cov{\post}{\beta}$.  However, if the residuals $\hat\epsilon_n$
+or their variances are correlated with $z_n$, then the frequentist and Bayesian
+covariance will not match, even asymptotically.  The covariance estimate in
+\eqref{regression_robust_cov} is known in the frequentist regression literature
+as a ``robust'' covariance estimate, and it is sometimes recommended when
+there is concern about model misspecification (e.g. \cite[Section
+5.5]{davidson:2004:econometric}).  In the present context, it is simply the
+regression version of the sandwich covariance matrix $\gcovtrue$.
+
+The influence function in this case is given by
+%
+\begin{align*}
+%
+\infl(\x_n) ={}&
+    N \cov{\post}{\beta,
+    -\frac{1}{2\sigma^2}\left(y_n^2 - 2 \beta^T z_n y_n +
+                             \beta^T z_n z_n^T \beta \right)} \\
+={}& N \cov{\post}{\beta, \sigma^{-2} \beta} z_n y_n -
+\frac{N}{2} \cov{\post}{\beta, \sigma^{-2}} y_n^2 +
+\frac{N}{2} \cov{\post}{\beta, \sigma^{-2} \beta^T z_n z_n^T \beta}.
+%
+\end{align*}
+%
+First,
+%
+\begin{align*}
+%
+\cov{\post}{\beta, \sigma^{-2} \beta} ={}&
+\expect{\post}{
+    \left(\beta - \hat\beta \right)
+    \left(\sigma^{-2} \beta - \expect{\post}{\sigma^{-2} \beta}\right)}
+\\ ={}&
+\expect{\post}{\left(\beta - \hat\beta \right) \sigma^{-2} \beta}
+\\ ={}&
+\expect{\post}{
+    \sigma^{-2}
+    \expect{p(\beta \vert \x, \sigma)}{\left(\beta - \hat\beta \right) \beta}
+    }
+\\ ={}&
+\frac{1}{N} \expect{\post}{\sigma^{-2} \sigma^2 \hat{S}_z^{-1}}
+\\ ={}& \frac{1}{N} \hat{S}_z^{-1}.
+%
+\end{align*}
+%
+Now, the posterior mean $\expect{\post}{\beta} = \hat\beta$ does not depend on
+$\sigma$, so
+%
+\begin{align*}
+%
+\cov{\post}{\beta, \sigma^{-2}} ={}&
+\expect{\post}{\left(\beta - \hat\beta\right)
+               \left( \sigma^{-2} - \expect{\post}{\sigma^{-2}}\right)} \\
+={}&
+\expect{\post}{\expect{p(\beta \vert \x, \sigma)}{\beta - \hat\beta}
+               \left( \sigma^{-2} - \expect{\post}{\sigma^{-2}}\right)} \\
+={}& 0.
+%
+\end{align*}
+%
+Similarly, the third-order array of third-order covariances is identically zero:
+%
+\begin{align*}
+%
+\expect{\post}{\sigma^{-2}(
+    \beta - \hat\beta)(\beta - \hat\beta)(\beta - \hat\beta)}
+= 0.
+%
+\end{align*}
+%
+To use this in $\infl(\x_n)$, observe that
+%
+\begin{align*}
+%
+\beta^T z_n z_n^T \beta ={}&
+    \left(\beta - \hat\beta\right)^T z_n z_n^T \left(\beta - \hat\beta\right) +
+    2 \hat\beta^T z_n z_n^T \beta -
+    \hat\beta^T z_n z_n^T \hat\beta,
+%
+\end{align*}
+%
+so that
+%
+\begin{align*}
+%
+\frac{N}{2} \cov{\post}{\beta, \sigma^{-2} \beta^T z_n z_n^T \beta} ={}&
+N \cov{\post}{\beta, \sigma^{-2} \hat\beta^T z_n z_n^T \beta}
+\\={}&
+N \cov{\post}{\beta, \sigma^{-2} \beta} z_n z_n^T \hat\beta
+\\={}&
+\hat{S}_z^{-1} z_n z_n^T \hat\beta.
+%
+\end{align*}
+%
+
+%
+%
+Combining,
+%
+\begin{align*}
+%
+\infl(\x_n) = \hat{S}_z^{-1} z_n \left(y_n - z_n^T \hat\beta\right).
+%
+\end{align*}
+%
+We thus see that
+%
+\begin{align*}
+%
+\bar{\iota} ={}& \hat{S}_z^{-1} \meann z_n y_n = 0\\
+\gcovij ={}&
+\meann \left(\iota(\x_n)^2 -  \bar{\iota}^2 \right) =
+    \hat{S}_z^{-1} \left(
+        \meann \hat\epsilon_n^2 z_n z_n^T \right)
+    \hat{S}_z^{-1},
+%
+\end{align*}
+%
+which matches the frequentist covariance estimate given in
+\eqref{regression_robust_cov}.
