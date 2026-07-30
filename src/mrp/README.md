@@ -183,12 +183,11 @@ Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata` (`--output_filenam
 ## Local sanity check (no SLURM)
 
 ```bash
-make sanity_check                                       # RESAMPLE_N=5, RUN_LOCALLY=true
-make sanity_check RESAMPLE_N=10                          # override the replicate count
-make sanity_check NUM_MCMC_SAMPLES=600                   # also shrink each individual fit
+make sanity_check
 ```
 
-Runs Stages 2-4 entirely locally with a small `RESAMPLE_N`, through to
+Runs Stages 2-4 entirely locally with a small `RESAMPLE_N` and
+small `NUM_MCMC_SAMPLES`, through to
 `bootstrap_data/mrp_combined_mrp.Rdata` and
 `paper/experiment_data/mrp/mrp_postprocessed.Rdata`. This **overwrites**
 whatever real production output currently exists at those paths — intended

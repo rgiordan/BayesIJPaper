@@ -153,12 +153,11 @@ make RUN_LOCALLY=false        # SLURM for the sim-replicate stage instead of loc
 ## Local sanity check (no SLURM)
 
 ```bash
-make sanity_check                                       # RESAMPLE_N=5, RUN_LOCALLY=true
-make sanity_check RESAMPLE_N=10                         # override the replicate count
-make sanity_check NUM_MCMC_SAMPLES=500                  # also shrink each individual fit
+make sanity_check
 ```
 
-Runs the full pipeline locally with a small `RESAMPLE_N`, through to
+Runs the full pipeline locally with a small `RESAMPLE_N` and
+`NUM_MCMC_SAMPLES`, through to
 `paper/experiment_data/simulations/simpler_sim_results.Rdata`. This
 **overwrites** whatever real production output currently exists at those
 paths — intended for a clean checkout. Note that since `DESC` (and hence

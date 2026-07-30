@@ -48,7 +48,7 @@ all: $(PAPER_OUTPUT)
 # unless the caller already passed RESAMPLE_N on the command line).
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=500 all
 
 # Final paper output — reads base result and combined sim results.
 $(PAPER_OUTPUT): $(SIM_COMBINED) $(BASE_RESULT)

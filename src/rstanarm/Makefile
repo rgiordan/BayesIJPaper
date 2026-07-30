@@ -50,7 +50,7 @@ $(CONFIG_DIR)/rstanarm_ij_model_list.json:
 # models are still fit -- only the per-model bootstrap count shrinks.
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=500 all
 
 # Final paper output — reads compiled_results. postprocess_for_paper.R's
 # --compiled_file is relative to src/rstanarm (it joins with its own

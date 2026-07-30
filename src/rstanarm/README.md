@@ -114,13 +114,12 @@ Produces: `paper/experiment_data/arm/arm_results_postprocessed.Rdata` (`--output
 ## Local sanity check (no SLURM)
 
 ```bash
-make sanity_check                                       # RESAMPLE_N=5, RUN_LOCALLY=true, all 65 models
-make sanity_check RESAMPLE_N=10                         # override the bootstrap count
-make sanity_check NUM_MCMC_SAMPLES=200                  # also shrink each individual fit
+make sanity_check
 ```
 
-Runs the full pipeline locally with a small `RESAMPLE_N` (all 65 models are
-still fit, just with fewer bootstraps each), through to
+Runs the full pipeline locally with a small `RESAMPLE_N`
+and `NUM_MCMC_SAMPLES` (all 65 models are
+still fit, just with fewer bootstraps and samples each), through to
 `paper/experiment_data/arm/arm_results_postprocessed.Rdata`. This
 **overwrites** whatever real production output currently exists at those
 paths — intended for a clean checkout.

@@ -65,7 +65,7 @@ all: $(PAPER_OUTPUT)
 # checkout, or accept that it overwrites real output.
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=500 all
 
 # -----------------------------------------------------------------------
 # Stage 4: Final paper output
