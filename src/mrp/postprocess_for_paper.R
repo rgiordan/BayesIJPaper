@@ -7,6 +7,25 @@ library(broom)
 library(tidybayes)
 library(mcmcse)
 library(lme4)
+library(optparse)
+
+option_list <- list(
+  make_option(c("--combined_file"),
+              default="bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata",
+              help="Path (relative to src/mrp) to the compile_postprocessing.R output."),
+  make_option(c("--output_filename"),
+              default="mrp_postprocessed.Rdata",
+              help="Output filename, written under paper/experiment_data/mrp."),
+  make_option(c("--seed"),
+              type="integer",
+              default=134432,
+              help="Seed used for the original/originallmer MCMC fits."))
+
+opt <- parse_args(OptionParser(option_list=option_list))
+print("===================")
+print("Options:")
+print(opt)
+print("===================")
 
 
 LoadIntoEnv <- function(filename) {
@@ -64,19 +83,18 @@ stopifnot(dir.exists(mrp_dir))
 stopifnot(dir.exists(output_dir))
 
 # Created with compile_postprocessing.R
-comb_env <- LoadIntoEnv(file.path(
-  mrp_dir, "bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata"))
+comb_env <- LoadIntoEnv(file.path(mrp_dir, opt$combined_file))
 data_env <- LoadIntoEnv(file.path(
   mrp_dir, "datasets/cces18_subset.Rdata"))
 base_fit <- LoadIntoEnv(file.path(
-  mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata"))
+  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d_samples5000_mrp_postprocessed.Rdata", opt$seed)))
 
 # Note that due to the lack of posterior_epred for rstan draws, this is
 # just the MAP and lmer fits, so we compare to base_mcmc directly.
 base_mcmc <- LoadIntoEnv(file.path(
-  mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"))
+  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d_samples5000.Rdata", opt$seed)))
 lmer_fit <- LoadIntoEnv(file.path(
-  mrp_dir, "bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata"))
+  mrp_dir, sprintf("bootstrap_data/mrp_originallmer_seed%d_samples5000.Rdata", opt$seed)))
 
 # Stan's MAP fit is no good, use our own instead
 map_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/custom_map_analysis.Rdata"))
@@ -330,4 +348,4 @@ save(n_obs,
      ij_time,
      linpred_time,
      num_mcmc_samples,
-     file=file.path(output_dir, "mrp_postprocessed.Rdata"))
+     file=file.path(output_dir, opt$output_filename))

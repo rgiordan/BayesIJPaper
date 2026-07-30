@@ -3,17 +3,31 @@
 library(tidyverse)
 library(rstan)
 library(gridExtra)
+library(optparse)
 
 library(bayesijlib)
 library(rstanarmijlib)
 
 rstan_options(auto_write=TRUE)
 
+option_list <- list(
+  make_option(c("--compiled_file"),
+              default="cluster/output/compiled_results_1116.Rdata",
+              help="Path (relative to src/rstanarm) to the load_rstanarm_results.R output."),
+  make_option(c("--output_filename"),
+              default="arm_results_postprocessed.Rdata",
+              help="Output filename, written under paper/experiment_data/arm."))
+
+opt <- parse_args(OptionParser(option_list=option_list))
+print("===================")
+print("Options:")
+print(opt)
+print("===================")
+
 # If TRUE do not run all the bootstraps and do not save.
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(repo_dir, "src/rstanarm")
 
-output_dir <- file.path(base_dir, "cluster/output")
 writing_dir <- file.path(repo_dir, "paper/experiment_data/arm")
 stopifnot(dir.exists(writing_dir))
 
@@ -24,9 +38,8 @@ model_list_file <- file(file.path(base_dir, "configs/",
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
-# Load the compiled results produced by postprocess_ARM_results.R
-output_filename <- sprintf("compiled_results_%s.Rdata", "1116")
-load(file=file.path(output_dir, output_filename))
+# Load the compiled results produced by load_rstanarm_results.R
+load(file=file.path(base_dir, opt$compiled_file))
 
 
 
@@ -210,9 +223,8 @@ if (FALSE) {
 ##########################################
 # Save a file with all the ARM results
 
-paper_filename <- sprintf("arm_results_postprocessed.Rdata")
 save(combined_df_long_labeled,
      combined_df_wide_labeled,
      model_df,
      timing_df,
-     file=file.path(writing_dir, paper_filename))
+     file=file.path(writing_dir, opt$output_filename))

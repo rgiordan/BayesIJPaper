@@ -4,6 +4,17 @@ PAPER_DIR   := $(REPO_ROOT)/paper/experiment_data/mrp
 
 SEED        := 134432
 
+# RESAMPLE_N controls how many bootstrap seeds (and, since each seed also
+# produces a subsample replicate, how many subsample seeds) are generated
+# and postprocessed. Defaults to today's full production count. Seeds run
+# 0..RESAMPLE_N-1, matching run_mcmc_slurm.sh's #SBATCH -a 0-100 (101 seeds).
+RESAMPLE_N  ?= 101
+
+# RUN_LOCALLY selects local (Rscript) vs SLURM (sbatch) execution for the
+# Stage 2 (bootstrap/subsample MCMC) and Stage 3 (per-file postprocessing)
+# stages. Defaults to false, matching today's SLURM-only behavior.
+RUN_LOCALLY ?= false
+
 # Paths relative to SRC_DIR, matching the conventions in run_mcmc.R and
 # postprocess_mcmc.R (which use --base_dir=$(SRC_DIR) and relative mcmc_file paths).
 DATASET         := datasets/cces18_subset.Rdata
@@ -14,23 +25,42 @@ ORIGINAL_MAP    := bootstrap_data/mrp_originalmap_seed$(SEED)_samples5000.Rdata
 CUSTOM_MAP      := bootstrap_data/custom_map_analysis.Rdata
 ORIGINAL_PP     := bootstrap_data/mrp_original_seed$(SEED)_samples5000_mrp_postprocessed.Rdata
 
-# The compile step (compile_postprocessing.R) appends a timestamp to its output
-# filename. The path below is the specific file that postprocess_for_paper.R
-# hardcodes. If you regenerate the combined file, update this variable and the
-# hardcoded path in postprocess_for_paper.R to match the new timestamp.
-COMBINED        := bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata
+# Deterministic (no timestamp) so it can be a stable Make dependency target;
+# compile_postprocessing.R's --output_filename is always passed explicitly
+# below, so its own auto-timestamped default is only exercised when that
+# script is run by hand with no arguments.
+COMBINED        := bootstrap_data/mrp_combined_mrp.Rdata
 
 PAPER_OUTPUT    := $(PAPER_DIR)/mrp_postprocessed.Rdata
 
-# The 202 bootstrap/subsample MCMC files are listed in mcmc_files.txt.
-# They were generated on a SLURM cluster (see run_mcmc_slurm.sh).
-# This derives the corresponding postprocessed filenames.
-MCMC_FILES      := $(shell cat $(SRC_DIR)/mcmc_files.txt)
+# The RESAMPLE_N bootstrap/subsample MCMC files, seeds 0..RESAMPLE_N-1
+# (matching run_mcmc_slurm.sh's #SBATCH -a 0-100 seed indexing). No longer
+# read from a committed mcmc_files.txt -- derived directly from RESAMPLE_N
+# so production (RESAMPLE_N=101) and reduced sanity-check runs share one
+# mechanism.
+LOCAL_SEEDS     := $(shell seq 0 $$(($(RESAMPLE_N)-1)))
+RAW_BOOT        := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_bootstrap_seed$(s)_samples5000.Rdata)
+RAW_SUB         := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_subsample_seed$(s)_samples5000.Rdata)
+MCMC_FILES      := $(RAW_BOOT) $(RAW_SUB)
 POSTPROCESSED   := $(patsubst %.Rdata,%_mrp_postprocessed.Rdata,$(MCMC_FILES))
 
-.PHONY: all data original_mcmc bootstrap_postprocess
+# Comma-joined list of postprocessed files for compile_postprocessing.R's
+# --file_pattern, which now takes an explicit list rather than a shell glob.
+FILE_LIST := $(shell echo $(addprefix $(SRC_DIR)/,$(POSTPROCESSED)) $(SRC_DIR)/$(ORIGINAL_PP) | tr ' ' ',')
+
+.PHONY: all data original_mcmc bootstrap_mcmc bootstrap_postprocess sanity_check
 
 all: $(PAPER_OUTPUT)
+
+# -----------------------------------------------------------------------
+# Sanity check: full pipeline, locally, with a small RESAMPLE_N (default 5
+# unless the caller already passed RESAMPLE_N on the command line). Writes
+# to the same default locations as a production run -- run in a clean
+# checkout, or accept that it overwrites real output.
+# -----------------------------------------------------------------------
+sanity_check:
+	$(MAKE) RUN_LOCALLY=true \
+	    $(if $(filter command line,$(origin RESAMPLE_N)),,RESAMPLE_N=5) all
 
 # -----------------------------------------------------------------------
 # Stage 4: Final paper output
@@ -38,43 +68,65 @@ all: $(PAPER_OUTPUT)
 $(PAPER_OUTPUT): $(SRC_DIR)/$(COMBINED) $(SRC_DIR)/$(ORIGINAL_PP) \
                  $(SRC_DIR)/$(ORIGINAL_LMER) $(SRC_DIR)/$(CUSTOM_MAP) \
                  $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && Rscript $(SRC_DIR)/postprocess_for_paper.R
+	cd $(SRC_DIR) && Rscript $(SRC_DIR)/postprocess_for_paper.R \
+	    --combined_file=$(COMBINED) \
+	    --seed=$(SEED)
 
 # -----------------------------------------------------------------------
 # Stage 3: Compile postprocessed replicates into single dataframe
 # -----------------------------------------------------------------------
-# Runs compile_postprocessing.R over all postprocessed files.
-# NOTE: The output filename includes a timestamp; see COMBINED comment above.
 $(SRC_DIR)/$(COMBINED): $(addprefix $(SRC_DIR)/,$(POSTPROCESSED)) \
                          $(SRC_DIR)/$(ORIGINAL_PP)
 	cd $(SRC_DIR) && ./compile_postprocessing.R \
 	    --base_dir=$(SRC_DIR) \
-	    --file_pattern="bootstrap_data/mrp_*_samples5000_mrp_postprocessed.Rdata" \
-	    --description=mrp
+	    --file_pattern="$(FILE_LIST)" \
+	    --description=mrp \
+	    --output_filename=$(COMBINED)
 
-# Postprocess the original MCMC output (always needed locally).
+# Postprocess the original MCMC output (always needed locally; a single
+# fast fit, not scaled by RESAMPLE_N or gated by RUN_LOCALLY).
 $(SRC_DIR)/$(ORIGINAL_PP): $(SRC_DIR)/$(ORIGINAL) $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./postprocess_mcmc.R \
 	    --base_dir=$(SRC_DIR) \
 	    --mcmc_file=$(ORIGINAL)
 
-# Generic rule: postprocess any single MCMC output file.
-# The 202 bootstrap/subsample files follow the same pattern.
+# Postprocessing the RESAMPLE_N bootstrap/subsample files is fairly
+# time-intensive, so it also respects RUN_LOCALLY: local via the existing
+# generic pattern rule (Rscript per file), or SLURM via
+# postprocess_mcmc_slurm.sh (one array job covering all RESAMPLE_N seeds).
+ifeq ($(RUN_LOCALLY),true)
 $(SRC_DIR)/%_mrp_postprocessed.Rdata: $(SRC_DIR)/%.Rdata $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./postprocess_mcmc.R \
 	    --base_dir=$(SRC_DIR) \
 	    --mcmc_file=$*.Rdata
 
-# Convenience target: postprocess all files listed in mcmc_files.txt.
 bootstrap_postprocess: $(addprefix $(SRC_DIR)/,$(POSTPROCESSED))
+else
+# Fire-and-forget, like bootstrap_mcmc below: submits the array job and
+# returns. Wait for it to finish, then re-run `make` to continue -- Make
+# only checks whether $(POSTPROCESSED) files exist, not how they were
+# produced, so the next stage picks them up regardless of RUN_LOCALLY.
+bootstrap_postprocess: $(SRC_DIR)/$(DATASET)
+	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/postprocess_mcmc_slurm.sh
+endif
 
 # -----------------------------------------------------------------------
 # Stage 2: Bootstrap/subsample replicates
-# These are intended for a SLURM cluster (see run_mcmc_slurm.sh).
-# The target below runs them locally and sequentially as a fallback.
 # -----------------------------------------------------------------------
+$(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR)
+
+$(SRC_DIR)/bootstrap_data/mrp_subsample_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --subsample
+
+ifeq ($(RUN_LOCALLY),true)
+bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
+else
+# Fire-and-forget, as today: submits the array job and returns. Wait for
+# it to finish before running `make bootstrap_postprocess`.
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET)
-	sbatch $(SRC_DIR)/run_mcmc_slurm.sh
+	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc_slurm.sh
+endif
 
 # -----------------------------------------------------------------------
 # Stage 1: Original MCMC fits

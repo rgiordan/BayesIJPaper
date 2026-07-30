@@ -80,51 +80,41 @@ Produces: `bootstrap_data/custom_map_analysis.Rdata`
 
 **Step 7: `run_mcmc.R` — bootstrap and subsample replicates**
 
-Runs MCMC on ~100 bootstrap and subsample replicates. Designed for a SLURM cluster; local execution is possible but slow.
-
-Make sure the paths in `run_mcmc_slurm.sh` are correct, and then run
+Runs MCMC on `RESAMPLE_N` bootstrap and `RESAMPLE_N` subsample replicates
+(default 101, matching the production run; seeds run 0..RESAMPLE_N-1).
+Controlled by the Makefile's `RUN_LOCALLY` flag:
 
 ```bash
-sbatch run_mcmc_slurm.sh
+make bootstrap_mcmc RUN_LOCALLY=false RESAMPLE_N=101   # SLURM (default)
+make bootstrap_mcmc RUN_LOCALLY=true  RESAMPLE_N=101   # local, sequential
 ```
 
-Produces: many `bootstrap_data/mrp_{subsample,bootstrap}_seed*.Rdata` files.
+The SLURM path (`sbatch --array=0-$((RESAMPLE_N-1)) run_mcmc_slurm.sh`) is
+fire-and-forget, same as running `sbatch run_mcmc_slurm.sh` directly — wait
+for the array job to finish before moving to Stage 3. Local execution is
+possible but slow (see runtime estimate below).
+
+Produces: `bootstrap_data/mrp_{subsample,bootstrap}_seed*_samples5000.Rdata` files.
 
 ---
 
 ## Stage 3: Post-processing and Aggregation
 
-**Step 8: Create a list of mcmc runs**
-
-Make sure you're on a system that has copies of all the MCMC
-runs in the `bootstrap_data` directory, including the original
-run, the subsampled runs, and the bootstraps.  If you ran step 7
-remotely, this probably means copying the output of the original
-MCMC fit to the remote machine.
-
-Run
-
-```bash
-ls -1a bootstrap_data/mrp_*_seed[0-9]*_samples5000.Rdata > mcmc_files.txt
-```
-
-The next step will postprocess every file in `mcmc_files.txt`.
-
----
-
 **Step 8: `postprocess_mcmc.R`** (once per MCMC output file)
 
-Evaluates MRP estimates, computes influence functions for variance estimation, and generates block bootstrap draws. Designed for batch execution via SLURM.
-
-Make sure the `#SBATCH -a 1-202` command in
-`postprocess_mcmc_slurm.sh` has the right number of tasks;
-there should be one task for each row in `mcmc_files.txt`.  Then run
+Evaluates MRP estimates, computes influence functions for variance estimation, and generates block bootstrap draws. This stage is fairly time-intensive, so it also respects `RUN_LOCALLY`:
 
 ```bash
-sbatch postprocess_mcmc_slurm.sh
+make bootstrap_postprocess RUN_LOCALLY=false RESAMPLE_N=101   # SLURM (default)
+make bootstrap_postprocess RUN_LOCALLY=true  RESAMPLE_N=101   # local, one Rscript call per file
 ```
 
-Note that you can postprocess a single file with
+The SLURM path (`sbatch --array=0-$((RESAMPLE_N-1)) postprocess_mcmc_slurm.sh`)
+derives each task's filenames directly from `$SLURM_ARRAY_TASK_ID` (no file
+list to prepare) and is fire-and-forget — wait for it to finish before
+moving to Stage 4.
+
+Note that you can postprocess a single file directly with
 ```bash
 ./postprocess_mcmc.R --base_dir=$(pwd) --mcmc_file=bootstrap_data/mrp_original_seed134432_samples5000.Rdata
 ```
@@ -137,18 +127,18 @@ Produces: `bootstrap_data/mrp_*_mrp_postprocessed.Rdata` for each MCMC output fi
 **Step 9: `compile_postprocessing.R`**
 
 Concatenates all postprocessed results into a single combined dataframe.
+This is invoked automatically by `make` with an explicit, comma-separated
+`--file_pattern` and a fixed `--output_filename`; to run by hand:
 
 ```bash
 ./compile_postprocessing.R --base_dir=$(pwd) \
-  --file_pattern=bootstrap_data/mrp_*_samples5000_mrp_postprocessed.Rdata \
-  --description=mrp
+  --file_pattern=bootstrap_data/a_mrp_postprocessed.Rdata,bootstrap_data/b_mrp_postprocessed.Rdata \
+  --description=mrp \
+  --output_filename=bootstrap_data/mrp_combined_mrp.Rdata
 ```
 
-Produces: `bootstrap_data/mrp_combined_mrp_<timestamp>.Rdata`
-
-> **Note:** The output filename includes a timestamp. The path is hard-coded in
-> `postprocess_for_paper.R` as `bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata`.
-> If you regenerate this file, update that path in `postprocess_for_paper.R`.
+Produces: `bootstrap_data/mrp_combined_mrp.Rdata` (or, if `--output_filename`
+is omitted, an auto-timestamped `bootstrap_data/mrp_combined_mrp_<timestamp>.Rdata`).
 
 ---
 
@@ -162,18 +152,35 @@ original/subsampled/bootstrapped datasets; exports summary statistics and confid
 intervals for the LaTeX paper.
 
 ```bash
-Rscript postprocess_for_paper.R
+Rscript postprocess_for_paper.R --combined_file=bootstrap_data/mrp_combined_mrp.Rdata --seed=134432
 ```
 
+(Options default to today's exact values, so plain `Rscript postprocess_for_paper.R` with no flags still works.)
+
 Reads:
-- `bootstrap_data/mrp_combined_mrp_20240724_1418.Rdata`
+- `bootstrap_data/mrp_combined_mrp.Rdata` (`--combined_file`)
 - `datasets/cces18_subset.Rdata`
-- `bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata`
-- `bootstrap_data/mrp_original_seed134432_samples5000.Rdata`
-- `bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata`
+- `bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata` (seed from `--seed`)
+- `bootstrap_data/mrp_original_seed134432_samples5000.Rdata` (seed from `--seed`)
+- `bootstrap_data/mrp_originallmer_seed134432_samples5000.Rdata` (seed from `--seed`)
 - `bootstrap_data/custom_map_analysis.Rdata`
 
-Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata`
+Produces: `paper/experiment_data/mrp/mrp_postprocessed.Rdata` (`--output_filename`)
+
+---
+
+## Local sanity check (no SLURM)
+
+```bash
+make sanity_check                  # RESAMPLE_N=5, RUN_LOCALLY=true
+make sanity_check RESAMPLE_N=10    # override the replicate count
+```
+
+Runs Stages 2-4 entirely locally with a small `RESAMPLE_N`, through to
+`bootstrap_data/mrp_combined_mrp.Rdata` and
+`paper/experiment_data/mrp/mrp_postprocessed.Rdata`. This **overwrites**
+whatever real production output currently exists at those paths — intended
+for a clean checkout, not for preserving cached production results.
 
 
 

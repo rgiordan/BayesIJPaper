@@ -41,7 +41,7 @@ parser.add_argument('--force', dest='force', action='store_true')
 parser.add_argument('--no-force', dest='force', action='store_false')
 parser.add_argument('--no_save_rstan_fit', dest='no_save_rstan_fit', action='store_true')
 parser.add_argument('--sim_ground_truth', type=str)
-parser.add_argument('--num_sims', type=int, default=200)
+parser.add_argument('--num_boots', type=int, default=200)
 parser.add_argument('--analysis', type=str,
                     help='Analysis to perform in ' + str(_VALID_ANALYSES))
 parser.set_defaults(submit=True)
@@ -136,6 +136,8 @@ for model_ind in range(len(model_list)):
         command_string += ' --save_draws '
         if args.no_save_rstan_fit:
             command_string += ' --no_save_rstan_fit '
+    elif analysis == _BOOT:
+        command_string += ' --default_num_boots={} '.format(args.num_boots)
 
 
     # Write the command to the script and call it if requested.

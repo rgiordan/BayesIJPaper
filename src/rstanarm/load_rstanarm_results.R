@@ -6,13 +6,31 @@ library(rstanarm)
 library(gridExtra)
 
 library(broom)
+library(optparse)
 
 library(bayesijlib)
 library(rstanarmijlib)
 
+option_list <- list(
+  make_option(c("--output_dir"),
+              default="",
+              help="Directory holding the per-model .Rdata files (default: src/rstanarm/cluster/output)."),
+  make_option(c("--file_suffix"),
+              default="0924_cluster",
+              help="Description tag embedded in per-model output filenames."),
+  make_option(c("--output_filename"),
+              default="compiled_results_1116.Rdata",
+              help="Filename to write the compiled results to, under output_dir."))
+
+opt <- parse_args(OptionParser(option_list=option_list))
+print("===================")
+print("Options:")
+print(opt)
+print("===================")
+
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(repo_dir, "src/rstanarm")
-output_dir <- file.path(base_dir, "cluster/output")
+output_dir <- if (nchar(opt$output_dir) > 0) opt$output_dir else file.path(base_dir, "cluster/output")
 
 model_list_filename <- "rstanarm_ij_model_list.json"
 model_list_file <- file(file.path(base_dir, "configs/", model_list_filename), "rb")
@@ -45,7 +63,7 @@ model_df <- do.call(rbind, lapply(1:length(model_list), GetModelDf))
 # Compare IJ, Bayes, and bootstrap.
 
 # Load the files with this suffix.
-file_suffix <- "0924_cluster"
+file_suffix <- opt$file_suffix
 boot_file_suffix <- NULL
 
 
@@ -278,9 +296,8 @@ if (FALSE) {
 ###########################################
 # Save a file for fast subsequent analysis
 
-file_date <- "1116"
-output_filename <- sprintf("compiled_results_%s.Rdata", file_date)
+output_filename <- opt$output_filename
 print(sprintf("Saving to %s", file.path(output_dir, output_filename)))
-save(file_suffix, combined_df, combined_df_nore, timing_df, 
+save(file_suffix, combined_df, combined_df_nore, timing_df,
      file=file.path(output_dir, output_filename))
 

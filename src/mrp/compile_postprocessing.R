@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # ./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/mrp_bootstrap_seed53487645_samples5000.Rdata --description=test
-# ./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/mrp_*_samples5000_mrp_postprocessed.Rdata --description=mrp
+# ./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/a_mrp_postprocessed.Rdata,bootstrap_data/b_mrp_postprocessed.Rdata --description=mrp
 #
 # This takes the files in the file pattern, loads them, and concatenates
 # the `result_df` dataframe from each into a single dataframe, and
@@ -16,18 +16,21 @@ option_list <- list(
               help="The base directory"),
   make_option(c("--file_pattern"),
               default="",
-              help="If set, compile subsample results instead of the bootstraps."),
+              help="Comma-separated list of exact files to compile."),
   make_option(c("--description"),
               default="postprocess",
-              help="If set, compile subsample results instead of the bootstraps."))
-  
+              help="A short description used to build the default output filename."),
+  make_option(c("--output_filename"),
+              default="",
+              help="If set, write here (relative to base_dir) instead of the default auto-timestamped name."))
+
 opt <- parse_args(OptionParser(option_list=option_list))
 print("===================")
 print("Options:")
 print(opt)
 print("===================")
 
-  
+
 load_into_env <- function(filename) {
   load_env <- environment()
   load(filename, envir=load_env)
@@ -36,13 +39,16 @@ load_into_env <- function(filename) {
 
 
 
-date_stamp <- format(Sys.time(), "%Y%m%d_%H%M")
-save_filename <- sprintf("mrp_combined_%s_%s.Rdata", opt$description, date_stamp)
-
-output_file <- file.path(opt$base_dir, "bootstrap_data", save_filename)
+if (nchar(opt$output_filename) > 0) {
+  output_file <- file.path(opt$base_dir, opt$output_filename)
+} else {
+  date_stamp <- format(Sys.time(), "%Y%m%d_%H%M")
+  save_filename <- sprintf("mrp_combined_%s_%s.Rdata", opt$description, date_stamp)
+  output_file <- file.path(opt$base_dir, "bootstrap_data", save_filename)
+}
 print(sprintf("Writing to %s", output_file))
 
-postprocessed_files <- Sys.glob(opt$file_pattern)
+postprocessed_files <- strsplit(opt$file_pattern, ",")[[1]]
 if (length(postprocessed_files) == 0) {
   stop(sprintf("No files matched the pattern %s", opt$file_pattern))
 }

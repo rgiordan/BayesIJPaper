@@ -31,6 +31,26 @@ case, the final script to run, which produces output that can be processed
 to produce the final paper, is called `postprocess_for_paper.R`.  The analysis
 pipeline runs backwards from that point.
 
+Each experiment's `Makefile` (and the top-level `Makefile`) exposes two flags:
+`RESAMPLE_N` (number of bootstrap/subsample/simulation replicates; defaults to
+the full production count) and `RUN_LOCALLY` (`true`/`false`, selects local
+`Rscript` execution vs. submitting to SLURM via `sbatch`). See each
+experiment's README for the exact targets.
+
+### Local sanity check (no SLURM)
+
+```bash
+make sanity_check                  # RESAMPLE_N=5, RUN_LOCALLY=true, all three experiments
+make sanity_check RESAMPLE_N=10    # override the replicate count
+```
+
+Runs all three experiments' pipelines end-to-end, entirely locally, with a
+small `RESAMPLE_N`. This is meant to be run in a clean checkout — it
+**overwrites** whatever real production output currently exists at the
+default paths (`paper/experiment_data/{mrp,arm,simulations}/...`), so it's
+a smoke test for "does the pipeline still run after a code change," not a
+way to produce a second, separate result set alongside the real one.
+
 
 ## Generate the figures
 
