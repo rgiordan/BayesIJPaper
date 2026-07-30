@@ -53,14 +53,12 @@ FILE_LIST := $(shell echo $(addprefix $(SRC_DIR)/,$(POSTPROCESSED)) $(SRC_DIR)/$
 all: $(PAPER_OUTPUT)
 
 # -----------------------------------------------------------------------
-# Sanity check: full pipeline, locally, with a small RESAMPLE_N (default 5
-# unless the caller already passed RESAMPLE_N on the command line). Writes
+# Sanity check: full pipeline, locally, with a small RESAMPLE_N . Writes
 # to the same default locations as a production run -- run in a clean
 # checkout, or accept that it overwrites real output.
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true \
-	    $(if $(filter command line,$(origin RESAMPLE_N)),,RESAMPLE_N=5) all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 all
 
 # -----------------------------------------------------------------------
 # Stage 4: Final paper output
@@ -68,7 +66,7 @@ sanity_check:
 $(PAPER_OUTPUT): $(SRC_DIR)/$(COMBINED) $(SRC_DIR)/$(ORIGINAL_PP) \
                  $(SRC_DIR)/$(ORIGINAL_LMER) $(SRC_DIR)/$(CUSTOM_MAP) \
                  $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && Rscript $(SRC_DIR)/postprocess_for_paper.R \
+	cd $(SRC_DIR) && Rscript ./postprocess_for_paper.R \
 	    --combined_file=$(COMBINED) \
 	    --seed=$(SEED)
 
@@ -106,20 +104,26 @@ else
 # returns. Wait for it to finish, then re-run `make` to continue -- Make
 # only checks whether $(POSTPROCESSED) files exist, not how they were
 # produced, so the next stage picks them up regardless of RUN_LOCALLY.
-bootstrap_postprocess: $(SRC_DIR)/$(DATASET)
+# Depends on the raw MCMC_FILES already existing (from a completed
+# bootstrap_mcmc run): the local generation pattern rules below are only
+# defined under RUN_LOCALLY=true, so if they're missing this fails fast,
+# locally, with "no rule to make target" instead of submitting a SLURM
+# array that's doomed to fail once each task tries to load a nonexistent
+# input file.
+bootstrap_postprocess: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
 	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/postprocess_mcmc_slurm.sh
 endif
 
 # -----------------------------------------------------------------------
 # Stage 2: Bootstrap/subsample replicates
 # -----------------------------------------------------------------------
+ifeq ($(RUN_LOCALLY),true)
 $(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR)
 
 $(SRC_DIR)/bootstrap_data/mrp_subsample_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --subsample
 
-ifeq ($(RUN_LOCALLY),true)
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
 else
 # Fire-and-forget, as today: submits the array job and returns. Wait for
@@ -155,7 +159,7 @@ $(SRC_DIR)/$(ORIGINAL_MAP): $(SRC_DIR)/$(DATASET)
 	    --seed=$(SEED)
 
 $(SRC_DIR)/$(CUSTOM_MAP): $(SRC_DIR)/$(ORIGINAL)
-	cd $(SRC_DIR) && Rscript $(SRC_DIR)/analyze_map.R
+	cd $(SRC_DIR) && Rscript ./analyze_map.R
 
 # -----------------------------------------------------------------------
 # Stage 0: Data preparation
@@ -163,11 +167,11 @@ $(SRC_DIR)/$(CUSTOM_MAP): $(SRC_DIR)/$(ORIGINAL)
 data: $(SRC_DIR)/$(DATASET)
 
 $(SRC_DIR)/$(DATASET): $(SRC_DIR)/$(CLEANED_DATA)
-	cd $(SRC_DIR) && Rscript $(SRC_DIR)/generate_dataset.R
+	cd $(SRC_DIR) && Rscript ./generate_dataset.R
 
 # Requires the raw CSV files to be downloaded manually into datasets/.
 # See the README Stage 0 for download instructions.
 $(SRC_DIR)/$(CLEANED_DATA): $(SRC_DIR)/datasets/cces18_common_vv.csv \
-                              $(SRC_DIR)/datasets/statelevel_predictors.csv \
-                              $(SRC_DIR)/datasets/poststrat_df.csv
-	cd $(SRC_DIR) && Rscript $(SRC_DIR)/clean_cces.R
+                            $(SRC_DIR)/datasets/statelevel_predictors.csv \
+                            $(SRC_DIR)/datasets/poststrat_df.csv
+	cd $(SRC_DIR) && Rscript ./clean_cces.R

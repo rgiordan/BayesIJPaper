@@ -123,14 +123,35 @@ production and reduced-`RESAMPLE_N` paths through one mechanism:
 
 - `RESAMPLE_N ?= 101`, `RUN_LOCALLY ?= false`.
 - New pattern rules calling the **existing, unmodified** `run_mcmc.R`
-  directly (no `sbatch`), mirroring `run_mcmc_slurm.sh`'s two lines:
+  directly (no `sbatch`), mirroring `run_mcmc_slurm.sh`'s two lines. These
+  must use the full `$(SRC_DIR)/...` target path, not a bare relative one
+  — everywhere else these files are referenced as prerequisites (e.g. via
+  `$(addprefix $(SRC_DIR)/,$(MCMC_FILES))`), Make needs the *exact same*
+  string to match a pattern rule against, and it doesn't normalize
+  relative vs. absolute paths itself. They're also gated behind
+  `RUN_LOCALLY=true`, for the same reason `bootstrap_postprocess` (Stage 3,
+  below) needs its own pattern rule gated: `bootstrap_postprocess`'s SLURM
+  branch depends on these raw files existing, and if that dependency were
+  left unguarded while these rules stayed unconditionally available, Make
+  would "helpfully" satisfy a missing raw file by building it **locally**
+  even under `RUN_LOCALLY=false` — exactly the behavior the whole toggle
+  exists to prevent:
   ```make
-  bootstrap_data/mrp_bootstrap_seed%_samples5000.Rdata:
+  ifeq ($(RUN_LOCALLY),true)
+  $(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
   	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR)
 
-  bootstrap_data/mrp_subsample_seed%_samples5000.Rdata:
+  $(SRC_DIR)/bootstrap_data/mrp_subsample_seed%_samples5000.Rdata: $(SRC_DIR)/$(DATASET)
   	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --subsample
+
+  bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
+  else
+  bootstrap_mcmc: $(SRC_DIR)/$(DATASET)
+  	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc_slurm.sh
+  endif
   ```
+  (`bootstrap_mcmc`'s own two branches are otherwise unchanged from the
+  original proposal — see below.)
 - **Seeds must start at 0, not 1**, to exactly match what
   `run_mcmc_slurm.sh`'s `#SBATCH -a 0-100` produces today:
   `LOCAL_SEEDS := $(shell seq 0 $$(($(RESAMPLE_N)-1)))`. At the default
@@ -156,22 +177,13 @@ production and reduced-`RESAMPLE_N` paths through one mechanism:
   be deleted from the repo. (`postprocess_mcmc_slurm.sh` is **not**
   legacy — see the new Stage 3 bullet below; it's actively modified and
   used.)
-- `bootstrap_mcmc` gains a `RUN_LOCALLY` toggle. The SLURM branch
+- `bootstrap_mcmc`'s SLURM branch (shown in the code block above)
   parameterizes the array bound (sbatch's `--array` CLI flag overrides
   the script's `#SBATCH -a 0-100` pragma, so `run_mcmc_slurm.sh` itself
-  needs no edits) instead of always requesting 101:
-  ```make
-  ifeq ($(RUN_LOCALLY),true)
-  bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
-  else
-  bootstrap_mcmc: $(SRC_DIR)/$(DATASET)
-  	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc_slurm.sh
-  endif
-  ```
-  As today, the SLURM branch is fire-and-forget (submits and returns; the
-  user still waits for the array job and re-invokes the next stage
-  manually) — `RUN_LOCALLY=false` doesn't change that async behavior,
-  just parameterizes the count.
+  needs no edits) instead of always requesting 101, and is fire-and-forget
+  (submits and returns; the user still waits for the array job and
+  re-invokes the next stage manually) — `RUN_LOCALLY=false` doesn't change
+  that async behavior, just parameterizes the count.
 - **Stage 3 (per-file postprocessing) also gets a `RUN_LOCALLY` toggle —
   new requirement, since this stage is fairly time-intensive and
   shouldn't be forced local.** Today the existing generic pattern rule
@@ -187,26 +199,28 @@ production and reduced-`RESAMPLE_N` paths through one mechanism:
 
   bootstrap_postprocess: $(addprefix $(SRC_DIR)/,$(POSTPROCESSED))
   else
-  bootstrap_postprocess: $(SRC_DIR)/$(DATASET)
+  bootstrap_postprocess: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
   	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/postprocess_mcmc_slurm.sh
   endif
   ```
-  The `else` branch deliberately has **no prerequisite on the raw MCMC
-  files themselves** — like `bootstrap_mcmc`'s SLURM branch, this is
-  fire-and-forget, and Make can't know whether the (also asynchronous)
-  `bootstrap_mcmc` SLURM array has finished producing them. This matches
-  today's already-manual, multi-stage SLURM workflow (README already
-  tells the user to wait between stages) rather than inventing new
-  blocking behavior. `$(SRC_DIR)/$(COMBINED)`'s prerequisites stay the
+  The `else` branch **does** depend on the raw `$(MCMC_FILES)` (the actual
+  files `postprocess_mcmc_slurm.sh` reads) — but for that dependency to be
+  safe rather than harmful, the Stage 2 raw-generation pattern rules must
+  also be gated behind `RUN_LOCALLY=true` (see below), so that under
+  `RUN_LOCALLY=false` there's no rule available that could silently
+  satisfy this prerequisite via **local** computation. With that gating in
+  place: if the raw files aren't present yet (the `bootstrap_mcmc` SLURM
+  array hasn't finished), this fails immediately and locally with "no
+  rule to make target" — rather than happily submitting a SLURM array
+  that's doomed to fail once each task tries to load a nonexistent input
+  file. This mirrors, and is a bit stricter than, today's already-manual,
+  multi-stage SLURM workflow (README already tells the user to wait
+  between stages). `$(SRC_DIR)/$(COMBINED)`'s prerequisites stay the
   actual `$(POSTPROCESSED)` files unconditionally (`Makefile:48-49`) —
   Make only cares whether they exist by the time it's invoked, not how
   they were created, so once both SLURM arrays finish and the user
   re-runs `make`, the combine step proceeds normally regardless of
-  `RUN_LOCALLY`. If invoked too early (before the SLURM postprocessing
-  array has actually produced the files), Make fails with a clear "no
-  rule to make target" error rather than silently falling back to local
-  computation — that's intentional, since the generic pattern rule above
-  is only defined under `RUN_LOCALLY=true`.
+  `RUN_LOCALLY`.
 
 **`src/mrp/postprocess_mcmc_slurm.sh`** — rewrite per the user's request
 to use "a manually specified slurm array rather than a text file of mcmc
