@@ -4,8 +4,6 @@ PAPER_SIMULATIONS := $(REPO_ROOT)/paper/experiment_data/simulations/simpler_sim_
 PAPER_ARM         := $(REPO_ROOT)/paper/experiment_data/arm/arm_results_postprocessed.Rdata
 PAPER_MRP         := $(REPO_ROOT)/paper/experiment_data/mrp/mrp_postprocessed.Rdata
 
-RESAMPLE_N ?= 5
-
 .PHONY: all simulations arm mrp sanity_check
 
 all: $(PAPER_SIMULATIONS) $(PAPER_ARM) $(PAPER_MRP)
@@ -24,9 +22,9 @@ $(PAPER_MRP):
 	$(MAKE) -C $(REPO_ROOT)/src/mrp
 
 # Local sanity check (no SLURM): runs all three experiments end-to-end with
-# a small RESAMPLE_N. Each sub-Makefile's own sanity_check target forces
+# a small RESAMPLE_N and no cluster. Each sub-Makefile's own sanity_check target forces
 # RUN_LOCALLY=true internally.
 sanity_check:
-	$(MAKE) -C $(REPO_ROOT)/src/mrp sanity_check RESAMPLE_N=$(RESAMPLE_N)
-	$(MAKE) -C $(REPO_ROOT)/src/rstanarm sanity_check RESAMPLE_N=$(RESAMPLE_N)
-	$(MAKE) -C $(REPO_ROOT)/src/singular_simulations sanity_check RESAMPLE_N=$(RESAMPLE_N)
+	$(MAKE) -C $(REPO_ROOT)/src/mrp sanity_check
+	$(MAKE) -C $(REPO_ROOT)/src/rstanarm sanity_check
+	$(MAKE) -C $(REPO_ROOT)/src/singular_simulations sanity_check
