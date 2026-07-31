@@ -43,6 +43,7 @@ parser.add_argument('--no_save_rstan_fit', dest='no_save_rstan_fit', action='sto
 parser.add_argument('--sim_ground_truth', type=str)
 parser.add_argument('--num_boots', type=int, default=200)
 parser.add_argument('--num_samples', type=int, default=2000)
+parser.add_argument('--num_mcmc_chains', type=int, default=4)
 parser.add_argument('--analysis', type=str,
                     help='Analysis to perform in ' + str(_VALID_ANALYSES))
 parser.set_defaults(submit=True)
@@ -84,7 +85,7 @@ config = {
     'base_dir': args.base_dir,
     'script': script,
     'num_cores': 4,
-    'num_mcmc_chains': 4,
+    'num_mcmc_chains': args.num_mcmc_chains,
     'model_list_filename': args.model_list_filename }
 
 slurm_script_dir = os.path.join(

@@ -13,33 +13,28 @@ PAPER_DIR   := $(REPO_ROOT)/paper/experiment_data/arm
 DESC        := 0924_cluster
 
 # NUM_MODELS controls how many models (from the start of the JSON config)
-# to fit/compile. Defaults to the full production count (65); a sanity
-# check can override it to a small number to skip most of the model fits.
+# to fit/compile. Defaults to all models in configs/rstanarm_ij_configs.csv.
 # Out-of-range values are caught in R (run_base_mcmc_rstanarm.R,
 # run_bootstrapped_mcmc_rstanarm.R, load_rstanarm_results.R), not here.
-NUM_MODELS  ?= 65
+NUM_MODELS  ?= 64
 MODEL_INDICES := $(shell seq 1 $(NUM_MODELS))
 
 # RESAMPLE_N controls the number of bootstrap replicates per model
-# (--default_num_boots). It does NOT affect NUM_MODELS -- a sanity check
-# still fits all 65 models, just with fewer bootstraps each.
+# (--default_num_boots).
 RESAMPLE_N  ?= 200
 
 # RUN_LOCALLY selects local (Rscript, via the .stamp_* targets) vs SLURM
 # (cluster/submit_slurm_scripts_rstanarm.py) execution for the MCMC
-# stages. Defaults to true, matching today's local-only Makefile behavior.
+# stages.
 RUN_LOCALLY ?= true
 
 # NUM_MCMC_SAMPLES controls --default_num_samples on both the base and
-# bootstrap fits. Doesn't affect any filename.
+# bootstrap fits.
 NUM_MCMC_SAMPLES ?= 2000
 
 # NUM_MCMC_CHAINS controls --num_mcmc_chains on both the base and
 # bootstrap fits (matches run_base_mcmc_rstanarm.R/
-# run_bootstrapped_mcmc_rstanarm.R's own default of 4). Only the local
-# (RUN_LOCALLY=true) path respects it -- submit_slurm_scripts_rstanarm.py
-# (SLURM) hardcodes num_mcmc_chains=4 and is left unedited, matching the
-# existing NUM_MCMC_SAMPLES-style gap for that script.
+# run_bootstrapped_mcmc_rstanarm.R's own default of 4).
 NUM_MCMC_CHAINS ?= 4
 
 COMPILED     := $(OUTPUT_DIR)/compiled_results_1116.Rdata
@@ -84,8 +79,8 @@ $(CONFIG_DIR)/rstanarm_ij_model_list.json:
 
 # -----------------------------------------------------------------------
 # Sanity check: full pipeline, locally, with a small RESAMPLE_N (default 5
-# unless the caller already passed RESAMPLE_N on the command line). All 65
-# models are still fit -- only the per-model bootstrap count shrinks.
+# unless the caller already passed RESAMPLE_N on the command line),
+# fewer chains, fewer MCMC samples, and fewer models.
 # -----------------------------------------------------------------------
 sanity_check:
 	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=800 NUM_MCMC_CHAINS=2 NUM_MODELS=10 all
@@ -155,6 +150,7 @@ base_mcmc:
 	    --analysis=base \
 	    --description=$(DESC) \
 	    --num_samples=$(NUM_MCMC_SAMPLES) \
+	    --num_mcmc_chains=$(NUM_MCMC_CHAINS) \
 	    --force
 
 boot_mcmc:
@@ -164,5 +160,6 @@ boot_mcmc:
 	    --description=$(DESC) \
 	    --num_boots=$(RESAMPLE_N) \
 	    --num_samples=$(NUM_MCMC_SAMPLES) \
+	    --num_mcmc_chains=$(NUM_MCMC_CHAINS) \
 	    --force
 endif

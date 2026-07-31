@@ -16,8 +16,7 @@ OBS_PER_RE  := 100
 RESAMPLE_N  ?= 100
 
 # RUN_LOCALLY selects local (Rscript) vs SLURM (sbatch run_sims_mcmc.sh)
-# execution for the sim-replicate generation stage. Defaults to true,
-# matching today's local-only Makefile behavior. Only the sim replicates
+# execution for the sim-replicate generation stage. Only the sim replicates
 # are affected -- run_sims_mcmc.sh has no --base equivalent, so BASE_RESULT
 # always runs locally.
 RUN_LOCALLY ?= true
@@ -27,7 +26,7 @@ RUN_LOCALLY ?= true
 PREFIX      ?=
 
 # NUM_MCMC_SAMPLES controls run_mcmc.R's --num_draws (total MCMC
-# iterations including warmup). Doesn't affect any filename. Only the
+# iterations including warmup). Only the
 # local (RUN_LOCALLY=true) path respects it -- run_sims_mcmc.sh (SLURM)
 # is left unedited and always samples at run_mcmc.R's own default,
 # matching the existing SEED/RE_DIM/OBS_PER_RE/PREFIX gap for that script.

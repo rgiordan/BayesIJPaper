@@ -118,8 +118,7 @@ make sanity_check
 ```
 
 Runs the full pipeline locally with a small `RESAMPLE_N`
-and `NUM_MCMC_SAMPLES` (all 65 models are
-still fit, just with fewer bootstraps and samples each), through to
+and `NUM_MCMC_SAMPLES` and for only ten models, through to
 `paper/experiment_data/arm/arm_results_postprocessed.Rdata`. This
 **overwrites** whatever real production output currently exists at those
 paths — intended for a clean checkout.

@@ -9,20 +9,19 @@ SEED        := 134432
 
 # RESAMPLE_N controls how many bootstrap seeds (and, since each seed also
 # produces a subsample replicate, how many subsample seeds) are generated
-# and postprocessed. Defaults to today's full production count. Seeds run
+# and postprocessed. Seeds run
 # 0..RESAMPLE_N-1, matching run_mcmc_slurm.sh's #SBATCH -a 0-100 (101 seeds).
 RESAMPLE_N  ?= 101
 
 # RUN_LOCALLY selects local (Rscript) vs SLURM (sbatch) execution for the
 # Stage 2 (bootstrap/subsample MCMC) and Stage 3 (per-file postprocessing)
-# stages. Defaults to false, matching today's SLURM-only behavior.
+# stages.
 RUN_LOCALLY ?= false
 
 # NUM_MCMC_SAMPLES controls run_mcmc.R's --num_samples (brm()'s `iter`,
 # which includes warmup -- --num_warmup_samples stays fixed at its own
 # default of 500, not controlled by this flag, so keep NUM_MCMC_SAMPLES
-# comfortably above 500). Unlike RESAMPLE_N, this has no effect on any
-# filename -- run_mcmc.R's output filenames no longer encode sample count.
+# comfortably above 500).
 NUM_MCMC_SAMPLES ?= 5000
 
 # Paths relative to SRC_DIR, matching the conventions in run_mcmc.R and
@@ -35,19 +34,12 @@ ORIGINAL_MAP    := bootstrap_data/mrp_originalmap_seed$(SEED).Rdata
 CUSTOM_MAP      := bootstrap_data/custom_map_analysis.Rdata
 ORIGINAL_PP     := bootstrap_data/mrp_original_seed$(SEED)_mrp_postprocessed.Rdata
 
-# Deterministic (no timestamp) so it can be a stable Make dependency target;
-# compile_postprocessing.R's --output_filename is always passed explicitly
-# below, so its own auto-timestamped default is only exercised when that
-# script is run by hand with no arguments.
 COMBINED        := bootstrap_data/mrp_combined_mrp.Rdata
 
 PAPER_OUTPUT    := $(PAPER_DIR)/mrp_postprocessed.Rdata
 
 # The RESAMPLE_N bootstrap/subsample MCMC files, seeds 0..RESAMPLE_N-1
-# (matching run_mcmc_slurm.sh's #SBATCH -a 0-100 seed indexing). No longer
-# read from a committed mcmc_files.txt -- derived directly from RESAMPLE_N
-# so production (RESAMPLE_N=101) and reduced sanity-check runs share one
-# mechanism.
+# (matching run_mcmc_slurm.sh's #SBATCH -a 0-100 seed indexing).
 LOCAL_SEEDS     := $(shell seq 0 $$(($(RESAMPLE_N)-1)))
 RAW_BOOT        := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_bootstrap_seed$(s).Rdata)
 RAW_SUB         := $(foreach s,$(LOCAL_SEEDS),bootstrap_data/mrp_subsample_seed$(s).Rdata)
@@ -55,7 +47,7 @@ MCMC_FILES      := $(RAW_BOOT) $(RAW_SUB)
 POSTPROCESSED   := $(patsubst %.Rdata,%_mrp_postprocessed.Rdata,$(MCMC_FILES))
 
 # Comma-joined list of postprocessed files for compile_postprocessing.R's
-# --file_pattern, which now takes an explicit list rather than a shell glob.
+# --file_pattern
 FILE_LIST := $(shell echo $(addprefix $(SRC_DIR)/,$(POSTPROCESSED)) $(SRC_DIR)/$(ORIGINAL_PP) | tr ' ' ',')
 
 .PHONY: all data original_mcmc bootstrap_mcmc bootstrap_postprocess sanity_check list_outputs
@@ -116,11 +108,7 @@ $(SRC_DIR)/$(ORIGINAL_PP): $(SRC_DIR)/$(ORIGINAL) $(SRC_DIR)/$(DATASET)
 	    --mcmc_file=$(ORIGINAL)
 
 # Postprocessing the RESAMPLE_N bootstrap/subsample files is fairly
-# time-intensive, so it also respects RUN_LOCALLY: local via explicit,
-# literal per-seed-per-method rules (postprocess_mcmc_slurm.sh, with
-# SLURM_ARRAY_TASK_ID set to the known seed -- no wildcard matching, no
-# parsing of the target name to recover method/seed), or SLURM via the
-# same script (one array job per method, covering all RESAMPLE_N seeds).
+# time-intensive, so it also respects RUN_LOCALLY
 ifeq ($(RUN_LOCALLY),true)
 define MRP_POSTPROCESS_BOOTSTRAP_RULE
 $(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed$(1)_mrp_postprocessed.Rdata: $(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed$(1).Rdata $(SRC_DIR)/$(DATASET)
@@ -173,8 +161,7 @@ else
 # Fire-and-forget, as today: submits the array jobs and returns. Wait for
 # them to finish before running `make bootstrap_postprocess`. Two separate
 # sbatch submissions -- run_mcmc.sh does one thing per invocation (plain or
-# --subsample), each producing a distinct per-seed file, so unlike before
-# this now also honors NUM_MCMC_SAMPLES on the SLURM path.
+# --subsample), each producing a distinct per-seed file
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET)
 	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc.sh $(NUM_MCMC_SAMPLES)
 	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc.sh $(NUM_MCMC_SAMPLES) --subsample
