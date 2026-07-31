@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# ./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/mrp_bootstrap_seed53487645_samples5000.Rdata --description=test
+# ./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/mrp_bootstrap_seed53487645.Rdata --description=test
 # ./compile_postprocessing.R --base_dir=$(pwd) --file_pattern=bootstrap_data/a_mrp_postprocessed.Rdata,bootstrap_data/b_mrp_postprocessed.Rdata --description=mrp
 #
 # This takes the files in the file pattern, loads them, and concatenates

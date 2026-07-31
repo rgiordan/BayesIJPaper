@@ -87,14 +87,14 @@ comb_env <- LoadIntoEnv(file.path(mrp_dir, opt$combined_file))
 data_env <- LoadIntoEnv(file.path(
   mrp_dir, "datasets/cces18_subset.Rdata"))
 base_fit <- LoadIntoEnv(file.path(
-  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d_samples5000_mrp_postprocessed.Rdata", opt$seed)))
+  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d_mrp_postprocessed.Rdata", opt$seed)))
 
 # Note that due to the lack of posterior_epred for rstan draws, this is
 # just the MAP and lmer fits, so we compare to base_mcmc directly.
 base_mcmc <- LoadIntoEnv(file.path(
-  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d_samples5000.Rdata", opt$seed)))
+  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d.Rdata", opt$seed)))
 lmer_fit <- LoadIntoEnv(file.path(
-  mrp_dir, sprintf("bootstrap_data/mrp_originallmer_seed%d_samples5000.Rdata", opt$seed)))
+  mrp_dir, sprintf("bootstrap_data/mrp_originallmer_seed%d.Rdata", opt$seed)))
 
 # Stan's MAP fit is no good, use our own instead
 map_fit <- LoadIntoEnv(file.path(mrp_dir, "bootstrap_data/custom_map_analysis.Rdata"))

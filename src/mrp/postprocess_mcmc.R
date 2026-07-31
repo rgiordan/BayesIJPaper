@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# ./postprocess_mcmc.R --base_dir=$(pwd) --mcmc_file=bootstrap_data/mrp_original_seed134432_samples5000.Rdata
+# ./postprocess_mcmc.R --base_dir=$(pwd) --mcmc_file=bootstrap_data/mrp_original_seed134432.Rdata
 #
 # This script takes the output of a single MCMC run produced by run_mcmc.R
 # and evaluates MrP, the influence function and related quantities.
@@ -31,7 +31,7 @@ print("===================")
 
 if (opt$mcmc_file == "") {
   if (interactive()) {
-    opt$mcmc_file <- "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"
+    opt$mcmc_file <- "bootstrap_data/mrp_original_seed134432.Rdata"
   } else {
     stop("You must specify --mcmc_file")
   }
