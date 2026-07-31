@@ -58,9 +58,26 @@ POSTPROCESSED   := $(patsubst %.Rdata,%_mrp_postprocessed.Rdata,$(MCMC_FILES))
 # --file_pattern, which now takes an explicit list rather than a shell glob.
 FILE_LIST := $(shell echo $(addprefix $(SRC_DIR)/,$(POSTPROCESSED)) $(SRC_DIR)/$(ORIGINAL_PP) | tr ' ' ',')
 
-.PHONY: all data original_mcmc bootstrap_mcmc bootstrap_postprocess sanity_check
+.PHONY: all data original_mcmc bootstrap_mcmc bootstrap_postprocess sanity_check list_outputs
 
 all: $(PAPER_OUTPUT)
+
+# Every file a successful `make all` run produces, so the user can review,
+# cache, or manually delete them.
+ALL_OUTPUT_FILES := $(SRC_DIR)/$(CLEANED_DATA) \
+                     $(SRC_DIR)/$(DATASET) \
+                     $(SRC_DIR)/$(ORIGINAL) \
+                     $(SRC_DIR)/$(ORIGINAL_LMER) \
+                     $(SRC_DIR)/$(ORIGINAL_MAP) \
+                     $(SRC_DIR)/$(CUSTOM_MAP) \
+                     $(SRC_DIR)/$(ORIGINAL_PP) \
+                     $(addprefix $(SRC_DIR)/,$(MCMC_FILES)) \
+                     $(addprefix $(SRC_DIR)/,$(POSTPROCESSED)) \
+                     $(SRC_DIR)/$(COMBINED) \
+                     $(PAPER_OUTPUT)
+
+list_outputs:
+	@printf '%s\n' $(ALL_OUTPUT_FILES)
 
 # -----------------------------------------------------------------------
 # Sanity check: full pipeline, locally, with a small RESAMPLE_N . Writes
