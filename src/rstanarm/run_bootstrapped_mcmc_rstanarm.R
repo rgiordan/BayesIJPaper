@@ -102,6 +102,13 @@ cat("\n\n\n===========================",
     "Model index ", model_list_ind, "\n",
     rstanarm_ij_config$desc, sep="")
 
+# DEBUGGING
+if (FALSE) {
+  df <- LoadRstanarmDataframe(rstanarm_ij_config, stan_examples_dir)
+  boot_fit <- RunRstanArm(rstanarm_ij_config, df, 
+                          chains = 1)
+}
+
 boot_result <- RunRstanarmBootstraps(
     rstanarm_ij_config,
     stan_examples_dir,

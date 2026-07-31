@@ -66,6 +66,9 @@ model_df <- do.call(bind_rows, lapply(1:length(model_list), GetModelDFRow))
 model_df <- filter(model_df, model_name != "test")
 model_df <- filter(model_df, model_name != "test_rstanarm")
 
+# TODO: index these by the name not by the number so that it's invariant to changes
+# in the model list.
+
 # Models 7 and 13, something went wrong, the variances are very large.  Also,
 # electric_1c was too slow to run 200 bootstraps.
 model_df <- model_df %>%
