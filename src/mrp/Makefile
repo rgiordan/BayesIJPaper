@@ -184,7 +184,7 @@ endif
 # Stage 1: Original MCMC fits
 # -----------------------------------------------------------------------
 original_mcmc: $(SRC_DIR)/$(ORIGINAL) $(SRC_DIR)/$(ORIGINAL_LMER) \
-               $(SRC_DIR)/$(ORIGINAL_MAP) $(SRC_DIR)/$(CUSTOM_MAP)
+               $(SRC_DIR)/$(ORIGINAL_MAP)
 
 $(SRC_DIR)/$(ORIGINAL): $(SRC_DIR)/$(DATASET)
 	cd $(SRC_DIR) && ./run_mcmc.R \
@@ -209,7 +209,7 @@ $(SRC_DIR)/$(ORIGINAL_MAP): $(SRC_DIR)/$(DATASET)
 	    --seed=$(SEED) \
 	    --num_samples=$(NUM_MCMC_SAMPLES)
 
-$(SRC_DIR)/$(CUSTOM_MAP): $(SRC_DIR)/$(ORIGINAL)
+$(SRC_DIR)/$(CUSTOM_MAP): $(SRC_DIR)/$(ORIGINAL) $(SRC_DIR)/$(ORIGINAL_MAP)
 	cd $(SRC_DIR) && Rscript ./analyze_map.R --seed=$(SEED)
 
 # -----------------------------------------------------------------------
