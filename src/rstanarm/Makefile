@@ -37,6 +37,14 @@ PAPER_OUTPUT := $(PAPER_DIR)/arm_results_postprocessed.Rdata
 BASE_STAMPS := $(addprefix $(OUTPUT_DIR)/.stamp_base_,$(MODEL_INDICES))
 BOOT_STAMPS := $(addprefix $(OUTPUT_DIR)/.stamp_boot_,$(MODEL_INDICES))
 
+# Shared shell snippet: given $$model_ind (set earlier in the calling
+# recipe), looks up that model's `desc` field from the JSON config and
+# assigns it to $$model_desc. Recursively-expanded, so it re-reads
+# $$model_ind fresh from whichever recipe invokes it.
+define GET_MODEL_DESC
+model_desc=$$(python3 -c "import json; d=json.load(open('$(CONFIG_DIR)/rstanarm_ij_model_list.json')); print(d[$$model_ind-1]['desc'][0])")
+endef
+
 .PHONY: all configs base_mcmc boot_mcmc sanity_check list_outputs
 
 all: $(PAPER_OUTPUT)
@@ -67,7 +75,7 @@ $(CONFIG_DIR)/rstanarm_ij_model_list.json:
 # models are still fit -- only the per-model bootstrap count shrinks.
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=500 all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=800 all
 
 # Final paper output — reads compiled_results. postprocess_for_paper.R's
 # --compiled_file is relative to src/rstanarm (it joins with its own
@@ -96,7 +104,7 @@ ifeq ($(RUN_LOCALLY),true)
 # Run with -j N to parallelise across models.
 $(OUTPUT_DIR)/.stamp_base_%:
 	@model_ind=$*; \
-	model_desc=$$(python3 -c "import json; d=json.load(open('$(CONFIG_DIR)/rstanarm_ij_model_list.json')); print(d[$$model_ind-1]['desc'])"); \
+	$(GET_MODEL_DESC); \
 	Rscript $(SRC_DIR)/run_base_mcmc_rstanarm.R \
 	    --base_dir=$(REPO_ROOT) \
 	    --model_list_ind=$$model_ind \
@@ -109,7 +117,7 @@ $(OUTPUT_DIR)/.stamp_base_%:
 # Bootstrap MCMC for model index %. Depends on the base run being complete.
 $(OUTPUT_DIR)/.stamp_boot_%: $(OUTPUT_DIR)/.stamp_base_%
 	@model_ind=$*; \
-	model_desc=$$(python3 -c "import json; d=json.load(open('$(CONFIG_DIR)/rstanarm_ij_model_list.json')); print(d[$$model_ind-1]['desc'])"); \
+	$(GET_MODEL_DESC); \
 	Rscript $(SRC_DIR)/run_bootstrapped_mcmc_rstanarm.R \
 	    --base_dir=$(REPO_ROOT) \
 	    --model_list_ind=$$model_ind \
