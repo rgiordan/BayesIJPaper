@@ -12,7 +12,12 @@ PAPER_DIR   := $(REPO_ROOT)/paper/experiment_data/arm
 # is the single source of truth (no independently-hardcoded copies).
 DESC        := 0924_cluster
 
-NUM_MODELS  := 65
+# NUM_MODELS controls how many models (from the start of the JSON config)
+# to fit/compile. Defaults to the full production count (65); a sanity
+# check can override it to a small number to skip most of the model fits.
+# Out-of-range values are caught in R (run_base_mcmc_rstanarm.R,
+# run_bootstrapped_mcmc_rstanarm.R, load_rstanarm_results.R), not here.
+NUM_MODELS  ?= 65
 MODEL_INDICES := $(shell seq 1 $(NUM_MODELS))
 
 # RESAMPLE_N controls the number of bootstrap replicates per model
@@ -28,6 +33,14 @@ RUN_LOCALLY ?= true
 # NUM_MCMC_SAMPLES controls --default_num_samples on both the base and
 # bootstrap fits. Doesn't affect any filename.
 NUM_MCMC_SAMPLES ?= 2000
+
+# NUM_MCMC_CHAINS controls --num_mcmc_chains on both the base and
+# bootstrap fits (matches run_base_mcmc_rstanarm.R/
+# run_bootstrapped_mcmc_rstanarm.R's own default of 4). Only the local
+# (RUN_LOCALLY=true) path respects it -- submit_slurm_scripts_rstanarm.py
+# (SLURM) hardcodes num_mcmc_chains=4 and is left unedited, matching the
+# existing NUM_MCMC_SAMPLES-style gap for that script.
+NUM_MCMC_CHAINS ?= 4
 
 COMPILED     := $(OUTPUT_DIR)/compiled_results_1116.Rdata
 PAPER_OUTPUT := $(PAPER_DIR)/arm_results_postprocessed.Rdata
@@ -75,7 +88,7 @@ $(CONFIG_DIR)/rstanarm_ij_model_list.json:
 # models are still fit -- only the per-model bootstrap count shrinks.
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=800 all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=800 NUM_MCMC_CHAINS=2 all
 
 # Final paper output — reads compiled_results. postprocess_for_paper.R's
 # --compiled_file is relative to src/rstanarm (it joins with its own
@@ -110,6 +123,7 @@ $(OUTPUT_DIR)/.stamp_base_%:
 	    --model_list_ind=$$model_ind \
 	    --save_filename=$(OUTPUT_DIR)/$${model_desc}_base_mcmc_$(DESC).Rdata \
 	    --default_num_samples=$(NUM_MCMC_SAMPLES) \
+	    --num_mcmc_chains=$(NUM_MCMC_CHAINS) \
 	    --save_draws \
 	    --force
 	touch $@
@@ -124,6 +138,7 @@ $(OUTPUT_DIR)/.stamp_boot_%: $(OUTPUT_DIR)/.stamp_base_%
 	    --save_filename=$(OUTPUT_DIR)/$${model_desc}_boot_mcmc_$(DESC).Rdata \
 	    --default_num_boots=$(RESAMPLE_N) \
 	    --default_num_samples=$(NUM_MCMC_SAMPLES) \
+	    --num_mcmc_chains=$(NUM_MCMC_CHAINS) \
 	    --force
 	touch $@
 

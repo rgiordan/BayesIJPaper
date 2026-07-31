@@ -20,7 +20,11 @@ option_list <- list(
               help="Description tag embedded in per-model output filenames."),
   make_option(c("--output_filename"),
               default="compiled_results_1116.Rdata",
-              help="Filename to write the compiled results to, under output_dir."))
+              help="Filename to write the compiled results to, under output_dir."),
+  make_option(c("--num_models"),
+              default=-1,
+              type="integer",
+              help="Number of models (from the start of the JSON config) to compile. Defaults to all models in the config."))
 
 opt <- parse_args(OptionParser(option_list=option_list))
 print("===================")
@@ -37,6 +41,12 @@ model_list_file <- file(file.path(base_dir, "configs/", model_list_filename), "r
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
+num_models <- if (opt$num_models > 0) opt$num_models else length(model_list)
+stopifnot(
+  "--num_models must be greater than zero" = num_models > 0,
+  "--num_models must not exceed the number of models in the config" =
+    num_models <= length(model_list))
+
 GetModelDf <- function(i) {
     model_config <- model_list[[i]]
     return(with(model_config,
@@ -52,7 +62,7 @@ GetModelDf <- function(i) {
     )))
 }
 
-model_df <- do.call(rbind, lapply(1:length(model_list), GetModelDf))
+model_df <- do.call(rbind, lapply(1:num_models, GetModelDf))
 
 
 
@@ -68,7 +78,7 @@ boot_file_suffix <- NULL
 
 
 tidy_results <- tibble()
-for (i in 1:length(model_list)) { 
+for (i in 1:num_models) {
     model_config <- model_list[[i]]
     cat("===================\n", "Loading", model_config$desc, "\n")
     
@@ -231,7 +241,7 @@ combined_df_nore <-
 
 
 timing_df <- data.frame()
-for (i in 1:length(model_list)) { 
+for (i in 1:num_models) {
     model_config <- model_list[[i]]
     file_desc <- model_config$desc
     cat("===================\n", "Loading", model_config$desc, "\n")
