@@ -1,3 +1,6 @@
+# You can check what make will do with
+# make -n --debug=v
+
 REPO_ROOT   := $(shell git rev-parse --show-toplevel)
 SRC_DIR     := $(REPO_ROOT)/src/rstanarm
 CONFIG_DIR  := $(SRC_DIR)/configs

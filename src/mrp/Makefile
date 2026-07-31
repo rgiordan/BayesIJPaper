@@ -1,3 +1,6 @@
+# You can check what make will do with
+# make -n --debug=v
+
 REPO_ROOT   := $(shell git rev-parse --show-toplevel)
 SRC_DIR     := $(REPO_ROOT)/src/mrp
 PAPER_DIR   := $(REPO_ROOT)/paper/experiment_data/mrp
@@ -65,7 +68,7 @@ all: $(PAPER_OUTPUT)
 # checkout, or accept that it overwrites real output.
 # -----------------------------------------------------------------------
 sanity_check:
-	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=500 all
+	$(MAKE) RUN_LOCALLY=true RESAMPLE_N=5 NUM_MCMC_SAMPLES=1000 all
 
 # -----------------------------------------------------------------------
 # Stage 4: Final paper output
@@ -137,11 +140,16 @@ endif
 # Stage 2: Bootstrap/subsample replicates
 # -----------------------------------------------------------------------
 ifeq ($(RUN_LOCALLY),true)
-$(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%.Rdata: $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$* ./run_mcmc.sh $(NUM_MCMC_SAMPLES)
-
-$(SRC_DIR)/bootstrap_data/mrp_subsample_seed%.Rdata: $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$* ./run_mcmc.sh $(NUM_MCMC_SAMPLES) --subsample
+define MRP_BOOTSTRAP_RULE
+$(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed$(1).Rdata: $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$(1) ./run_mcmc.sh $(NUM_MCMC_SAMPLES)
+endef
+define MRP_SUBSAMPLE_RULE
+$(SRC_DIR)/bootstrap_data/mrp_subsample_seed$(1).Rdata: $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$(1) ./run_mcmc.sh $(NUM_MCMC_SAMPLES) --subsample
+endef
+$(foreach s,$(LOCAL_SEEDS),$(eval $(call MRP_BOOTSTRAP_RULE,$(s))))
+$(foreach s,$(LOCAL_SEEDS),$(eval $(call MRP_SUBSAMPLE_RULE,$(s))))
 
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
 else

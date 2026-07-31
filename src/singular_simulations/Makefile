@@ -1,3 +1,6 @@
+# You can check what make will do with
+# make -n --debug=v
+
 REPO_ROOT   := $(shell git rev-parse --show-toplevel)
 SRC_DIR     := $(REPO_ROOT)/src/singular_simulations
 OUTPUT_DIR  := $(SRC_DIR)/output
@@ -73,16 +76,19 @@ $(SIM_COMBINED): $(SIM_FILES)
 # then re-run `make` to continue; run_sims_mcmc.sh is left unedited, since
 # `sbatch --array=` overrides its #SBATCH -a 1-100 pragma).
 ifeq ($(RUN_LOCALLY),true)
-$(OUTPUT_DIR)/super_simple_simulation_sim%_results_$(DESC).Rdata:
+define SIM_RULE
+$(OUTPUT_DIR)/super_simple_simulation_sim$(1)_results_$(DESC).Rdata:
 	Rscript $(SRC_DIR)/run_mcmc.R \
 	    --sim \
-	    --sim_num=$* \
+	    --sim_num=$(1) \
 	    --seed=$(SEED) \
 	    --re_dim=$(RE_DIM) \
 	    --obs_per_re=$(OBS_PER_RE) \
 	    --prefix=$(PREFIX) \
 	    --num_draws=$(NUM_MCMC_SAMPLES) \
 	    --base_dir=$(REPO_ROOT)
+endef
+$(foreach n,$(SIM_NUMS),$(eval $(call SIM_RULE,$(n))))
 
 sim_files: $(SIM_FILES)
 else
