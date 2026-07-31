@@ -8,7 +8,16 @@ library(tidybayes)
 library(rstan)
 library(brms)
 library(mcmcse)
+library(optparse)
 rstan_options(auto_write=TRUE)
+
+option_list <- list(
+  make_option(c("--seed"),
+              help="The random seed used by the original MCMC/MAP fits to load.",
+              default=134432,
+              type="integer")
+)
+opt <- parse_args(OptionParser(option_list=option_list))
 
 
 LoadIntoEnv <- function(filename) {
@@ -41,15 +50,13 @@ mrp_dir <- file.path(repo_dir, "src/mrp")
 
 # Created with compile_postprocessing.R
 data_env <- LoadIntoEnv(file.path(mrp_dir, "datasets/cces18_subset.Rdata"))
-# base_fit <- LoadIntoEnv(file.path(
-#   mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000_mrp_postprocessed.Rdata"))
 
 # Note that due to the lack of posterior_epred for rstan draws, this is
 # just the MAP and lmer fits, so we compare to base_mcmc directly.
 base_mcmc <- LoadIntoEnv(file.path(
-  mrp_dir, "bootstrap_data/mrp_original_seed134432_samples5000.Rdata"))
+  mrp_dir, sprintf("bootstrap_data/mrp_original_seed%d.Rdata", opt$seed)))
 map_fit <- LoadIntoEnv(file.path(
-  mrp_dir, "bootstrap_data/mrp_originalmap_seed134432_samples5000.Rdata"))
+  mrp_dir, sprintf("bootstrap_data/mrp_originalmap_seed%d.Rdata", opt$seed)))
 
 
 

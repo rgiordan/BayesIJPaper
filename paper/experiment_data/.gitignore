@@ -1,2 +1,5 @@
 # Only update the data files manually
 *.Rdata
+siumulations/simpler_sim_results.Rdata
+mrp/mrp_postprocessed.Rdata
+arm/arm_results_postprocessed.Rdata

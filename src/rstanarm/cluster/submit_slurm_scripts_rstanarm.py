@@ -41,7 +41,9 @@ parser.add_argument('--force', dest='force', action='store_true')
 parser.add_argument('--no-force', dest='force', action='store_false')
 parser.add_argument('--no_save_rstan_fit', dest='no_save_rstan_fit', action='store_true')
 parser.add_argument('--sim_ground_truth', type=str)
-parser.add_argument('--num_sims', type=int, default=200)
+parser.add_argument('--num_boots', type=int, default=200)
+parser.add_argument('--num_samples', type=int, default=2000)
+parser.add_argument('--num_mcmc_chains', type=int, default=4)
 parser.add_argument('--analysis', type=str,
                     help='Analysis to perform in ' + str(_VALID_ANALYSES))
 parser.set_defaults(submit=True)
@@ -83,7 +85,7 @@ config = {
     'base_dir': args.base_dir,
     'script': script,
     'num_cores': 4,
-    'num_mcmc_chains': 4,
+    'num_mcmc_chains': args.num_mcmc_chains,
     'model_list_filename': args.model_list_filename }
 
 slurm_script_dir = os.path.join(
@@ -128,6 +130,7 @@ for model_ind in range(len(model_list)):
          ).format(**this_config)
     if args.force:
         command_string += ' --force '
+    command_string += ' --default_num_samples={} '.format(args.num_samples)
 
     # Append analysis-specific arguments.
     # For base MCMC:
@@ -136,6 +139,8 @@ for model_ind in range(len(model_list)):
         command_string += ' --save_draws '
         if args.no_save_rstan_fit:
             command_string += ' --no_save_rstan_fit '
+    elif analysis == _BOOT:
+        command_string += ' --default_num_boots={} '.format(args.num_boots)
 
 
     # Write the command to the script and call it if requested.

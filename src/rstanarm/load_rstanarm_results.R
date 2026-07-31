@@ -6,18 +6,46 @@ library(rstanarm)
 library(gridExtra)
 
 library(broom)
+library(optparse)
 
 library(bayesijlib)
 library(rstanarmijlib)
 
+option_list <- list(
+  make_option(c("--output_dir"),
+              default="",
+              help="Directory holding the per-model .Rdata files (default: src/rstanarm/cluster/output)."),
+  make_option(c("--file_suffix"),
+              default="0924_cluster",
+              help="Description tag embedded in per-model output filenames."),
+  make_option(c("--output_filename"),
+              default="compiled_results_1116.Rdata",
+              help="Filename to write the compiled results to, under output_dir."),
+  make_option(c("--num_models"),
+              default=-1,
+              type="integer",
+              help="Number of models (from the start of the JSON config) to compile. Defaults to all models in the config."))
+
+opt <- parse_args(OptionParser(option_list=option_list))
+print("===================")
+print("Options:")
+print(opt)
+print("===================")
+
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(repo_dir, "src/rstanarm")
-output_dir <- file.path(base_dir, "cluster/output")
+output_dir <- if (nchar(opt$output_dir) > 0) opt$output_dir else file.path(base_dir, "cluster/output")
 
 model_list_filename <- "rstanarm_ij_model_list.json"
 model_list_file <- file(file.path(base_dir, "configs/", model_list_filename), "rb")
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
+
+num_models <- if (opt$num_models > 0) opt$num_models else length(model_list)
+stopifnot(
+  "--num_models must be greater than zero" = num_models > 0,
+  "--num_models must not exceed the number of models in the config" =
+    num_models <= length(model_list))
 
 GetModelDf <- function(i) {
     model_config <- model_list[[i]]
@@ -34,7 +62,7 @@ GetModelDf <- function(i) {
     )))
 }
 
-model_df <- do.call(rbind, lapply(1:length(model_list), GetModelDf))
+model_df <- do.call(rbind, lapply(1:num_models, GetModelDf))
 
 
 
@@ -45,12 +73,12 @@ model_df <- do.call(rbind, lapply(1:length(model_list), GetModelDf))
 # Compare IJ, Bayes, and bootstrap.
 
 # Load the files with this suffix.
-file_suffix <- "0924_cluster"
+file_suffix <- opt$file_suffix
 boot_file_suffix <- NULL
 
 
 tidy_results <- tibble()
-for (i in 1:length(model_list)) { 
+for (i in 1:num_models) {
     model_config <- model_list[[i]]
     cat("===================\n", "Loading", model_config$desc, "\n")
     
@@ -213,7 +241,7 @@ combined_df_nore <-
 
 
 timing_df <- data.frame()
-for (i in 1:length(model_list)) { 
+for (i in 1:num_models) {
     model_config <- model_list[[i]]
     file_desc <- model_config$desc
     cat("===================\n", "Loading", model_config$desc, "\n")
@@ -278,9 +306,8 @@ if (FALSE) {
 ###########################################
 # Save a file for fast subsequent analysis
 
-file_date <- "1116"
-output_filename <- sprintf("compiled_results_%s.Rdata", file_date)
+output_filename <- opt$output_filename
 print(sprintf("Saving to %s", file.path(output_dir, output_filename)))
-save(file_suffix, combined_df, combined_df_nore, timing_df, 
+save(file_suffix, combined_df, combined_df_nore, timing_df,
      file=file.path(output_dir, output_filename))
 

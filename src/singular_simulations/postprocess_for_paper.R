@@ -9,7 +9,25 @@ library(rstanarmijlib)
 library(gridExtra)
 library(broom)
 library(latex2exp)
+library(optparse)
 
+option_list <- list(
+  make_option(c("--seed"), type="integer", default=100,
+              help="Seed used for the base fit and simulation replicates."),
+  make_option(c("--re_dim"), type="integer", default=100,
+              help="Number of random-effect groups."),
+  make_option(c("--obs_per_re"), type="integer", default=100,
+              help="Observations per random-effect group."),
+  make_option(c("--prefix"), default="",
+              help="Prefix prepended to desc, mirroring run_mcmc.R/combine_simulations.R."),
+  make_option(c("--output_filename"), default="simpler_sim_results.Rdata",
+              help="Output filename, written under paper/experiment_data/simulations."))
+
+opt <- parse_args(OptionParser(option_list=option_list))
+print("===================")
+print("Options:")
+print(opt)
+print("===================")
 
 options(mc.cores=4)
 base_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
@@ -17,11 +35,14 @@ results_dir <- file.path(base_dir, "src/singular_simulations/output")
 output_dir <- file.path(base_dir, "paper/experiment_data/simulations")
 
 
-seed_val <- 100
-re_dim <- 100
-obs_per_re <- 100
+seed_val <- opt$seed
+re_dim <- opt$re_dim
+obs_per_re <- opt$obs_per_re
 
 desc <- sprintf("redim%d_obsperre%d_seed%d", re_dim, obs_per_re, seed_val)
+if (nchar(opt$prefix) > 0) {
+  desc <- paste0(opt$prefix, "_", desc)
+}
 
 # These results should be found in
 # src/singular_simulations
@@ -188,7 +209,7 @@ if (FALSE) {
 num_mcmc_draws <- nrow(par_draws)
 num_sims <- nrow(sim_draws)
 
-save_filename <- file.path(output_dir, "simpler_sim_results.Rdata")
+save_filename <- file.path(output_dir, opt$output_filename)
 print(sprintf("Saving to %s", save_filename))
 save(cov_long_df, cov_wide2_df,
      re_dim, obs_per_re, num_exch_obs, seed_val, num_mcmc_draws, num_sims,

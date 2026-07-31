@@ -39,9 +39,9 @@ Produces: `output/super_simple_simulation_base_results_redim100_obsperre100_seed
 
 ---
 
-## Stage 2: Simulation replicates (100 independent datasets)
+## Stage 2: Simulation replicates (`RESAMPLE_N` independent datasets)
 
-**Step 3: `run_mcmc.R --sim --sim_num=N`** (repeat for N = 1..100)
+**Step 3: `run_mcmc.R --sim --sim_num=N`** (repeat for N = 1..`RESAMPLE_N`)
 
 Fits the same model to a freshly simulated dataset and saves a reduced
 summary: the posterior mean of each parameter, the IJ and Bayes covariance
@@ -53,20 +53,27 @@ Run one replicate directly:
 ./run_mcmc.R --sim --sim_num=1 --seed=100 --re_dim=100 --obs_per_re=100
 ```
 
-Run all 100 replicates locally, in parallel, via the Makefile:
+Run all `RESAMPLE_N` replicates (default 100) via the Makefile, controlled
+by `RUN_LOCALLY`:
 
 ```bash
-make -j 8
+make sim_files RUN_LOCALLY=true  RESAMPLE_N=100 -j 8   # local, parallel (default)
+make sim_files RUN_LOCALLY=false RESAMPLE_N=100        # SLURM array job, fire-and-forget
 ```
 
-or submit them as a SLURM array job:
+The SLURM path (`sbatch --array=1-RESAMPLE_N run_sims_mcmc.sh`) doesn't read
+`SEED`/`RE_DIM`/`OBS_PER_RE`/`PREFIX`/`NUM_MCMC_SAMPLES` from the Makefile
+— it relies on `run_mcmc.R`'s own defaults, which match the Makefile's
+defaults. If you override those away from their defaults, use
+`RUN_LOCALLY=true` instead (known limitation, not fixed, to keep
+`run_sims_mcmc.sh` unedited).
 
-```bash
-sbatch run_sims_mcmc.sh    # #SBATCH -a 1-100
-```
+`NUM_MCMC_SAMPLES` (default 5000) controls `run_mcmc.R`'s `--num_draws`
+(total MCMC iterations including warmup, for both `--base` and `--sim`
+fits) and has no effect on any filename.
 
 Produces: `output/super_simple_simulation_sim<N>_results_redim100_obsperre100_seed100.Rdata`
-for N = 1..100 (100 files)
+for N = 1..`RESAMPLE_N`
 
 **Step 3b (optional, cluster only): `sync_remote_files.sh`**
 
@@ -110,33 +117,53 @@ block-bootstrap and delta-method calculations), and saves a tidy
 long/wide dataframe for the paper's figures.
 
 ```bash
-Rscript postprocess_for_paper.R
+Rscript postprocess_for_paper.R --seed=100 --re_dim=100 --obs_per_re=100
 ```
+
+(Options default to these same values, so plain `Rscript postprocess_for_paper.R` still works.)
 
 Reads:
 - `output/super_simple_simulation_sim_results_redim100_obsperre100_seed100.Rdata`
 - `output/super_simple_simulation_base_results_redim100_obsperre100_seed100.Rdata`
 
-Produces: `paper/experiment_data/simulations/simpler_sim_results.Rdata`
+Produces: `paper/experiment_data/simulations/simpler_sim_results.Rdata` (`--output_filename`)
 
-> **Note:** `seed_val`, `re_dim`, and `obs_per_re` are hard-coded near the top
-> of `postprocess_for_paper.R` (100, 100, 100) rather than read from
-> command-line flags. If you change `SEED`, `RE_DIM`, or `OBS_PER_RE` in the
-> `Makefile`, update these hard-coded values too so the filenames line up.
+`--seed`/`--re_dim`/`--obs_per_re`/`--prefix` are now CLI flags (previously
+hard-coded near the top of the script) — the Makefile passes them explicitly
+so the `Makefile`'s `SEED`/`RE_DIM`/`OBS_PER_RE`/`PREFIX` variables are the
+single source of truth.
 
 ---
 
 ## Running the whole pipeline with `make`
 
 The `Makefile` in this directory encodes the dependency graph above (base
-fit + 100 sim replicates &rarr; combine &rarr; postprocess) and can build
-everything, or any single output file, directly from `src/singular_simulations`:
+fit + `RESAMPLE_N` sim replicates &rarr; combine &rarr; postprocess) and can
+build everything, or any single output file, directly from
+`src/singular_simulations`:
 
 ```bash
-make          # builds paper/experiment_data/simulations/simpler_sim_results.Rdata
-              # and everything it depends on
-make -j 8     # parallelize across the 100 independent sim replicates
+make                          # builds paper/experiment_data/simulations/simpler_sim_results.Rdata
+                               # and everything it depends on (RESAMPLE_N=100, RUN_LOCALLY=true)
+make -j 8                     # parallelize across the independent sim replicates
+make RESAMPLE_N=20            # fewer replicates
+make RUN_LOCALLY=false        # SLURM for the sim-replicate stage instead of local
 ```
+
+## Local sanity check (no SLURM)
+
+```bash
+make sanity_check
+```
+
+Runs the full pipeline locally with a small `RESAMPLE_N` and
+`NUM_MCMC_SAMPLES`, through to
+`paper/experiment_data/simulations/simpler_sim_results.Rdata`. This
+**overwrites** whatever real production output currently exists at those
+paths — intended for a clean checkout. Note that since `DESC` (and hence
+every output filename) doesn't depend on `RESAMPLE_N`, if the combined/base
+files from a prior full run already exist, Make's normal up-to-date check
+may skip rebuilding them — this is only meaningful in a clean checkout.
 
 
 # Rough runtime estimate

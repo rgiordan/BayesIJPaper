@@ -3,11 +3,26 @@
 library(tidyverse)
 library(rstan)
 library(gridExtra)
+library(optparse)
 
 library(bayesijlib)
 library(rstanarmijlib)
 
 rstan_options(auto_write=TRUE)
+
+option_list <- list(
+  make_option(c("--compiled_file"),
+              default="cluster/output/compiled_results_1116.Rdata",
+              help="Path (relative to src/rstanarm) to the load_rstanarm_results.R output."),
+  make_option(c("--output_filename"),
+              default="arm_results_postprocessed.Rdata",
+              help="Output filename, written under paper/experiment_data/arm."))
+
+opt <- parse_args(OptionParser(option_list=option_list))
+print("===================")
+print("Options:")
+print(opt)
+print("===================")
 
 # If TRUE do not run all the bootstraps and do not save.
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
@@ -24,9 +39,8 @@ model_list_file <- file(file.path(base_dir, "configs/",
 model_list <- jsonlite::fromJSON(model_list_file, simplifyDataFrame=FALSE)
 close(model_list_file)
 
-# Load the compiled results produced by postprocess_ARM_results.R
-output_filename <- sprintf("compiled_results_%s.Rdata", "1116")
-load(file=file.path(output_dir, output_filename))
+# Load the compiled results produced by load_rstanarm_results.R
+load(file=file.path(base_dir, opt$compiled_file))
 
 
 
@@ -49,23 +63,28 @@ GetModelDFRow <- function(i) {
 
 model_df <- do.call(bind_rows, lapply(1:length(model_list), GetModelDFRow))
 
-# Remove test models.  Because we inner join later this will remove them from the paper as well.
-model_df <- filter(model_df, model_name != "test")
-model_df <- filter(model_df, model_name != "test_rstanarm")
+# Remove test models.  Because we inner join later this will remove them
+# from the paper as well.
+bad_model_names <- c()
+bad_model_names <- c(bad_model_names, "test", "test_rstanarm")
 
-# Models 7 and 13, something went wrong, the variances are very large.  Also,
-# electric_1c was too slow to run 200 bootstraps.
-model_df <- model_df %>%
-    filter(model_index != 7) %>%
-    filter(model_index != 12) %>%
-    filter(model_index != 65)
+# In models earn_height and mesquite, something went wrong, the variances
+# are very large.  And electric_1c was too slow to run for 200 bootstraps.
+bad_model_names <- c(bad_model_names, "earn_height")
+bad_model_names <- c(bad_model_names, "mesquite")
+bad_model_names <- c(bad_model_names, "electric_1c")
+
+# Make sure each model name is unique
+for (bad_model_name in bad_model_names) {
+  stopifnot(sum(model_df$model_name == bad_model_name) <= 1)
+}
+
+model_df <- dplyr::filter(model_df, !(model_name %in% bad_model_names))
 
 combined_df_nore <-
-    combined_df_nore %>%
-    filter(model_index != 7) %>%
-    filter(model_index != 13) %>%
-    filter(model_index != 65) %>%
-    mutate(params_full=paste(row_variable, column_variable))
+  combined_df_nore %>%
+  dplyr::filter(model_index %in% model_df$model_index) %>%
+  mutate(params_full=paste(row_variable, column_variable))
 
 
 ######################################
@@ -162,10 +181,6 @@ combined_df_long_labeled$family_label <- factor(
     labels=c("Linear regression", "Logistic regression"))
 table(combined_df_long_labeled$family_label)
 
-
-combined_df_long_labeled %>% filter(model_index == 65) %>% nrow() /
-    combined_df_nore %>% filter(model_index == 65) %>% nrow()
-
 colnames(combined_df_long_labeled)
 
 combined_df_wide_labeled <-
@@ -215,4 +230,4 @@ save(combined_df_long_labeled,
      combined_df_wide_labeled,
      model_df,
      timing_df,
-     file=file.path(writing_dir, paper_filename))
+     file=file.path(writing_dir, opt$output_filename))

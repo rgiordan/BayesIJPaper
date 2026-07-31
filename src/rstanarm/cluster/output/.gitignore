@@ -1,2 +1,3 @@
 *.Rdata
 **/*.Rdata
+.stamp* # Makefile artifacts

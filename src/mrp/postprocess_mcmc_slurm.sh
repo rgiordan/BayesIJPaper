@@ -1,18 +1,19 @@
 #!/bin/bash
-## To prepare the files, run
-## > ls -1a bootstrap_data/mrp_*_seed[0-9]*_samples5000.Rdata > mcmc_files.txt
-## Set the array size to `cat mcmc_files.txt | wc -l` 
-#SBATCH -a 1-202
 #SBATCH --output=slurm_logs/postprocess_%A_%a_%j.out
 #SBATCH --error=slurm_logs/postprocess_%A_%a_%j.err
-#
-## Run with sbatch postprocess_mcmc_slurm.sh
 
-## https://blog.ronin.cloud/slurm-job-arrays/
+# Example invocations
+# sbatch --array=0-100 run_mcmc.sh
+# run_mcmc.sh subsample
 
-
-CONFIG_FILE=mcmc_files.txt
 BASE_DIR=$(git rev-parse --show-toplevel)/src/mrp
-MCMC_FILE=$(awk -v ID=${SLURM_ARRAY_TASK_ID} 'NR==ID' ${CONFIG_FILE})
+METHOD=${1:-bootstrap} # Uses bootstrap by default; could also be subsample
 
-./postprocess_mcmc.R --base_dir=${BASE_DIR} --mcmc_file=${MCMC_FILE}
+if [[ "$METHOD" != "bootstrap" && "$METHOD" != "subsample" ]]; then
+    echo "Error: first argument must be 'bootstrap' or 'subsample', got: $METHOD" >&2
+    exit 1
+fi
+
+./postprocess_mcmc.R \
+    --base_dir=${BASE_DIR} \
+    --mcmc_file=bootstrap_data/mrp_${METHOD}_seed${SLURM_ARRAY_TASK_ID}.Rdata
