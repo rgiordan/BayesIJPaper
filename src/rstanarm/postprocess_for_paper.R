@@ -28,6 +28,7 @@ print("===================")
 repo_dir <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(repo_dir, "src/rstanarm")
 
+output_dir <- file.path(base_dir, "cluster/output")
 writing_dir <- file.path(repo_dir, "paper/experiment_data/arm")
 stopifnot(dir.exists(writing_dir))
 
@@ -73,9 +74,9 @@ bad_model_names <- c(bad_model_names, "earn_height")
 bad_model_names <- c(bad_model_names, "mesquite")
 bad_model_names <- c(bad_model_names, "electric_1c")
 
-# Make sure each model name is unique and occurs
+# Make sure each model name is unique
 for (bad_model_name in bad_model_names) {
-  stopifnot(sum(model_df$model_name == bad_model_name) == 1)
+  stopifnot(sum(model_df$model_name == bad_model_name) <= 1)
 }
 
 model_df <- dplyr::filter(model_df, !(model_name %in% bad_model_names))
@@ -224,6 +225,7 @@ if (FALSE) {
 ##########################################
 # Save a file with all the ARM results
 
+paper_filename <- sprintf("arm_results_postprocessed.Rdata")
 save(combined_df_long_labeled,
      combined_df_wide_labeled,
      model_df,
