@@ -42,9 +42,19 @@ PAPER_OUTPUT := $(PAPER_DIR)/simpler_sim_results.Rdata
 SIM_NUMS  := $(shell seq 1 $(RESAMPLE_N))
 SIM_FILES := $(foreach n,$(SIM_NUMS),$(OUTPUT_DIR)/super_simple_simulation_sim$(n)_results_$(DESC).Rdata)
 
-.PHONY: all sim_files sanity_check
+.PHONY: all sim_files sanity_check list_outputs
 
 all: $(PAPER_OUTPUT)
+
+# Every file a successful `make all` run produces, so the user can review,
+# cache, or manually delete them.
+ALL_OUTPUT_FILES := $(SIM_FILES) \
+                     $(SIM_COMBINED) \
+                     $(BASE_RESULT) \
+                     $(PAPER_OUTPUT)
+
+list_outputs:
+	@printf '%s\n' $(ALL_OUTPUT_FILES)
 
 # -----------------------------------------------------------------------
 # Sanity check: full pipeline, locally, with a small RESAMPLE_N (default 5

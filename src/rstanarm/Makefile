@@ -37,9 +37,23 @@ PAPER_OUTPUT := $(PAPER_DIR)/arm_results_postprocessed.Rdata
 BASE_STAMPS := $(addprefix $(OUTPUT_DIR)/.stamp_base_,$(MODEL_INDICES))
 BOOT_STAMPS := $(addprefix $(OUTPUT_DIR)/.stamp_boot_,$(MODEL_INDICES))
 
-.PHONY: all configs base_mcmc boot_mcmc sanity_check
+.PHONY: all configs base_mcmc boot_mcmc sanity_check list_outputs
 
 all: $(PAPER_OUTPUT)
+
+# Files a successful `make all` run produces, so the user can review, cache,
+# or manually delete them. Lists the stamp files themselves ($(BASE_STAMPS)/
+# $(BOOT_STAMPS)) rather than the actual per-model MCMC .Rdata files they
+# guard -- those real filenames are only known at recipe time (looked up
+# from the JSON config via model_desc), not expressed as a Make variable.
+ALL_OUTPUT_FILES := $(CONFIG_DIR)/rstanarm_ij_model_list.json \
+                     $(BASE_STAMPS) \
+                     $(BOOT_STAMPS) \
+                     $(COMPILED) \
+                     $(PAPER_OUTPUT)
+
+list_outputs:
+	@printf '%s\n' $(ALL_OUTPUT_FILES)
 
 # Regenerate the JSON model config from the CSV spreadsheet.
 # The output is already committed; only run this if regenerating from scratch.
