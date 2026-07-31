@@ -62,26 +62,28 @@ GetModelDFRow <- function(i) {
 
 model_df <- do.call(bind_rows, lapply(1:length(model_list), GetModelDFRow))
 
-# Remove test models.  Because we inner join later this will remove them from the paper as well.
-model_df <- filter(model_df, model_name != "test")
-model_df <- filter(model_df, model_name != "test_rstanarm")
+# Remove test models.  Because we inner join later this will remove them
+# from the paper as well.
+bad_model_names <- c()
+bad_model_names <- c(bad_model_names, "test", "test_rstanarm")
 
-# TODO: index these by the name not by the number so that it's invariant to changes
-# in the model list.
+# In models earn_height and mesquite, something went wrong, the variances
+# are very large.  And electric_1c was too slow to run for 200 bootstraps.
+bad_model_names <- c(bad_model_names, "earn_height")
+bad_model_names <- c(bad_model_names, "mesquite")
+bad_model_names <- c(bad_model_names, "electric_1c")
 
-# Models 7 and 13, something went wrong, the variances are very large.  Also,
-# electric_1c was too slow to run 200 bootstraps.
-model_df <- model_df %>%
-    filter(model_index != 7) %>%
-    filter(model_index != 12) %>%
-    filter(model_index != 65)
+# Make sure each model name is unique and occurs
+for (bad_model_name in bad_model_names) {
+  stopifnot(sum(model_df$model_name == bad_model_name) == 1)
+}
+
+model_df <- dplyr::filter(model_df, !(model_name %in% bad_model_names))
 
 combined_df_nore <-
-    combined_df_nore %>%
-    filter(model_index != 7) %>%
-    filter(model_index != 13) %>%
-    filter(model_index != 65) %>%
-    mutate(params_full=paste(row_variable, column_variable))
+  combined_df_nore %>%
+  dplyr::filter(model_index %in% model_df$model_index) %>%
+  mutate(params_full=paste(row_variable, column_variable))
 
 
 ######################################
@@ -177,10 +179,6 @@ combined_df_long_labeled$family_label <- factor(
     levels=c("gaussian()", "binomial(link=\"logit\")"),
     labels=c("Linear regression", "Logistic regression"))
 table(combined_df_long_labeled$family_label)
-
-
-combined_df_long_labeled %>% filter(model_index == 65) %>% nrow() /
-    combined_df_nore %>% filter(model_index == 65) %>% nrow()
 
 colnames(combined_df_long_labeled)
 
