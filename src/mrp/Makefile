@@ -96,31 +96,41 @@ $(SRC_DIR)/$(ORIGINAL_PP): $(SRC_DIR)/$(ORIGINAL) $(SRC_DIR)/$(DATASET)
 	    --mcmc_file=$(ORIGINAL)
 
 # Postprocessing the RESAMPLE_N bootstrap/subsample files is fairly
-# time-intensive, so it also respects RUN_LOCALLY: local via the existing
-# generic pattern rule (Rscript per file), or SLURM via
-# postprocess_mcmc_slurm.sh (one array job covering all RESAMPLE_N seeds).
-
-# TODO: this matching on %.Rdata will fail
+# time-intensive, so it also respects RUN_LOCALLY: local via explicit,
+# literal per-seed-per-method rules (postprocess_mcmc_slurm.sh, with
+# SLURM_ARRAY_TASK_ID set to the known seed -- no wildcard matching, no
+# parsing of the target name to recover method/seed), or SLURM via the
+# same script (one array job per method, covering all RESAMPLE_N seeds).
 ifeq ($(RUN_LOCALLY),true)
-$(SRC_DIR)/%_mrp_postprocessed.Rdata: $(SRC_DIR)/%.Rdata $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && ./postprocess_mcmc.R \
-	    --base_dir=$(SRC_DIR) \
-	    --mcmc_file=$*.Rdata
+define MRP_POSTPROCESS_BOOTSTRAP_RULE
+$(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed$(1)_mrp_postprocessed.Rdata: $(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed$(1).Rdata $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$(1) ./postprocess_mcmc_slurm.sh bootstrap
+endef
+define MRP_POSTPROCESS_SUBSAMPLE_RULE
+$(SRC_DIR)/bootstrap_data/mrp_subsample_seed$(1)_mrp_postprocessed.Rdata: $(SRC_DIR)/bootstrap_data/mrp_subsample_seed$(1).Rdata $(SRC_DIR)/$(DATASET)
+	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$(1) ./postprocess_mcmc_slurm.sh subsample
+endef
+$(foreach s,$(LOCAL_SEEDS),$(eval $(call MRP_POSTPROCESS_BOOTSTRAP_RULE,$(s))))
+$(foreach s,$(LOCAL_SEEDS),$(eval $(call MRP_POSTPROCESS_SUBSAMPLE_RULE,$(s))))
 
 bootstrap_postprocess: $(addprefix $(SRC_DIR)/,$(POSTPROCESSED))
 else
-# Fire-and-forget, like bootstrap_mcmc below: submits the array job and
-# returns. Wait for it to finish, then re-run `make` to continue -- Make
+# Fire-and-forget, like bootstrap_mcmc below: submits the array jobs and
+# returns. Wait for them to finish, then re-run `make` to continue -- Make
 # only checks whether $(POSTPROCESSED) files exist, not how they were
 # produced, so the next stage picks them up regardless of RUN_LOCALLY.
-# Depends on the raw MCMC_FILES already existing (from a completed
-# bootstrap_mcmc run): the local generation pattern rules below are only
-# defined under RUN_LOCALLY=true, so if they're missing this fails fast,
-# locally, with "no rule to make target" instead of submitting a SLURM
-# array that's doomed to fail once each task tries to load a nonexistent
-# input file.
+# Two separate sbatch submissions, one per method, since
+# postprocess_mcmc_slurm.sh now does one thing per invocation (bootstrap or
+# subsample, not both) -- avoids a single job/recipe producing two output
+# files, which would otherwise race under parallel execution. Depends on
+# the raw MCMC_FILES already existing (from a completed bootstrap_mcmc
+# run): the local generated rules above are only defined under
+# RUN_LOCALLY=true, so if they're missing this fails fast, locally, with
+# "no rule to make target" instead of submitting a SLURM array that's
+# doomed to fail once each task tries to load a nonexistent input file.
 bootstrap_postprocess: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
-	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/postprocess_mcmc_slurm.sh
+	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/postprocess_mcmc_slurm.sh bootstrap
+	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/postprocess_mcmc_slurm.sh subsample
 endif
 
 # -----------------------------------------------------------------------
@@ -128,21 +138,21 @@ endif
 # -----------------------------------------------------------------------
 ifeq ($(RUN_LOCALLY),true)
 $(SRC_DIR)/bootstrap_data/mrp_bootstrap_seed%.Rdata: $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --num_samples=$(NUM_MCMC_SAMPLES)
+	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$* ./run_mcmc.sh $(NUM_MCMC_SAMPLES)
 
 $(SRC_DIR)/bootstrap_data/mrp_subsample_seed%.Rdata: $(SRC_DIR)/$(DATASET)
-	cd $(SRC_DIR) && ./run_mcmc.R --seed=$* --base_dir=$(SRC_DIR) --subsample --num_samples=$(NUM_MCMC_SAMPLES)
+	cd $(SRC_DIR) && SLURM_ARRAY_TASK_ID=$* ./run_mcmc.sh $(NUM_MCMC_SAMPLES) --subsample
 
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET) $(addprefix $(SRC_DIR)/,$(MCMC_FILES))
 else
-# Fire-and-forget, as today: submits the array job and returns. Wait for
-# it to finish before running `make bootstrap_postprocess`. Note the
-# SLURM path doesn't take NUM_MCMC_SAMPLES -- run_mcmc_slurm.sh always
-# samples at run_mcmc.R's own default. Since filenames no longer encode
-# sample count, this is just a "SLURM path doesn't get faster" gap, not a
-# correctness issue.
+# Fire-and-forget, as today: submits the array jobs and returns. Wait for
+# them to finish before running `make bootstrap_postprocess`. Two separate
+# sbatch submissions -- run_mcmc.sh does one thing per invocation (plain or
+# --subsample), each producing a distinct per-seed file, so unlike before
+# this now also honors NUM_MCMC_SAMPLES on the SLURM path.
 bootstrap_mcmc: $(SRC_DIR)/$(DATASET)
-	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc_slurm.sh
+	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc.sh $(NUM_MCMC_SAMPLES)
+	sbatch --array=0-$$(($(RESAMPLE_N)-1)) $(SRC_DIR)/run_mcmc.sh $(NUM_MCMC_SAMPLES) --subsample
 endif
 
 # -----------------------------------------------------------------------
