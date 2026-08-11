@@ -12,14 +12,13 @@ GIT_REPO=$(git rev-parse --show-toplevel)
 zip -r ${GIT_REPO}/paper/bayesij_code.zip ${GIT_REPO} \
     --exclude ${GIT_REPO}"/.git/*" \
     --exclude ${GIT_REPO}"/.claude/*" \
-    --exclude ${GIT_REPO}"/src/rstanarm/cluster/output/ARM_*.Rdata" \
-    --exclude ${GIT_REPO}"/src/singular_simulations/output/super_simple_simulation_sim?*_results_redim100_obsperre100_seed100.Rdata" \
-    --exclude ${GIT_REPO}"/src/mrp/bootstrap_data/mrp_bootstrap_seed1_samples5000.Rdata" \
-    --exclude ${GIT_REPO}"/src/singular_simulations/output/super_simple_simulation_base_results_redim100_obsperre100_seed100.Rdata" \
-    --exclude ${GIT_REPO}"/src/src/mrp/bootstrap_data/mrp_original_seed134432_samples5000.Rdata" \
-    --exclude ${GIT_REPO}"/*/*.zip" \
+    --exclude ${GIT_REPO}"/src/rstanarm/cluster/slurm_logs/*" \
+    --exclude ${GIT_REPO}"/src/rstanarm/cluster/output/*.Rdata" \
+    --exclude ${GIT_REPO}"/src/singular_simulations/output/*.Rdata" \
+    --exclude ${GIT_REPO}"/src/singular_simulations/output/logs/*" \
+    --exclude ${GIT_REPO}"/src/mrp/bootstrap_data/*.Rdata" \
+    --exclude ${GIT_REPO}"/src/mrp/slurm_logs/*" \
     --exclude ${GIT_REPO}"/src/mrp/datasets/cces18_common_vv.csv" \
-    --exclude ${GIT_REPO}"/libs/bayesijmrp/bayesijmrp/tests/testthat/mcmc_cache/*" \
-    --exclude ${GIT_REPO}"/src/mrp/bootstrap_data/mrp_original_seed134432_samples5000.Rdata"
-
+    --exclude ${GIT_REPO}"/*/*.zip" \
+    --exclude ${GIT_REPO}"/libs/bayesijmrp/bayesijmrp/tests/testthat/mcmc_cache/*"
 
