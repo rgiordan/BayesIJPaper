@@ -30,10 +30,11 @@ supplement.pdf:
 
 # Copy only the latex to a subfolder for uploading to the arxiv.
 # Note to set the etoolbox boolean arxiv to true before doing this.
-arxiv: main.pdf
+.PHONY arxiv: main.pdf
 	cp *.tex arxiv/
 	cp -R appendices arxiv/
 	cp -R figure arxiv/
+	cp -R static_figures arxiv/
 	cp -R simple_examples arxiv/
 
 	cp *.bib arxiv/
@@ -42,7 +43,7 @@ arxiv: main.pdf
 
 	cp main.bbl arxiv/references.bbl # To fool arxiv
 
-	echo 'Now run cd arxiv; tar -czvf ./arxiv.tgz *; cd ..'
+	echo 'Check for success, then run cd arxiv; tar -czvf ./arxiv.tgz *; cd ..'
 
 clean_figures:
 	rm figure/*

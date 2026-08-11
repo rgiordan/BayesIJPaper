@@ -385,3 +385,4 @@ rsconnect/
 **/*.rds
 **/*.json
 **git /*.npz
+*.zip
