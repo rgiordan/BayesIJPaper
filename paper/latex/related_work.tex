@@ -4,12 +4,20 @@ to ours, but is limited to the special case of exponential families. The
 frequentist sampling variability of Bayesian posterior expectations under
 misspecification is studied in \citet{kleijn:2012:bvm} from a theoretical point
 of view, motivating the form of the sandwich covariance.
-\Citet{huggins:2020:bayesbag,huggins:2022:bayesbag} proved the consistency of
-the bootstrap as estimate of the frequentist sampling variability of posterior
-expectations that obey a BCLT (the preprint and published paper are different
-enough that we believe both warrant citation).  Both \citet{vehtari:2024:psis}
-and \citet{lee:2017:frequentistbayesse} consider importance sampling estimates
-to the effect of dropping datapoints, with \citet{lee:2017:frequentistbayesse}
+\Citet{huggins:2024:bayesbagparameter} derive a BCLT for the ``BayesBag''
+posterior which combines both posterior and bootstrap uncertainty; we conjecture
+that a minor modification of their proof would prove the consistency of the
+bootstrap alone as an estimator of the limiting frequentist variance of a
+posterior mean. See also \citet{huggins:2022:bayesbag} for a closely related
+BCLT result in the context of model selection, as well as the same authors'
+earlier work on arxiv, \citet{huggins:2020:bayesbag}.  Although the IJ
+covariance does not provide bootstrap samples for use in BayesBag posteriors
+directly, the IJ covariance could be used to estimate the bootstrap covariance
+term that appears in the law of total covariance decomposition of the BayesBag
+covariance (see the final, unnumbered equation in Section 2.3 of
+\citet{huggins:2024:bayesbagparameter}). Both \citet{vehtari:2024:psis} and
+\citet{lee:2017:frequentistbayesse} consider importance sampling estimates to
+the effect of dropping datapoints, with \citet{lee:2017:frequentistbayesse}
 explicitly considering estimation of frequentist variability of the posterior
 under an assumption of correct specification. However, importance sampling
 estimates of frequentist variability can be expected to have very low sampling
