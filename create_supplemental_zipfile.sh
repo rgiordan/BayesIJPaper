@@ -10,7 +10,7 @@ GIT_REPO=$(git rev-parse --show-toplevel)
 
 # Zip the code, including data files, but excluding large
 # collections of large intermediate data files, and the paper itself.
-zip -r ${GIT_REPO}/bayesij_supplement.zip ${GIT_REPO}/* \
+zip -r ${GIT_REPO}/bayesij_code_supplement.zip ${GIT_REPO}/* \
     --exclude ${GIT_REPO}"/*/*.zip" \
     --exclude ${GIT_REPO}"/.git/*" \
     --exclude ${GIT_REPO}"/paper/latex/arxiv/*" \
@@ -26,3 +26,5 @@ zip -r ${GIT_REPO}/bayesij_supplement.zip ${GIT_REPO}/* \
     --exclude ${GIT_REPO}"/libs/bayesijmrp/bayesijmrp/tests/testthat/mcmc_cache/*"
 
 
+# Create a single zipfile with the code and the supplement pdf.
+zip bayesij_supplement.zip bayesij_code_supplement.zip paper/latex/supplement.pdf
