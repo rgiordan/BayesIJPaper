@@ -64,7 +64,8 @@ Finally, you can generate the paper's tables and figures by running
 
 The output will automaticall propagate to main.pdf and supplement.pdf.
 
-# AI Assistance acknowledgement
+
+# AI Assistance acknowledgement for reproducibility pipeline
 
 The AI assistant Claude Code v2.1.114 was used to help clean and document the
 minimal steps to reproducing the paper.  The key tasks that AI helped with were:
@@ -80,3 +81,6 @@ minimal steps to reproducing the paper.  The key tasks that AI helped with were:
 With the exception of the makefiles, and minor changes (e.g. changing the name
 of an R package, adding command line arguments to files), AI was primarily used
 to make code suggestions that were checked and implemented by hand.
+
+See the main text of the paper for an AI acknowledgement concerning the paper
+writing itself.
