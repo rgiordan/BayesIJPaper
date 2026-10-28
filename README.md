@@ -62,7 +62,7 @@ Finally, you can generate the paper's tables and figures by running
 
 `paper/latex/make recompile_knitr`
 
-The output will be in figures.pdf.
+The output will automaticall propagate to main.pdf and supplement.pdf.
 
 # AI Assistance acknowledgement
 
