@@ -1,7 +1,6 @@
 # Use this script to debug and edit the knit graphs without re-compiling in latex.
 
-#git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
-git_repo_loc <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/writing/bayes/"
+git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
 base_dir <- file.path(git_repo_loc, "paper/latex")
 
 knitr_debug <- FALSE # Set to true to see error output
