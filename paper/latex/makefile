@@ -9,7 +9,7 @@ PAPER_LOC=${GIT_REPO_LOC}/paper/latex
 
 .PHONY recompile_knitr:
 	Rscript -e 'library(knitr); knit("figures_knitr.Rnw")'
-	latexmk figures.tex
+	$(MAKE) main.pdf
 
 figures_knitr.tex:
 	Rscript -e 'library(knitr); knit("figures_knitr.Rnw")'
