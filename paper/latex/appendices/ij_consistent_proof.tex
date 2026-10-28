@@ -1,100 +1,298 @@
 \begin{proof}
-    %
-    We can re-arrange the covariance in the definition of $\infl_n$ as the product
-    of terms centered at $\thetahat$:
-    %
-    \begin{align*}
-    %
-    \infl_n ={}& N \expect{\post}{
-        (\g(\theta) - \g(\thetahat))
-        (\ell(\x_n \vert \theta) - \ell(\x_n \vert \thetahat))
-    } -
-    \\&
-    2 N \left(
-        \g(\thetahat) - \expect{\post}{\g(\theta)}
-    \right)
-    \left(
-        \ell(\x_n \vert \thetahat) - \expect{\post}{\ell(\x_n \vert \theta)}
-    \right).
-    %
-    \end{align*}
-    %
-    Apply \thmref{bayes_clt_main} three times, with $\phi_\g(\theta) := \g(\theta)$,
-    $\phi_\ell(\theta, \x_n) := \ell(\x_n \vert \theta)$, and $\phi_{\ell\g}(\theta,
-    \x_n) := (\g(\theta) - \g(\thetahat)) (\ell(\x_n \vert \theta) - \ell(\x_n \vert
-    \thetahat))$, all of which are third-order BCLT-okay by assumption. Let the
-    residuals be denoted as $\resid{\g}$ (with no $\x_n$ dependence),
-    $\resid{\ell}(\x_n)$, and $\resid{\ell\g}(\x_n)$, respectively.   Note that the
-    first derivative of $\theta \mapsto \phi_{\ell\g}(\theta, \x_n)$ is zero at
-    $\thetahat$.
+%
+Throughout the proof, write $\hat\g := \g(\thetahat)$ and $\hat\ell_n :=
+\ell(\x_n \vert \thetahat)$.
 
-    Write the leading term in the expansion of $\phi_\ell(\theta,
-    \x_n)$ as
-    %
-    \begin{align*}
-    %
-    L(\x_n) :=
-    \frac{1}{2} \ellgrad{2}(\thetahat, \x_n) \infohat^{-1} +
-    \frac{1}{6} \ellgrad{1}(\thetahat, \x_n) \likhatk{3}(\thetahat) \normfourth.
-    %
-    \end{align*}
-    %
-    Under \assuref{bayes_clt}, $\thetahat \plim \thetatrue$  and $\infohat^{-1}$ has
-    bounded operator norm with probability approaching one (\lemref{thetahat_consistent}).
-    These facts imply that $\meann \norm{L(\x_n)}_2^2 = \ordp{1}$ by Cauchy-Schwarz
-    and a ULLN (\assuref{bayes_clt} \itemref{loglik_ulln} and \lemref{ulln}).
+Apply \thmref{bayes_clt_main} three times, with $\phi_\g(\theta) :=
+\g(\theta)$, $\phi_\ell(\theta, \x_n) := \ell(\x_n \vert \theta)$, and
+$\phi_{\ell\g}(\theta, \x_n) := \g(\theta) \ell(\x_n \vert \theta)$, all of
+which are third-order BCLT-okay by \assuref{bclt_okay}. Let the residuals be
+denoted as $\resid{\g}$ (with no $\x_n$ dependence), $\resid{\ell}(\x_n)$, and
+$\resid{\ell\g}(\x_n)$, respectively, and write the leading terms of the
+expansions of $\phi_\g$ and $\phi_\ell$ as
+%
+\begin{align*}
+%
+L_\g :={}&
+\frac{1}{2} \ggrad{2}(\thetahat) \infohat^{-1} +
+\frac{1}{6} \ggrad{1}(\thetahat) \likhatk{3}(\thetahat) \normfourth
+\\
+L_\ell(\x_n) :={}&
+\frac{1}{2} \ellgrad{2}(\x_n \vert \thetahat) \infohat^{-1} +
+\frac{1}{6} \ellgrad{1}(\x_n \vert \thetahat) \likhatk{3}(\thetahat) \normfourth.
+%
+\end{align*}
+%
+The leading term of \eqref{bclt_expansion} is linear in $\phi$, so by the
+product rule the leading term of the expansion of $\phi_{\ell\g}$ is
+%
+\begin{align*}
+%
+L_{\ell\g}(\x_n) :={}&
+\hat\ell_n L_\g + \hat\g L_\ell(\x_n) +
+\ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat).
+%
+\end{align*}
+%
+Under \assuref{bayes_clt}, $\thetahat \plim \thetatrue$  and $\infohat^{-1}$ has
+bounded operator norm with probability approaching one (\lemref{thetahat_consistent}).
+These facts, together with the continuity of $\ggrad{1}$ and $\ggrad{2}$,
+imply that $\hat\g = \ordp{1}$ and $L_\g = \ordp{1}$, and, by
+Cauchy-Schwarz and a ULLN (\assuref{bayes_clt} \itemref{loglik_ulln} and
+\lemref{ulln}), that $\meann \norm{L_\ell(\x_n)}_2^2 = \ordp{1}$.
 
-    Then \thmref{bayes_clt_main}, together with the fact that $\thetahat = \ordp{1}$
-    and $\g(\theta)$ is continuous, gives
-    %
-    \begin{align*}
-    %
-    \infl_n ={}&
-    \ggrad{1}(\thetahat) \infohat \ellgrad{1}(\x_n \vert \thetahat) +
-    \ordlog{N^{-1}} \resid{\ell\g}(\x_n) +
-    \\& N
-        \left( \ordp{N^{-1}} L(\x_n) + \ordlogp{N^{-2}} \resid{\ell}(\x_n) \right)
-        \left( \ordp{N^{-1}} + \ordlogp{N^{-2}} \resid{\g} \right)
-    \\=&
-    \ggrad{1}(\thetahat) \infohat \ellgrad{1}(\x_n \vert \thetahat) +
-    \\&
-    % \ordlog{N^{-1}} (\resid{\ell\g}(\x_n) + L(\x_n)) +
-    % \ordlogp{N^{-2}} \left(\resid{\g} L(\x_n) +  \resid{\ell}(\x_n)\right) +
-    % \ordlogp{N^{-3}} \resid{\ell}(\x_n) \resid{\g}.
-    \ordlog{N^{-1}} \left(
-    \resid{\ell\g}(\x_n) + L(\x_n) +
-    \resid{\g} L(\x_n) +  \resid{\ell}(\x_n) +
-    \resid{\ell}(\x_n) \resid{\g}
-    \right).
-    %
-    \end{align*}
-    %
-    In the final line, we have combined lower orders into the $\ordp{N^{-1}}$ term
-    for conciseness of expression.
+The three expansions give
+%
+\begin{align*}
+%
+\infl_n ={}&
+N \left(
+    \expect{\post}{\phi_{\ell\g}(\theta, \x_n)} -
+    \expect{\post}{\phi_\g(\theta)} \expect{\post}{\phi_\ell(\theta, \x_n)}
+\right)
+\\={}&
+N \Big(
+    \hat\g \hat\ell_n +
+    N^{-1} L_{\ell\g}(\x_n) +
+    \ordlog{N^{-3/2}} \resid{\ell\g}(\x_n)
+\Big) -
+\\&
+N \left( \hat\g + N^{-1} L_\g + \ordlog{N^{-3/2}} \resid{\g} \right)
+\left( \hat\ell_n + N^{-1} L_\ell(\x_n) + \ordlog{N^{-3/2}} \resid{\ell}(\x_n) \right)
+\\={}&
+\left(N \hat\g \hat\ell_n + \hat\ell_n L_\g + \hat\g L_\ell(\x_n)\right) +
+\ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) +
+\ordlog{N^{-1/2}} \resid{\ell\g}(\x_n) -
+\\&
+\left(N \hat\g \hat\ell_n + \hat\ell_n L_\g + \hat\g L_\ell(\x_n)\right) -
+N^{-1} L_\g L_\ell(\x_n) +
+\ordlog{N^{-1/2}} \left(
+    \hat\g \resid{\ell}(\x_n) + \hat\ell_n \resid{\g}
+\right) +
+\\&
+\ordlog{N^{-3/2}} \left(
+    L_\g \resid{\ell}(\x_n) + L_\ell(\x_n) \resid{\g}
+\right) +
+\ordlog{N^{-2}} \resid{\g} \resid{\ell}(\x_n)
+\\={}&
+\ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) +
+\ordlog{N^{-1/2}} \resid{\infl}(\x_n),
+%
+\end{align*}
+%
+where the third line uses the definition of $L_{\ell\g}(\x_n)$, the two
+terms in large parentheses cancel, and we have combined lower orders into
+%
+\begin{align*}
+%
+\resid{\infl}(\x_n) :={}&
+\resid{\ell\g}(\x_n) +
+\norm{\hat\g}_2 \resid{\ell}(\x_n) +
+\abs{\hat\ell_n} \resid{\g} +
+\\{}&
+\norm{L_\g}_2 \norm{L_\ell(\x_n)}_2 +
+\norm{L_\g}_2 \resid{\ell}(\x_n) +
+\norm{L_\ell(\x_n)}_2 \resid{\g} +
+\resid{\g} \resid{\ell}(\x_n).
+%
+\end{align*}
 
-    We now show that the sums of the squares of the residuals in the preceding
-    display go to zero. By \thmref{bayes_clt_main}, each of $\meann
-    \resid{\ell}(\x_n)^2$, and $\meann \resid{\ell\g}(\x_n)^2$ are $O_p(1)$.
-    Similarly, $\meann \norm{\infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)}_2^2 =
-    \ordp{1}$ by a ULLN and the boundedness of the operator norm of $\infohat^{-1}$.
-    By Cauchy-Schwarz, we then have $\meann \ggrad{1}(\thetahat)^\trans
-    \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) \resid{\infl}(\x_n) = O_p(1)$.
+We now show that the residual is square summable. By
+\thmref{bayes_clt_main}, each of $\meann \resid{\ell}(\x_n)^2$, $\meann
+\resid{\ell\g}(\x_n)^2$, and $\resid{\g}$ are $O_p(1)$.  Further, $\meann
+\hat\ell_n^2 = \ordp{1}$ by \eqref{means_op1} of \lemref{ulln} with $k = 0$.
+Combining these with the bounds on $\hat\g$, $L_\g$, and $L_\ell(\x_n)$ above, and
+using $(\sum_{i=1}^7 a_i)^2 \le 7 \sum_{i=1}^7 a_i^2$ to control
+$\sumn \resid{\infl}(\x_n)^2$, gives $\meann
+\resid{\infl}(\x_n)^2 = \ordp{1}$.
 
-    By repeated application of Cauchy-Schwarz, we
-    can thus sum $\infl_n$ and $\infl_n \infl_n^\trans$ to get
-    %
-    \begin{align*}
-    %
-    \sumn \infl_n ={}&
-     \ggrad{1}(\thetahat) \infohat \sumn \ellgrad{1}(\x_n \vert \thetahat) +
-     \ordlogp{N^{-1}} = \ordlogp{N^{-1}} \\
-    \meann \infl_n \infl_n^\trans ={}&  \ggrad{1}(\thetahat) \infohat^{-1}
-     \scorecovhat
-     \infohat^{-1} \ggrad{1}(\thetahat)^\trans + \ordlogp{N^{-1}}
-    = \gcovmaphat + \ordlogp{N^{-1}}.
-    %
-    \end{align*}
-    %
-    Consistency of $\gcovij$ then follows from \corref{bayes_expectation_dist}.
-    %
+Similarly, $\meann \norm{\infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)}_2^2 =
+\ordp{1}$ by a ULLN and the boundedness of the operator norm of $\infohat^{-1}$.
+By repeated application of Cauchy-Schwarz, we can thus average $\infl_n$ and
+$\infl_n \infl_n^\trans$ to get
+%
+\begin{align*}
+%
+\meann \infl_n ={}&
+    \ggrad{1}(\thetahat) \infohat^{-1} \meann \ellgrad{1}(\x_n \vert \thetahat) +
+    \ordlogp{N^{-1/2}}
+    \\={}&
+    -N^{-1} \ggrad{1}(\thetahat) \infohat^{-1} \logpriorgrad{1}(\thetahat) +
+    \ordlogp{N^{-1/2}} = \ordlogp{N^{-1/2}} \\
+\meann \infl_n \infl_n^\trans ={}&  \ggrad{1}(\thetahat) \infohat^{-1}
+    \scorecovhat
+    \infohat^{-1} \ggrad{1}(\thetahat)^\trans + \ordlogp{N^{-1/2}}
+= \gcovmaphat + \ordlogp{N^{-1/2}}.
+%
+\end{align*}
+%
+Here we used the first-order condition $\likhatk{1}(\thetahat) = 0$, which gives
+$\sumn \ellgrad{1}(\x_n \vert \thetahat) = -\logpriorgrad{1}(\thetahat)$.
+It remains to show that $\gcovmaphat \plim \gcovtrue$, which follows from the
+continuous mapping theorem and the following three facts.  First,
+$\ggrad{1}(\thetahat) \plim \ggrad{1}(\thetatrue)$ by continuity of $\ggrad{1}$
+and \lemref{thetahat_consistent}.  Second, $\infohat \plim \info$, as shown in
+the proof of \lemref{regular_event} \eventref{infoev}, so that $\infohat^{-1}
+\plim \info^{-1}$.  Third, each entry of $\ellgrad{1}(\x_n \vert \theta)
+\ellgrad{1}(\x_n \vert \theta)^\trans$ is continuous in $\theta$ and bounded in
+absolute value by $\sup_{\theta \in \thetaball{\deltaulln}}
+\norm{\ellgrad{1}(\x_n \vert \theta)}_2^2$, which has finite expectation, as
+shown in the proof of \lemref{ulln}.  Each entry therefore satisfies a ULLN
+\citep[Example 19.8]{van:2000:asymptotic}, and, since $\thetahat \plim
+\thetatrue$,
+%
+\begin{align*}
+%
+\scorecovhat \plim
+\expect{\fdist(\xn)}{
+    \ellgrad{1}(\xn \vert \thetatrue) \ellgrad{1}(\xn \vert \thetatrue)^\trans
+} = \scorecov,
+%
+\end{align*}
+%
+where the final equality uses $\expect{\fdist(\xn)}{\ellgrad{1}(\xn \vert
+\thetatrue)} = \likk{1}(\thetatrue) = 0$, which holds because $\thetatrue$
+maximizes $\lik(\theta)$ and the interchange of differentiation and expectation
+is justified (\assuref{bayes_clt} \itemref{loglik_smooth}).
+
 \end{proof}
+
+
+% \begin{proof}
+%     %
+%     We can re-arrange the covariance in the definition of $\infl_n$ as the product
+%     of terms centered at $\thetahat$:
+%     %
+%     \begin{align*}
+%     %
+%     \infl_n ={}& N \expect{\post}{
+%         (\g(\theta) - \g(\thetahat))
+%         (\ell(\x_n \vert \theta) - \ell(\x_n \vert \thetahat))
+%     } -
+%     \\&
+%     N \left(
+%         \g(\thetahat) - \expect{\post}{\g(\theta)}
+%     \right)
+%     \left(
+%         \ell(\x_n \vert \thetahat) - \expect{\post}{\ell(\x_n \vert \theta)}
+%     \right).
+%     %
+%     \end{align*}
+%     %
+%     Apply \thmref{bayes_clt_main} three times, with $\phi_\g(\theta) :=
+%     \g(\theta)$, $\phi_\ell(\theta, \x_n) := \ell(\x_n \vert \theta)$, and
+%     $\phi_{\ell\g}(\theta, \x_n) := \g(\theta) \ell(\x_n \vert \theta) $, all of
+%     which are third-order BCLT-okay by \assuref{bclt_okay}. Let the residuals be
+%     denoted as $\resid{\g}$ (with no $\x_n$ dependence), $\resid{\ell}(\x_n)$, and
+%     $\resid{\ell\g}(\x_n)$, respectively.
+
+%     Let $\phi^c(\theta, \x_n) := (\g(\theta) - \g(\thetahat))
+%     (\ell(\x_n \vert \theta) - \ell(\x_n \vert \thetahat))$ denote the centered
+%     product in the first term of $\infl_n$.  Because $\phi^c$ depends on the
+%     whole dataset through $\thetahat$, we do not apply \thmref{bayes_clt_main} to
+%     it directly.  Instead, note that
+%     %
+%     \begin{align*}
+%     %
+%     \phi^c(\theta, \x_n) ={}&
+%         \phi_{\ell\g}(\theta, \x_n) -
+%         \g(\thetahat) \phi_\ell(\theta, \x_n) -
+%         \ell(\x_n \vert \thetahat) \phi_\g(\theta) +
+%         \g(\thetahat) \ell(\x_n \vert \thetahat),
+%     %
+%     \end{align*}
+%     %
+%     where the coefficients $\g(\thetahat)$ and $\ell(\x_n \vert \thetahat)$ do
+%     not depend on $\theta$.  Both the posterior expectation and the leading term
+%     of \eqref{bclt_expansion} are linear in $\phi$.  Further, $\phi^c$ and its
+%     first derivative are zero at $\thetahat$, and its second derivative satisfies
+%     $\frac{1}{2} \phi^c_{(2)}(\thetahat, \x_n) \infohat^{-1} =
+%     \ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)$.
+%     Combining the three expansions therefore gives
+%     %
+%     \begin{align*}
+%     %
+%     \expect{\post}{\phi^c(\theta, \x_n)} ={}&
+%         N^{-1} \ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) +
+%         \ordlog{N^{-3/2}} \resid{c}(\x_n),
+%     \quad\textrm{where}
+%     \\
+%     \resid{c}(\x_n) :={}&
+%         \resid{\ell\g}(\x_n) +
+%         \norm{\g(\thetahat)}_2 \resid{\ell}(\x_n) +
+%         \abs{\ell(\x_n \vert \thetahat)} \resid{\g}.
+%     %
+%     \end{align*}
+
+%     Write the leading term in the expansion of $\phi_\ell(\theta,
+%     \x_n)$ as
+%     %
+%     \begin{align*}
+%     %
+%     L(\x_n) :=
+%     \frac{1}{2} \ellgrad{2}(\thetahat, \x_n) \infohat^{-1} +
+%     \frac{1}{6} \ellgrad{1}(\thetahat, \x_n) \likhatk{3}(\thetahat) \normfourth.
+%     %
+%     \end{align*}
+%     %
+%     Under \assuref{bayes_clt}, $\thetahat \plim \thetatrue$  and $\infohat^{-1}$ has
+%     bounded operator norm with probability approaching one (\lemref{thetahat_consistent}).
+%     These facts imply that $\meann \norm{L(\x_n)}_2^2 = \ordp{1}$ by Cauchy-Schwarz
+%     and a ULLN (\assuref{bayes_clt} \itemref{loglik_ulln} and \lemref{ulln}).
+
+%     Then \thmref{bayes_clt_main}, together with the fact that $\thetahat = \ordp{1}$
+%     and $\g(\theta)$ is continuous, gives
+%     %
+%     \begin{align*}
+%     %
+%     \infl_n ={}&
+%     \ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) +
+%     \ordlog{N^{-1/2}} \resid{c}(\x_n) +
+%     \\& N
+%         \left( \ordp{N^{-1}} L(\x_n) + \ordlogp{N^{-2}} \resid{\ell}(\x_n) \right)
+%         \left( \ordp{N^{-1}} + \ordlogp{N^{-2}} \resid{\g} \right)
+%     \\=&
+%     \ggrad{1}(\thetahat) \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) +
+%     \\&
+%     \ordlog{N^{-1/2}} \left(
+%     \resid{c}(\x_n) + L(\x_n) +
+%     \resid{\g} L(\x_n) +  \resid{\ell}(\x_n) +
+%     \resid{\ell}(\x_n) \resid{\g}
+%     \right).
+%     %
+%     \end{align*}
+%     %
+%     In the final line, we have combined lower orders into the $\ordlog{N^{-1/2}}$ term
+%     for conciseness of expression, and we write $\resid{\infl}(\x_n)$ for the sum
+%     in parentheses.
+
+%     We now show that the sums of the squares of the residuals in the preceding
+%     display go to zero. By \thmref{bayes_clt_main}, each of $\meann
+%     \resid{\ell}(\x_n)^2$, $\meann \resid{\ell\g}(\x_n)^2$, and $\resid{\g}$ are
+%     $O_p(1)$.  Further, $\g(\thetahat) = \ordp{1}$, and $\meann \ell(\x_n \vert
+%     \thetahat)^2 = \ordp{1}$ by \eqref{means_op1} of \lemref{ulln} with $k = 0$.
+%     Since $(a + b + c)^2 \le 3 (a^2 + b^2 + c^2)$, it follows that
+%     $\meann \resid{c}(\x_n)^2 = \ordp{1}$.
+%     Similarly, $\meann \norm{\infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)}_2^2 =
+%     \ordp{1}$ by a ULLN and the boundedness of the operator norm of $\infohat^{-1}$.
+%     By Cauchy-Schwarz, we then have $\meann \ggrad{1}(\thetahat)^\trans
+%     \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat) \resid{\infl}(\x_n) = O_p(1)$.
+
+%     By repeated application of Cauchy-Schwarz, we
+%     can thus sum $\infl_n$ and $\infl_n \infl_n^\trans$ to get
+%     %
+%     \begin{align*}
+%     %
+%     \sumn \infl_n ={}&
+%      \ggrad{1}(\thetahat) \infohat^{-1} \sumn \ellgrad{1}(\x_n \vert \thetahat) +
+%      \ordlogp{N^{-1/2}} = \ordlogp{N^{-1/2}} \\
+%     \meann \infl_n \infl_n^\trans ={}&  \ggrad{1}(\thetahat) \infohat^{-1}
+%      \scorecovhat
+%      \infohat^{-1} \ggrad{1}(\thetahat)^\trans + \ordlogp{N^{-1/2}}
+%     = \gcovmaphat + \ordlogp{N^{-1/2}}.
+%     %
+%     \end{align*}
+%     %
+%     Consistency of $\gcovij$ then follows from \corref{bayes_expectation_dist}.
+%     %
+% \end{proof}

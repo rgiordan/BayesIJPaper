@@ -41,26 +41,27 @@ The model and MAP are given by
 %
 \begin{align*}
 %
-\likhat(\x \vert \theta) ={}&
-    \meann \left(x_n \log \theta - \theta \right) + C\\
-\log \pi(\theta) ={}& (a - 1) \log \theta - b\theta \Rightarrow \\
+\log \pi(\theta) ={}& (a - 1) \log \theta - b\theta + C\\
+\likhat(\theta) ={}&
+    \meann \left(x_n \log \theta - \theta \right) +
+    \frac{1}{N} \log \pi(\theta) + C \Rightarrow \\
 \thetahat ={}& \frac{N \bar{\x} + a - 1}{N + b}\\
-\ellgrad{1}(\x \vert \theta) ={}& \frac{\x_n}{\theta} - 1 \\
-\likhatk{2}(\x \vert \theta) ={}& -\frac{\bar{\x}}{\theta^2}.
+\ellgrad{1}(\x_n \vert \theta) ={}& \frac{\x_n}{\theta} - 1 \\
+\likhatk{2}(\theta) ={}& -\frac{\bar{\x} + (a - 1) / N}{\theta^2}.
 %
 \end{align*}
 %
-Here, the MAP and posterior expectation differ by a factor of $1 / (N + b)$,
+Here, the MAP and posterior expectation differ by $1 / (N + b)$,
 though, as expected, the difference is $o_p(N^{-1/2})$. We
 can now compute the sandwich covariance estimator:
 %
 \begin{align*}
 %
-\scorecovhat ={}& \frac{\hat\sigma^2}{\thetahat^{2}} \\
-\infohat ={}& -\likhatk{2}(\x \vert \thetahat) = \frac{\bar{\x}}{\thetahat^2}\\
+\scorecovhat ={}& \meann \left(\frac{\x_n}{\thetahat} - 1\right)^2 =
+    \frac{\hat\sigma^2 + (\bar{\x} - \thetahat)^2}{\thetahat^{2}} \\
+\infohat ={}& -\likhatk{2}(\thetahat) = \frac{N + b}{N \thetahat}\\
 \gcovhat ={}& \infohat^{-1} \scorecovhat \infohat^{-1}
-= \frac{\thetahat^2}{\bar{\x}^2} \hat\sigma^2
-= \left(\frac{N \bar{\x} + a - 1}{(N + b)\bar{\x}}\right)^2 \hat\sigma^2.
+= \frac{N^2}{(N + b)^2} \left(\hat\sigma^2 + (\bar{\x} - \thetahat)^2\right).
 %
 \end{align*}
 %
@@ -89,4 +90,6 @@ partition function.  It follows that
 %
 \end{align*}
 %
-which is also a consistent estimator of $\sigma^2 = \gcovtrue$.
+which is also a consistent estimator of $\sigma^2 = \gcovtrue$.  Since $\bar{\x} -
+\thetahat = O_p(N^{-1})$, $\gcovij$ and $\gcovhat$ differ only by a term of
+order $O_p(N^{-2})$.

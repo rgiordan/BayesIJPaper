@@ -2,29 +2,42 @@
 
 Since our experiments use a finite $M$,
 $\gcovbayeshat$ and $\gcovijhat$ are MCMC estimators of $\gcovbayes$ and
-$\gcovij$, respectively.  Similarly, our $B$ bootstrap samples are thought of as
-a random draw from the set of $B_{max} := N^N / N!$ possible bootstrap samples,
-and so $\gcovboothat$ is a ``doubly Monte-Carlo'' estimator of $\gcovboot :=
-\lim_{B \rightarrow B_{max}} \lim_{M \rightarrow \infty} \gcovboothat$.  In
-general, for $B < B_{max}$, we expect bootstrap sampling variability to remain
-even in $\lim_{M \rightarrow \infty} \gcovboothat$. Similarly, for $M < \infty$,
-we expect MCMC sampling variability to remain even in $\lim_{B \rightarrow
-B_{max}} \gcovboothat$.  We will shortly discuss how to estimate these Monte
-Carlo errors.
+$\gcovij$, respectively.  Similarly, sampling with replacement from the rows of
+$\xvec$ in \algrref{boot} is equivalent to drawing integer weights $\wvec \sim
+\mathrm{Multinomial}(N; N^{-1}, \ldots, N^{-1})$ and computing the weighted
+posterior expectation $\expect{\postw}{\g(\theta)}$ of \eqref{weighted_post}.
+We therefore define the exact bootstrap covariance as the expectation under
+multinomial resampling,
+%
+\begin{align*}
+%
+\gcovboot :={}& N \cov{\wvec \sim \mathrm{Multinomial}(N; N^{-1}, \ldots, N^{-1})}
+    {\expect{\postw}{\g(\theta)}},
+%
+\end{align*}
+%
+of which $\gcovboothat$, computed with $B$ bootstrap samples and $M$ MCMC draws
+for each, is a ``doubly Monte-Carlo'' estimator.  In general, for $B < \infty$,
+we expect bootstrap sampling variability to remain even as $M \rightarrow
+\infty$. Similarly, for $M < \infty$, we expect MCMC sampling variability to
+remain even as $B \rightarrow \infty$.  We will shortly discuss how to estimate
+these Monte Carlo errors.
 
 Even when the conditions of \thmref{ij_consistent} are met and the IJ covariance
-is consistent, we do not expect $\gcovij = \gcovboot$ even with $B = B_{max}$
-and $M = \infty$, since we have a finite number $N$ of data points, and the
+is consistent, we do not expect $\gcovij = \gcovboot$, even though $\gcovboot$ involves no Monte
+Carlo error, since we have a finite number $N$ of data points, and the
 bootstrap and IJ covariance are formally distinct (though each consistent)
 estimators of $\gcovtrue$.  The difference $\gcovij - \gcovboot$ should decrease
 as $N$ grows, but, for any finite $N$, the difference can be expected to exceed
 Monte Carlo error for sufficiently large $M$ and $B$. Similarly, even in the
-correctly specified case, we do not expect $\gcovbayes = \gcovhat$, as, again,
-these are distinct (though consistent) estimators of $\info^{-1}$.
+correctly specified case, we do not expect $\gcovbayes = \gcovij$, as, again,
+these are distinct (though consistent) estimators of $\ggrad{1}(\thetatrue)
+\info^{-1} \ggrad{1}(\thetatrue)^\trans$.
 
 One might attempt to additionally account for frequentist sampling variability
 of the original data from the target population in $\gcovij$ or $\gcovboot$ as
-estimators of $\gcovtrue$, or of $\gcovbayes$ as an estimator of $\info^{-1}$.
+estimators of $\gcovtrue$, or of $\gcovbayes$ as an estimator of
+$\ggrad{1}(\thetatrue) \info^{-1} \ggrad{1}(\thetatrue)^\trans$.
 However, we expect the quantities $\gcovij$, $\gcovboot$, and $\gcovbayes$ to be
 highly correlated under random sampling of the data from the population
 distribution, and it is necessary to take this correlation into account when

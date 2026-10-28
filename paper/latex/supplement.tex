@@ -22,6 +22,22 @@
     Tamara Broderick (\texttt{tbroderick@mit.edu})
 \end{center}
 
+% Prefix the supplement's numbers with "S" so that cross-references between
+% the separately compiled main paper and supplement (via xr) are unambiguous.
+\renewcommand{\thefigure}{S\arabic{figure}}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\theequation}{S\arabic{equation}}
+\renewcommand{\thealgorithm}{S\arabic{algorithm}}
+\renewcommand{\theassu}{S\arabic{assu}}
+\renewcommand{\thedefn}{S\arabic{defn}}
+\renewcommand{\thelem}{S\arabic{lem}}
+\renewcommand{\theex}{S\arabic{ex}}
+\renewcommand{\thethm}{S\arabic{thm}}
+\renewcommand{\theprop}{S\arabic{prop}}
+\renewcommand{\thecor}{S\arabic{cor}}
+\renewcommand{\thecond}{S\arabic{cond}}
+\renewcommand{\theconj}{S\arabic{conj}}
+
 \input{supplement_content.tex}
 
 \printbibliography{}

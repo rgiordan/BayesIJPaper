@@ -16,6 +16,7 @@
 \newcommand{\armNumModels}{56}
 \newcommand{\armNumDatasets}{14}
 \newcommand{\armNumCovsEstimated}{768}
+\newcommand{\armNumParams}{252}
 \newcommand{\armNumMCMCSamples}{2{,}000}
 \newcommand{\armNumBootstraps}{200}
 \newcommand{\armMedianNumObs}{240}
@@ -46,7 +47,7 @@
 \begin{table}[h]
 \begin{center}
 % latex table generated in R 4.6.1 by xtable 1.8-8 package
-% Thu Jul 30 10:32:00 2026
+% Mon Oct 26 19:45:52 2026
 \begin{tabular}{|l|c|c|}
   \hline
  & Fixed effects only & Random and fixed effects \\ 
@@ -57,11 +58,10 @@ Logistic regression & 192 &  10 \\
    \hline
 \end{tabular}
 
-
-Models
+Total quantities to estimate by model type
 
 \vspace{0.1in}% latex table generated in R 4.6.1 by xtable 1.8-8 package
-% Thu Jul 30 10:32:00 2026
+% Mon Oct 26 19:45:52 2026
 \begin{tabular}{|l|c|c|}
   \hline
  & Cross-covariance estimate & Variance estimate \\ 
@@ -73,7 +73,7 @@ Regression parameter & 325 & 190 \\
 \end{tabular}
 
 
-Covariances to estimate
+Total quantities to estimate by parameter type
 
 \end{center}
 
@@ -84,7 +84,7 @@ Covariances to estimate
 
 \def\ARMModelList{
 % latex table generated in R 4.6.1 by xtable 1.8-8 package
-% Thu Jul 30 10:32:00 2026
+% Mon Oct 26 19:45:52 2026
 \begin{table}[ht]
 \centering
 \begin{tabular}{rlllr}
@@ -164,7 +164,7 @@ Covariances to estimate
 
 }
 
-\caption[The distribution of the z-statistics $\zdiff$]{The distribution of the z-statistics $\zdiff$.  Red lines indicate the boundaries of a two-sided normal test for significance with level $0.1$, and ``Rejected'' counts the number of covariances in both sides of the rejection region.  The ``Log scale parameter'' panel includes all variances or covariances that involve at least one log scale parameter.}\label{fig:relerr_graph}
+\caption[The distribution of the z-statistics $\zdiff$]{The distribution of the z-statistics $\zdiff$.  Red lines indicate the boundaries of a two-sided normal test for significance with level $0.1$, and ``Rejected'' gives the percentage of covariances in both sides of the rejection region.  The ``Log scale parameter'' panel includes all variances or covariances that involve at least one log scale parameter.}\label{fig:relerr_graph}
 \end{figure}
 
 \end{knitrout}
@@ -220,7 +220,7 @@ Covariances to estimate
 
 }
 
-\caption[The difference from the simulation, IJ, and Bayesian covariances]{The difference from the simulation, IJ, and Bayesian covariances. Standard errors include variation due to both Monte Carlo and, in the case of the IJ and simulation, frequentist error.}\label{fig:simple_sim_result}
+\caption[The simulation, IJ, and Bayesian variance estimates, each scaled by $N$]{The simulation, IJ, and Bayesian variance estimates, each scaled by $N$. The right panel uses a log scale.  Error bars show two standard errors.  For the IJ and Bayesian estimates, these include both MCMC error and frequentist sampling error; for the simulation, they reflect the finite number of simulated datasets.  No error bar is shown for the Bayesian posterior variance of $\log \sigma_\mu$.}\label{fig:simple_sim_result}
 \end{figure}
 
 \end{knitrout}
@@ -282,7 +282,7 @@ Covariances to estimate
 
 }
 
-\caption[LMER versus MCMC for the MrP model]{LMER versus MCMC for the MrP model}\label{fig:mrp_lmer_graph}
+\caption[GLMER versus MCMC for the MrP model]{GLMER versus MCMC for the MrP model}\label{fig:mrp_lmer_graph}
 \end{figure}
 
 \end{knitrout}
@@ -298,7 +298,7 @@ Covariances to estimate
 
 }
 
-\caption[LMER versus MCMC standard errors for the MrP model]{LMER versus MCMC standard errors for the MrP model}\label{fig:mrp_lmer_sd_graph}
+\caption[GLMER versus MCMC standard errors for the MrP model]{GLMER versus MCMC standard errors for the MrP model}\label{fig:mrp_lmer_sd_graph}
 \end{figure}
 
 \end{knitrout}

@@ -22,11 +22,11 @@ is third-order BCLT-okay, define the residual function
 %
 \resid{1}(\xvec_s) :={}&
     \expect{\normresid{\infoev / 2}{R_1}(\tau)}{
-        \norm{\tresid{3}{\phi(\cdot, \xvec_s), \theta, \thetahat}}_2}
+        \norm{\tresid{3}{\phi(\cdot, \xvec_s), \thetahat, \theta}}_2}
 \\
 %
 \resid{2}(\xvec_s) :={}&
-    \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}{\norm{\phi(\theta, \xvec_s)}_2}
+    \expect{\normresid{\infoev / 4}{R_1 \bigcup R_2}(\tau)}{\norm{\phi(\theta, \xvec_s)}_2}
 \\
 %
 \resid{3}(\xvec_s) :={}& \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}_2}
@@ -62,7 +62,7 @@ N^{-1} \left(
     \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
         \expect{\normhat}{\tau^4} \right) +
 \\&
-\ordlog{N^{-2}} \resid{\phi}(\xvec_s),
+\ordlog{N^{-3/2}} \resid{\phi}(\xvec_s),
 %
 \end{align*}
 %
@@ -87,7 +87,7 @@ I(\phi) ={}&
         \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
             \expect{\normhat}{\tau^4} \right) +
 \nonumber\\ &\quad
-    \ordlog{N^{-2}} \resid{\phi}(\xvec_s).
+    \ordlog{N^{-3/2}} \resid{\phi}(\xvec_s).
 \eqlabel{i_phi_expansion}
 %
 \end{align}
@@ -114,9 +114,30 @@ For the remainder of this proof, for compactness of notation, we define
 \end{align*}
 %
 which follows from \lemref{r1_normalizer_expansion} and the fact that
-$\normalizer$ is bounded away from zero when $\regevent$ occurs. When
-$\phi(\theta, \xvec_s) \equiv 1$, then $\resid{0}(\xvec_s) = \resid{1}(\xvec_s) = 0$,
-so by \lemref{region_r3, region_r2},
+$\normalizer$ is bounded away from zero when $\regevent$ occurs, since then
+$\norm{\infohat}_{op} < 2 \norm{\info}_{op}$ (\lemref{regular_event}
+\eventref{infoev}).
+
+When $\phi(\theta, \xvec_s) \equiv 1$, we have $I_1(1) = \zeta$ exactly, by the
+definition of $I_1$ (\defref{region_division}). Further, by
+\lemref{region_r2, region_r3},
+%
+\begin{align*}
+%
+\norm{I_2(1)}_2 \le{}&
+    O\left(N^{-3}\right)
+    \expect{\normresid{\infoev / 4}{R_1 \bigcup R_2}(\tau)}{1}
+    = O\left(N^{-3}\right)
+\quad\textrm{and}\quad
+\norm{I_3(1)}_2 = O(N^{\thetadim/2} \exp(-N \epsilon_L)) = O\left(N^{-3}\right).
+%
+\end{align*}
+%
+Since the regions are disjoint when $\regevent$ occurs (\lemref{regular_event}
+\eventref{disjoint_regions}), $I(1) = I_1(1) + I_2(1) + I_3(1) = \zeta +
+O(N^{-3})$. Finally, since $\zeta = \normalizer(1 + \ordlog{N^{-1}})$ and
+$\normalizer$ is bounded away from zero, $\zeta$ is also bounded away from zero
+for $N$ sufficiently large, so
 %
 \begin{align*}
 %
@@ -146,7 +167,7 @@ N^{-1} \frac{\normalizer}{\zeta} \left(
     \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
         \expect{\normhat}{\tau^4} \right) +
 \\&
-\ordlog{N^{-2}} \resid{\phi}(\xvec_s)
+\ordlog{N^{-3/2}} \resid{\phi}(\xvec_s)
 \\={}&
 \phi(\thetahat, \xvec_s) +
 N^{-1} \left(
@@ -154,15 +175,15 @@ N^{-1} \left(
     \frac{1}{6} \likhatk{3}(\thetahat) \phigrad{1}(\thetahat, \xvec_s)
         \expect{\normhat}{\tau^4} \right) +
 \\&
-\ordlog{N^{-2}} \resid{\phi}(\xvec_s).
+\ordlog{N^{-3/2}} \resid{\phi}(\xvec_s).
 %
 \end{align*}
 %
 Note that we have absorbed terms from the expansion of $I(\phi)$ that are linear
-in $|\phi(\thetahat, \xvec_s)|$, $\norm{\phigrad{2}(\thetahat, \xvec_s)}$, and
-$\norm{\phigrad{3}(\thetahat, \xvec_s)}$ into the residual $\resid{\phi}(\xvec_s)$.
+in $\norm{\phigrad{1}(\thetahat, \xvec_s)}$ and $\norm{\phigrad{2}(\thetahat, \xvec_s)}$
+into the residual $\resid{\phi}(\xvec_s)$.
 To do so we have used the fact that, when $\regevent$ occurs,
-$\likhatk{3}(\thetahat) = \likhatk{3}(\thetatrue) + O(1)$.
+$\likhatk{3}(\thetahat) = O(1)$.
 
 Finally, the expansion holds with $\fdist$-probability approaching one by
 \lemref{regular_event}.

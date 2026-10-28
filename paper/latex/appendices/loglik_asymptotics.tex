@@ -21,7 +21,7 @@ residual for a vector-valued function.
 
 \begin{defn}\deflabel{taylor_residual}
 %
-For a $k$-times differentiable function $\phi(\theta)$, a fixed $\thetahat$, and
+For a $k$-times differentiable function $\phi(\theta)$, a fixed $\thetahat$,
 and $\theta$, define the residual functional
 %
 \begin{align*}
@@ -61,11 +61,11 @@ series residual
 \begin{proof}
 %
 Let $\phi_d(\theta)$ denote the $d$-th component of the vector $\phi(\theta)$
-(contrast this notation with for the $d$-th order derivative
+(contrast this notation with the $d$-th order derivative
 $\phigrad{d}(\theta)$). Consider the scalar to scalar map $t \mapsto
 \phi_d(\thetahat + t (\theta - \thetahat))$. Taking the integral remainder form
 of the $K - 1$-th order Taylor series expansion of this scalar map
-\cite[Appendix B.2]{dudley:2018:analysis} and stacking the result into a vector
+\citep[Appendix B.2]{dudley:2018:analysis} and stacking the result into a vector
 gives the desired result.
 %
 \end{proof}
@@ -182,13 +182,19 @@ Suppose that there exists $\deltaulln > 0$, $M(\xn)$, and $K \ge 1$ such that
 \sup_{\theta \in \thetaball{\deltaulln}}
     \norm{\ellgrad{K}(\xn \vert \theta)}_2 \le M(\xn)
 \quad\textrm{with}\quad
-\expect{\fdist(\xn)}{M(\xn)^2} \le \infty.
+\expect{\fdist(\xn)}{M(\xn)^2} < \infty.
 \eqlabel{bounded_lipschitz}
 %
 \end{align}
 %
-Addionally assume that $\pi(\theta)$ is non-zero and $K-1$ times
-continuously differentiable in $\thetaball{\deltaulln}$.
+Additionally assume that $\pi(\theta)$ is non-zero and $K-1$ times
+continuously differentiable in $\thetaball{\deltaulln}$.  Assume also that
+%
+\begin{align}
+    \expect{\fdist(\xn)}{\norm{\ellgrad{k}(\xn \vert \thetatrue)}^2_2} < \infty
+    \textrm{ for }k=0,\ldots, K-1.
+    \eqlabel{ellgrad_bounded_moments}
+\end{align}
 %
 Then the following results hold.  First, for $k \in \{0, \ldots, K\}$,
 %
@@ -211,11 +217,11 @@ Then, for $k \in \{0, \ldots, K - 1\}$,
            }_2 &\plim{} 0
          \eqlabel{glivenko_cantelli} \\
 %
-\sup_{\theta \in \thetaball{\deltaulln}}
-    \norm{\frac{1}{\sqrt{N}} \sumn \left( \ellgrad{k}(\x_n \vert \theta) -
-           \expect{\fdist(\xn)}{\ellgrad{k}(\xn \vert \theta)}\right)
-           }_2 &={} \ordp{1}
-           \eqlabel{donsker} \\
+% \sup_{\theta \in \thetaball{\deltaulln}}
+%     \norm{\frac{1}{\sqrt{N}} \sumn \left( \ellgrad{k}(\x_n \vert \theta) -
+%            \expect{\fdist(\xn)}{\ellgrad{k}(\xn \vert \theta)}\right)
+%            }_2 &={} \ordp{1}
+%            \eqlabel{donsker} \\
 %
 \sup_{\theta \in \thetaball{\deltaulln}}
     \norm{\likhatk{k}(\theta) - \likk{k}(\theta)}_2 &\plim{} 0.
@@ -274,7 +280,7 @@ component, gives
 %
 \begin{align}
 %
-\norm{\ellgrad{K-1}(\xn \vert \theta)}_\infty \le{}&
+\norm{\ellgrad{K-1}(\xn \vert \theta) - \ellgrad{K-1}(\xn \vert \theta')}_\infty \le{}&
     \norm{\theta - \theta'}_2
     \sup_{\thetatil \in \thetaball{\deltaulln}}
         \norm{\ellgrad{K}(\xn \vert \thetatil)}_2
@@ -283,30 +289,56 @@ component, gives
 %
 \end{align}
 %
-It follows that each component of $\ellgrad{K-1}(\xn \vert \theta)$ is both
-Glivenko-Cantelli and Donsker, and so \eqref{glivenko_cantelli,donsker} hold for
-$k = K - 1$ (see \cite[Example 19.7]{van:2000:asymptotic},
-as well as the discussion in \defref{ulln} above).  Further,
+It follows that each component of $\ellgrad{K-1}(\xn \vert \theta)$ is
+Glivenko-Cantelli, and so \eqref{glivenko_cantelli} holds for
+$k = K - 1$, using also \eqref{bounded_lipschitz} and
+\eqref{ellgrad_bounded_moments} for square integrability
+(see \cite[Example 19.7]{van:2000:asymptotic},
+as well as the discussion in \defref{ulln} above).  Further, evaluating
+\eqref{ellgrad_linf_bound} at $\theta' = \thetatrue$ and taking the
+supremum gives
 %
 \begin{align*}
-%
 \sup_{\theta \in \thetaball{\deltaulln}}
-    \norm{\ellgrad{K-1}(\xn \vert \theta)}_2
+    \norm{\ellgrad{K-1}(\xn \vert \theta)}^2_2
 \le{}&
+\thetadim^{K-1}
 \sup_{\theta \in \thetaball{\deltaulln}}
-    \sqrt{\thetadim} \norm{\ellgrad{K-1}(\xn \vert \theta)}_\infty
-\le{}
-    2 \sqrt{\thetadim}  \deltaulln M(\xn),
-%
+    \norm{\ellgrad{K-1}(\xn \vert \theta)}_\infty^2
+\\\le{}&
+2 \thetadim^{K-1}
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{
+        \ellgrad{K-1}(\xn \vert \theta) -
+        \ellgrad{K-1}(\xn \vert \thetatrue)}_\infty^2 +
+2 \thetadim^{K-1}
+ \norm{\ellgrad{K-1}(\xn \vert \thetatrue)}_\infty^2
+\\\le{}&
+2 \thetadim^{K-1}
+\sup_{\theta \in \thetaball{\deltaulln}}
+\norm{\theta - \thetatrue}^2_2 M(\xn)^2 +
+2 \thetadim^{K-1}
+ \norm{\ellgrad{K-1}(\xn \vert \thetatrue)}_2^2
+\\\le{}&
+2 \deltaulln^2 \thetadim^{K-1} M(\xn)^2 +
+2 \thetadim^{K-1} \norm{\ellgrad{K-1}(\xn \vert \thetatrue)}_2^2.
 \end{align*}
 %
-where the final line applies \eqref{ellgrad_linf_bound} and
-$
-\sup_{\theta, \theta' \in \thetaball{\deltaulln}} \norm{\theta - \theta'}_2 \le 2 \deltaulln.
-$
-It follows that \eqref{means_op1} holds for $k = K - 1$.
+It follows from \eqref{bounded_lipschitz} and \eqref{ellgrad_bounded_moments}
+with $k = K - 1$ that
+$$
+\expect{\fdist(\xn)}{\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\ellgrad{K-1}(\xn \vert \theta)}^2_2} < \infty,
+$$
+and so \eqref{means_op1} holds for $k = K - 1$ by applying the LLN
+to the envelope function
+$\sup_{\theta \in \thetaball{\deltaulln}}
+    \norm{\ellgrad{K-1}(\xn \vert \theta)}^2_2$.
 
-Since \eqref{bounded_lipschitz} holds for $k=K-1$, the remaining results follow
+Since \eqref{bounded_lipschitz} holds for $k=K-1$ with the envelope
+$M_{K-1}(\xn) := \left(\sup_{\theta \in \thetaball{\deltaulln}}
+\norm{\ellgrad{K-1}(\xn \vert \theta)}^2_2\right)^{1/2}$ in place of $M(\xn)$,
+the remaining results follow
 by proceeding inductively on $K-1$, $K-2$, and so on.
 
 Finally, by continuity of $\prior(\theta)$

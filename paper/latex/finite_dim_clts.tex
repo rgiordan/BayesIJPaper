@@ -45,6 +45,10 @@ justified.
 %
 \end{align*}
 %
+Additionally,
+$\expect{\fdist(\xn)}{
+    \norm{\ellgrad{k}(\xn \vert \thetatrue)}_2^2} < \infty$ for $k=0, \ldots, 3$.
+%
 \item \itemlabel{strict_opt}
 The log likelihood has a strict optimum in the following sense:
     %
@@ -67,7 +71,7 @@ The log likelihood has a strict optimum in the following sense:
     % can blow up outside the delta ball and still have the MAP
     % be well-behaved.
     \begin{align*}
-    \sup_{\theta: \thetadom \setminus \thetaball{\delta}}
+    \inf_{\theta \in \thetadom \setminus \thetaball{\delta}}
     \left( \meann \ell(\x_n \vert \thetatrue) -
            \meann \ell(\x_n \vert \theta)
     \right) > \varepsilon.
@@ -115,7 +119,7 @@ datapoint, is ``$K$-th order BCLT-okay'' if
     $\meann \expect{\prior(\theta)}{\norm{\phi(\theta, \x_n)}^2_2} = O_p(1)$.
 %
 \item\itemlabel{grad_op1}
-For some $\delta > 0$, and for each $k = 1, \ldots, K$,
+For some $\delta > 0$, and for each $k = 0, \ldots, K$,
 $\sup_{\theta \in \thetaball{\delta}}
     \meann \norm{\phigrad{k}(\theta, \x_n)}^2_2 = O_p(1)$.
 %
@@ -123,7 +127,7 @@ $\sup_{\theta \in \thetaball{\delta}}
 %
 When the function $\phi(\theta, \x_n) = \phi(\theta)$ does not depend on the
 data (e.g., $\phi(\theta, \x_n) = \g(\theta)$), then \itemref{grad_op1}
-is vacuous, and \itemref{prior_op1} simply becomes
+holds automatically by continuity, and \itemref{prior_op1} simply becomes
 $\expect{\prior(\theta)}{\norm{\phi(\theta)}^2_2} < \infty$.
 %
 \end{defn}
@@ -150,7 +154,7 @@ N^{-1} \left(
     \frac{1}{6} \phigrad{1}(\thetahat, \x_n) \likhatk{3}(\thetahat) \normfourth
 \right) +
 \nonumber\\&
-\ordlog{N^{-2}} 1_{\phi} \resid{\phi}(\x_n),
+\ordlog{N^{-3/2}} 1_{\phi} \resid{\phi}(\x_n),
 \textrm{ where }\meann \resid{\phi}(\x_n)^2 = O_p(1).
 \eqlabel{bclt_expansion}
 %
@@ -177,7 +181,7 @@ avoid a tedious thicket of indicial sums. Concretely, we mean that
 ={}&
 \sum_{a,b,c,d=1}^{\thetadim}
 \fracat{\partial \phi(\theta, \x_n)}{\partial\theta_a }{\thetahat}
-\fracat{\partial^3 \lik(\theta)}
+\fracat{\partial^3 \likhat(\theta)}
        {\partial\theta_b \partial\theta_c \partial \theta_d }{\thetahat}
        \normfourth_{abcd}
 %
@@ -333,7 +337,7 @@ variance estimate is consistent.  Specifically,
     \gcovij ={}&
         \ggrad{1}(\thetahat) \infohat^{-1}
             \scorecovhat \infohat^{-1} \ggrad{1}(\thetahat)^\trans +
-        \ordlogp{N^{-1}}
+        \ordlogp{N^{-1/2}}
         \plim \gcovtrue.
 \end{align*}
 %

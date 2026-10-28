@@ -22,8 +22,8 @@ x_n \vert \theta &\iid \normdist(\cdot | \theta, 1) &
 \end{align*}
 %
 We will take $\theta$ to be our quantity of interest, so $\g(\theta) = \theta$.
-Since $\sigma^2 \ne 1$ the model is misspecified, and so we expect the posterior
-variance $\cov{\post}{\theta}$ to differ from $\gcovtrue$, even asymptotically.
+Since $\sigma^2 \ne 1$ the model is misspecified, and so we expect the scaled posterior
+variance $N \cov{\post}{\theta}$ to differ from $\gcovtrue$, even asymptotically.
 
 For this simple model, the posterior is available in closed form:
 %
@@ -34,7 +34,7 @@ For this simple model, the posterior is available in closed form:
 \end{align*}
 %
 From this, we can see that $\thetatrue = \lim_{N \rightarrow \infty}
-\expect{\post}{\theta} = \thetagen$, It happens in this simple example that
+\expect{\post}{\theta} = \thetagen$. It happens in this simple example that
 $\thetatrue$ is ``consistent'' for the true mean $\expect{\fdist(\xn)}{\xn}$,
 though in general this need not be the case.  For example, the model's trivial
 ``estimate'' of $\var{\fdist(\xn)}{\xn}$ is $1$, which is never equal to the
@@ -43,10 +43,10 @@ true value of $\sigma^2$.
 One can readily verify that \assuref{bayes_clt,bclt_okay} are satisfied for this
 model and this particular value of $\thetatrue$. Arguably the most challenging
 condition is the final part of \assuref{bayes_clt} \itemref{strict_opt}, which
-one can show via strong convexity of the log likelihood, together with
+one can show via strong concavity of the log likelihood, together with
 convergence of $\frac{1}{N} \sumn \ellgrad{1}(\x_n \vert \thetatrue) \plim 0$ by
 the ordinary law of large numbers.  Using special structure of a particular
-problem (like strong convexity) to establish a condition like
+problem (like strong concavity) to establish a condition like
 \assuref{bayes_clt} \itemref{strict_opt} is common in the literature --- see,
 for example, textbook proofs of the consistency of M-estimators on unbounded
 domains (e.g.~Theorem 9.11 of \citet{keener:2010:theoretical} or Chapter 6.2 of
@@ -64,12 +64,14 @@ the variance of the limiting distribution is also the limit of the variance,
 since
 $$
 N \var{\xfdist}{\expect{\post}{\theta}} =
-    \frac{N^2}{(N+1)^2}\sigma^2 \rightarrow \sigma^2 \gcovtrue.
+    \frac{N^2}{(N+1)^2}\sigma^2 \rightarrow \sigma^2 = \gcovtrue.
 $$
 The asymptotic equivalence between the variance of the limit and the limit of
-the variance occurs in this case because $\var{\xfdist}{\expect{\post}{\theta}}$
-is uniformly integrable as a sequence in $N$ (Theorem 10.3.6 of
-\citet{dudley:2018:realanalysis}).  We emphasize, however, that our theorems do
+the variance occurs in this case because the rescaled squared errors
+$N \left(\expect{\post}{\theta} - \thetatrue\right)^2$ are uniformly
+integrable in $N$ (Theorem 10.3.6 of \citet{dudley:2018:realanalysis}).
+%
+We emphasize, however, that our theorems do
 not assume uniform integrability, and we aim to estimate the variance of the
 limiting normal distribution, not the limiting value of the variance, as
 discussed in the text surrounding \eqref{gtrue}.
@@ -80,26 +82,28 @@ remaining quantities are (up to constants not depending on
 $\theta$):
 \begin{align}
 %
-\likhat(\x \vert \theta) ={}&
-    -\frac{1}{2N} \sumn \left(x_n^2 - 2x_n \theta + \theta^2\right) + \textrm{Constant}
+\log \pi(\theta) ={}& -\frac{1}{2}\theta^2 + \textrm{Constant}
 \quad\textrm{and}\quad
 % \nonumber\\
-\log \pi(\theta) ={}& -\frac{1}{2}\theta^2 + \textrm{Constant} \Rightarrow \nonumber \\
+\likhat(\theta) ={}
+    -\frac{1}{2N} \sumn \left(x_n^2 - 2x_n \theta + \theta^2\right)
+    -\frac{1}{2N} \theta^2 + \textrm{Constant} \Rightarrow \nonumber \\
 \thetahat ={}& \xbar
 \quad\textrm{,}\quad
-\ellgrad{1}(\x \vert \theta) ={} x_n - \theta
+\ellgrad{1}(\x_n \vert \theta) ={} x_n - \theta
 \quad\textrm{and}\quad
-\likhatk{2}(\x \vert \theta) ={} -1 \Rightarrow \nonumber \\
+\likhatk{2}(\theta) ={} -\frac{N+1}{N} \Rightarrow \nonumber \\
 \scorecovhat ={}& \meann \left(x_n - \xbar\right)^2
 \quad\textrm{,}\quad
-\infohat ={} 1
+\infohat ={} \frac{N+1}{N}
 \quad\textrm{and}\quad
-\gcovhat ={} \infohat^{-1} \scorecovhat \infohat^{-1} = \scorecovhat.
+\gcovhat ={} \infohat^{-1} \scorecovhat \infohat^{-1} =
+    \frac{N^2}{(N + 1)^2} \scorecovhat.
 \eqlabel{normal_gcovhat}
 %
 \end{align}
 %
-It is readily verified that $\scorecovhat \plim \sigma^2 = \gcovtrue$,
+It is readily verified that $\gcovhat \plim \sigma^2 = \gcovtrue$,
 so we have verified the conclusion of \corref{bayes_expectation_dist}.
 
 Finally, we manually verify \thmref{ij_consistent}. The influence score is given by:
@@ -110,7 +114,8 @@ Finally, we manually verify \thmref{ij_consistent}. The influence score is given
     \theta, -\frac{1}{2} \left(\x_n^2 - 2\x_n \theta + \theta^2 \right)} \\
 ={}&
  -\frac{1}{2}  N \cov{\post}{\theta, 1} \x_n^2 +
- N \cov{\post}{\theta, \theta} \x_n  + N  \cov{\post}{\theta, \theta^2}
+ N \cov{\post}{\theta, \theta} \x_n
+ -\frac{1}{2} N  \cov{\post}{\theta, \theta^2}
 ={} \frac{N}{N+1} \x_n + \textrm{Constant},
 %
 \end{align*}
@@ -123,10 +128,15 @@ the IJ covariance estimate is given by
 \begin{align*}
 %
 \gcovij ={}& \meann \left(\infl_n - \bar{\infl} \right)^2
-={} \frac{N^2}{(N + 1)^2} \scorecovhat \plim \sigma^2 = \gcovtrue.
+={} \frac{N^2}{(N + 1)^2} \meann \left(\x_n - \bar{\x}\right)^2
+\plim \sigma^2 = \gcovtrue,
+\quad\textrm{where}\quad
+\bar{\x} := \meann \x_n.
 %
 \end{align*}
 %
-Thus $\gcovij$ differs from the $\gcovhat$ given in \eqref{normal_gcovhat} by a
-factor that vanishes asymptotically.  So, like $\gcovhat$, $\gcovij$ is a
+Since $\scorecovhat = \meann \left(\x_n - \bar{\x}\right)^2 + \left(\bar{\x} -
+\xbar\right)^2$ and $\bar{\x} - \xbar = \bar{\x} / (N + 1) = O_p(N^{-1})$,
+$\gcovij$ differs from the $\gcovhat$ given in \eqref{normal_gcovhat} only by
+a term of order $O_p(N^{-2})$.  So, like $\gcovhat$, $\gcovij$ is a
 consistent estimator of the asymptotic variance $\gcovtrue$.

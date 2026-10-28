@@ -8,4 +8,5 @@ ggplot(mrp_env$compiled_df) +
   geom_text(aes(x="Bootstrap", y=4.9e-5, 
                  label="Horizontal line shows estimated true variance"),
             size=3) +
-  xlab("")
+  xlab("") +
+  ylab("Variance estimate")

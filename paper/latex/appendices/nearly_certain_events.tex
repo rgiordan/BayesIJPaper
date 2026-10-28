@@ -26,38 +26,33 @@ for a particular $N$, $\delta_1$, $\delta_2$.
 disjoint, and $I(\phi) = I_1(\phi) + I_2(\phi) + I_3(\phi)$.
 %
 \item \eventlabel{thetahat_close}
-$\norm{\thetahat - \thetatrue}_\infty < \epsilon_U$.
+$\norm{\thetahat - \thetatrue}_2 < \epsilon_U$.
 %
 \item \eventlabel{prior_close}
     $|\prior(\thetahat) - \prior(\thetatrue)| < \epsilon_U$.
 %
-\item \eventlabel{ulln} For any scalar-valued function $\rho(\theta, \x_n)$
-with $ \expect{\fdist(\xn)}{\rho(\theta, \xn)} = 0$
-satisfying a ULLN with $\delta = \deltaulln$, we have
+\item \eventlabel{ulln} For each $k \in \{0, \ldots, 4\}$,
+$\sup_{\theta \in R_1 \bigcup R_2}
+    \norm{\likhatk{k}(\theta) - \likk{k}(\theta)}_2 \le \epsilon_U$.
 %
-%\begin{align*}
-%
-$\sup_{\theta \in R_1 \bigcup R_2} \meann
-\abs{\rho(\theta, \x_n)}
-    \le \epsilon_U$.
-%
-\item \eventlabel{infoev} $\infoevhat > \infoev / 2$.
+\item \eventlabel{infoev} $\infoevhat > \infoev / 2$ and
+$\norm{\infohat}_{op} < 2\norm{\info}_{op}$.
 %
 \item \eventlabel{strict_opt} There exists $\epsilon_L > 0$ such that
 %
 %\begin{align*}
-$\sup_{\theta \in R_3}
+$\inf_{\theta \in R_3}
 \left( \sumn \ell(\x_n \vert \thetahat) -
        \sumn \ell(\x_n \vert \theta)
 \right) > N \epsilon_L$.
 %\end{align*}
 \end{enumerate}
 
-Let \assuref{bayes_clt} hold. For any $\delta_1 > 0$, any $\pi_0 \in (0,1)$, and
-any $\delta_2 > 0$ and $\epsilon_U > 0$ satisfying  $\deltaulln > \epsilon_U +
-\delta_2$ and $\delta_2 / 2 \ge \epsilon_U$, there exists an $N^*$ such $N >
-N^*$ implies that event $\regevent$ occurs with $\fdist$-probability at least $1 -
-\pi_0$.
+Let \assuref{bayes_clt} hold with $\delta = \deltaulln$. For any $\delta_1 > 0$,
+any $\pi_0 \in (0,1)$, and any $\delta_2 > 0$ and $\epsilon_U > 0$ satisfying
+$\deltaulln > \epsilon_U + \delta_2$ and $\delta_2 / 2 \ge \epsilon_U$, there
+exists an $N^*$ such $N > N^*$ implies that event $\regevent$ occurs with
+$\fdist$-probability at least $1 - \pi_0$.
 %
 \begin{proof}
 %
@@ -84,81 +79,225 @@ implies that
 %
 \end{align*}
 %
-Therefore,
+Therefore, for each $k \in \{0, \ldots, 4\}$,
 %
 \begin{align*}
 %
-\sup_{\theta \in R_1 \bigcup R_2} \meann \abs{\rho(\theta, \x_n)} \le&
+\sup_{\theta \in R_1 \bigcup R_2}
+    \norm{\likhatk{k}(\theta) - \likk{k}(\theta)}_2 \le&
 \sup_{\theta \in \thetaball{\deltaulln}}
-    \meann \abs{\rho(\theta, \x_n)} \plim 0.
+    \norm{\likhatk{k}(\theta) - \likk{k}(\theta)}_2 \plim 0.
 %
 \end{align*}
 %
-\Eventref{infoev} follows from \lemref{thetahat_consistent}.
+For $k \le 3$, the limit is \eqref{ulln} of \lemref{ulln} with $K = 4$.  For
+$k = 4$, $\theta \mapsto \ellgrad{4}(\xn \vert \theta)$ is continuous on the
+compact set $\thetaball{\deltaulln}$ with integrable envelope $M(\xn)$
+(\assuref{bayes_clt} \itemref{loglik_smooth,loglik_ulln}), so it satisfies a
+ULLN \citep[Example 19.8]{van:2000:asymptotic}, and
+$\frac{1}{N} \sup_{\theta \in \thetaball{\deltaulln}}
+\norm{\logpriorgrad{4}(\theta)}_2 \rightarrow 0$ by \assuref{bayes_clt}
+\itemref{prior_smooth}.  Since there are finitely many $k$, all of these bounds
+hold simultaneously with probability approaching one.
 
 
-For \eventref{strict_opt}, write
+
+\Eventref{infoev} follows from \lemref{thetahat_consistent}, together with
+the fact that $\infohat = -\likhatk{2}(\thetahat) \plim \info$ by
+$\thetahat \plim \thetatrue$, the ULLN of \lemref{ulln}, the continuity of
+$\likk{2}$, and the continuity of matrix eigenvalues.
+
+
+For \eventref{strict_opt}, we have to convert \assuref{bayes_clt}
+\itemref{strict_opt} into a statement about $\thetahat$ and $R_3$.  First,
 %
-\begin{align*}
-%
+\begin{align}
 \MoveEqLeft
-\frac{1}{N} \sup_{\theta \in R_3}
-\left( \sumn \ell(\x_n \vert \thetahat) -
-       \sumn \ell(\x_n \vert \theta)
+\inf_{\theta \in R_3}
+\left( \frac{1}{N} \sumn \ell(\x_n \vert \thetahat) -
+       \frac{1}{N} \sumn \ell(\x_n \vert \theta)
 \right)
-=\\&
-\likhat(\thetahat) - \logprior(\thetahat) -
-\sup_{\theta \in R_3} \left(\likhat(\theta) - \logprior(\theta)\right)
-=\\&
-\likhat(\thetahat) - \likhat(\thetatrue) +
-    \sup_{\theta \in R_3}
-        \left(\likhat(\thetatrue) - \likhat(\theta)\right).
+% =\nonumber \\&
+%     \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetahat) -
+%         \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue)
+%     \right) +
+%     \inf_{\theta \in R_3}
+%     \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+%         \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+%     \right)
+= \nonumber \\&
+\frac{1}{N} \sumn \ell(\x_n \vert \thetahat) -
+       \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue)
+ + \inf_{\theta \in R_3}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right).
+    \eqlabel{lemmafourrthreebound}
+\end{align}
 %
-\end{align*}
-%
-Since $\norm{\thetahat - \thetatrue}_2 \le \epsilon_U \le \delta_2 / 2$
-by assumption of the present lemma,
+
+We begin by controlling the second term in
+\eqref{lemmafourrthreebound}.
+Since $\norm{\thetahat - \thetatrue}_2 < \epsilon_U \le \delta_2 / 2$ by
+\eventref{thetahat_close} of the present lemma,
 %
 \begin{align*}
 %
 \theta \in& R_3 \Rightarrow\\
-\norm{\theta - \thetahat + \thetahat - \thetatrue}_2 \ge & \delta_2 \Rightarrow\\
-\norm{\theta - \thetahat}_2 + \norm{\thetahat - \thetatrue}_2
+\norm{\theta - \thetatrue + \thetatrue - \thetahat}_2 \ge & \delta_2 \Rightarrow\\
+\norm{\theta - \thetatrue}_2 + \norm{\thetatrue - \thetahat}_2
     \ge& \delta_2 \Rightarrow\\
-\norm{\theta - \thetahat}_2 \ge& \delta_2 - \frac{\delta_2}{2} = \frac{\delta_2}{2},
+\norm{\theta - \thetatrue}_2 >& \delta_2 - \frac{\delta_2}{2} = \frac{\delta_2}{2},
 %
 \end{align*}
 %
-so the set $R_3$, is contained in $\thetadom \setminus \thetaball{\delta_2 /
-2}$. Consequently, by \assuref{bayes_clt} \itemref{strict_opt}, there exists an
-$\epsilon_L$ such that
+It follows that the set $R_3$ is contained in
+$\thetadom \setminus \thetaball{\delta_2 / 2}$, and
+$$
+\inf_{\theta \in R_3}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right) \ge
+\inf_{\theta \in \thetadom \setminus \thetaball{\delta_2 / 2}}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right).
+$$
+Now, applying \assuref{bayes_clt} \itemref{strict_opt}, we have
+$$
+\inf_{\theta \in \thetadom \setminus \thetaball{\deltaulln}}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right) > \varepsilon,
+$$
+for some $\varepsilon > 0$.
+
+It remains to control the annulus
+\def\annulus{\thetaball{\deltaulln} \setminus \thetaball{\delta_2 / 2}}
+$$
+\begin{aligned}
+\MoveEqLeft
+\inf_{\theta \in \annulus}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right)
+\\={}&
+\inf_{\theta \in \annulus}
+    \left(
+        \likhat(\thetatrue) - \likhat(\theta) -
+        \frac{1}{N} \log \prior(\thetatrue) +
+        \frac{1}{N} \log \prior(\theta)
+    \right)
+\\\ge{}&
+\inf_{\theta \in \annulus}
+    \left(
+        \likhat(\thetatrue) - \likhat(\theta)
+    \right) -
+\frac{2}{N} \sup_{\theta \in \thetaball{\deltaulln}} \abs{
+    \log \prior(\theta)
+}.
+\end{aligned}
+$$
+Define $\eta$ to satisfy
+$$
+4 \eta := \inf_{\theta \in \annulus} \left(\lik(\thetatrue) - \lik(\theta)\right) > 0
+$$
+Since $\thetatrue$ is a unique maximizer of $\lik$, $\lik(\theta)$ is
+continuous, and the closure of $\annulus$ is a compact set not containing
+$\thetatrue$, we have that $\eta > 0$.
+
+We now bound the remaining terms by $\eta$.
+Since the prior is continuous and nonzero on the
+compact set $\thetaball{\deltaulln}$,
+and because $\thetaball{\deltaulln}$ is fixed by
+$\deltaulln$, $\sup_{\theta \in \thetaball{\deltaulln}} \abs{\log \prior(\theta)}$ is a
+finite constant and we can take
+$N^*$ large enough that
 %
-\begin{align*}
+\begin{align}
+\frac{2}{N} \sup_{\theta \in \thetaball{\deltaulln}} \abs{
+    \log \prior(\theta)
+} < \eta.
+\eqlabel{lemmafourpriorbound}
+\end{align}
 %
-\sup_{\theta: \norm{\theta - \thetahat}_2 \ge \delta_2}
-    \left(\likhat(\thetatrue) - \likhat(\theta)\right) \le&
-\sup_{\theta \in \thetadom \setminus \thetaball{\delta_2 / 2}}
-    \left(\likhat(\thetatrue) - \likhat(\theta)\right) \le
--2 \epsilon_L.
+By \lemref{ulln} (with $k = 0$), there exists an $N^*$ such that,
+with arbitrarily high probability,
+$$
+\sup_{\theta \in \thetaball{\deltaulln}}
+    \abs{\likhat(\theta) - \lik(\theta)} \le    \eta.
+$$
+Combining,
+$$
+\begin{aligned}
+\MoveEqLeft
+\inf_{\theta \in \annulus}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right)
+\\\ge{}&
+\inf_{\theta \in \annulus}
+    \left(
+        \likhat(\thetatrue) - \lik(\thetatrue) +
+        \lik(\thetatrue) - \lik(\theta) +
+        \lik(\theta) - \likhat(\theta)
+    \right)
+    -
+\\{}&
+    \frac{2}{N} \sup_{\theta \in \thetaball{\deltaulln}} \abs{
+        \log \prior(\theta)
+    }
+\\\ge{}&
+\inf_{\theta \in \annulus} \left(\lik(\thetatrue) - \lik(\theta) \right) -
+2 \sup_{\theta \in \thetaball{\deltaulln}} \abs{\likhat(\theta) - \lik(\theta)}
+- \eta
+\\\ge{}&
+4 \eta - 3 \eta = \eta > 0.
+\end{aligned}
+$$
+Combining,
 %
-\end{align*}
-%
-By the continuity of $\lik$, and a ULLN applied to $\likhat(\theta)$, we can
-take $\norm{\thetahat - \thetatrue}_2$ sufficiently small that that
-$|\likhat(\thetahat) - \likhat(\thetatrue)| < \epsilon_L$.  It follows that,
-with probability approaching one,
-%
-\begin{align*}
-%
-\frac{1}{N} \sup_{\theta: \norm{\theta - \thetahat}_2 \ge \delta_2}
-\left( \sumn \ell(\x_n \vert \thetahat) -
-       \sumn \ell(\x_n \vert \theta)
-\right) \le \epsilon_L - 2 \epsilon_L = -\epsilon_L.
-%
-\end{align*}
-%
-The result follows by multiplying both sides of the inequality by $N$.
-%
+\begin{align}
+\inf_{\theta \in R_3}
+    \left( \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) -
+        \frac{1}{N} \sumn \ell(\x_n \vert \theta)
+    \right) \ge \textrm{min}(\eta, \varepsilon) > 0.
+\eqlabel{lemmafourullnbound}
+\end{align}
+
+Finally, we control the first term
+in \eqref{lemmafourrthreebound}.  Since $\thetahat$ maximizes
+$\likhat(\theta)$, and on the event that $\thetahat$ is in
+$\thetaball{\deltaulln}$ (which holds under \eventref{thetahat_close}, since
+$\norm{\thetahat - \thetatrue}_2 < \epsilon_U < \deltaulln$),
+$$
+\begin{aligned}
+\frac{1}{N} \sumn \ell(\x_n \vert \thetahat) -
+       \frac{1}{N} \sumn \ell(\x_n \vert \thetatrue) ={}&
+\likhat(\thetahat) - \likhat(\thetatrue) - \frac{1}{N} \log \prior(\thetahat) +
+\\{}&
+\frac{1}{N} \log \prior(\thetatrue)
+\\\ge{}&
+-\frac{2}{N}  \sup_{\theta \in \thetaball{\deltaulln}} \abs{\log \prior(\theta)}.
+\end{aligned}
+$$
+As argued above in \eqref{lemmafourpriorbound}, we can take
+$N^*$ even larger so that
+$$
+\frac{2}{N} \sup_{\theta \in \thetaball{\deltaulln}} \abs{
+    \log \prior(\theta)
+} < \frac{1}{2} \textrm{min}(\eta, \varepsilon).
+$$
+Combining with \eqref{lemmafourullnbound} and \eqref{lemmafourrthreebound},
+and multiplying by $N$, gives the desired result with
+$\epsilon_L = \frac{1}{2} \textrm{min}(\varepsilon, \eta)$.  The argument
+uses the event in \assuref{bayes_clt} \itemref{strict_opt}, the ULLN event, and
+\eventref{thetahat_close}; each holds with probability approaching one, so all
+three hold jointly with probability approaching one, and we can take $N^*$
+large enough that this joint probability is at least $1 - \pi_0$.
+
+
+
 \end{proof}
 %
 \end{lem}

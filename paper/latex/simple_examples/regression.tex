@@ -9,11 +9,13 @@ The model and data generating process are
 %
 \textrm{Model:}\quad
 &&\sigma^{-2} &\sim \mathrm{Gamma}(a, b)\\
-&&\beta &\sim \normdist(\cdot | 0, \sigma_\beta^2 I_D)\\
+%&&\beta &\sim \normdist(\cdot | 0, \sigma_\beta^2 I_D)\\
+&&\beta \vert \sigma &\sim \normdist\left(\cdot \,\Big|\, 0, \frac{\sigma^2}{\sigma_\beta^2} I_D\right)\\
 &&y_n &\iid \normdist(\cdot | \beta^T z_n, \sigma^2)\\
 \textrm{Data generating process (reality):}\quad
 &&&\textrm{The moments of }
-    y_n z_n \textrm{, } z_n z_n^T \textrm{, and } y_n^2 z_n z_n^T\\
+    y_n z_n \textrm{, } z_n z_n^T \textrm{, } y_n^2 z_n z_n^T
+    \textrm{, and } \norm{z_n}_2^4\\
 &&&\textrm{are finite and obey a LLN, with}\\
 &&&\textrm{invertible }\expect{\xfdist}{z_n z_n^T}.
 %
@@ -28,9 +30,13 @@ require the conditional posterior $p(\beta \vert \x, \sigma)$.
 \hat{S}_z :={}& \meann z_n z_n^T + \frac{\sigma_\beta^2}{N} I_D\\
 \hat\beta :={}& \hat{S}_z^{-1} \left(\meann z_n y_n\right)\\
 p(\beta \vert \x, \sigma) ={}&
-    \normdist\left(\beta \vert \hat\beta, \sigma^2 \hat{S}_z \right)\\
+    \normdist\left(\beta \vert \hat\beta, \frac{\sigma^2}{N} \hat{S}_z^{-1} \right)\\
+% p(\beta \vert \x, \sigma) ={}&
+%     \normdist\left(\beta \vert \hat\beta, \sigma^2 \hat{S}_z \right)\\
 \expect{\post}{\beta} ={}& \hat\beta\\
-\cov{\post}{\beta} ={}& \frac{\sigma^2}{N} \hat{S}_z^{-1}.
+\cov{p(\beta \vert \x, \sigma)}{\beta} ={}& \frac{\sigma^2}{N} \hat{S}_z^{-1}
+\quad\textrm{and}\quad
+\cov{\post}{\beta} ={} \frac{\expect{\post}{\sigma^2}}{N} \hat{S}_z^{-1}.
 %
 \end{align*}
 
@@ -56,8 +62,9 @@ the full exchangeable pair is random.
 
 Because of the term $\hat{S}_z^{-1}$ and the randomness of $z_n$, the variance
 $N \var{\xfdist}{\expect{\post}{\beta}}$ does not have a closed form. However,
-by a CLT applied to $\sqrt{N} \meann z_n (y_n - \hat\beta^T z_n)$ and Slutsky's
-theorem, the variance is consistently estimated by
+by a CLT applied to $\sqrt{N} \meann z_n (y_n - \beta_\infty^T z_n)$, where
+$\beta_\infty := \expect{\xfdist}{z_n z_n^T}^{-1} \expect{\xfdist}{z_n y_n}$,
+and Slutsky's theorem, the variance is consistently estimated by
 %
 \begin{align}
 %
@@ -78,15 +85,16 @@ If the model is correctly specified, and $\sigma = \sigma_0$, then
 %
 \end{align*}
 %
-and $N \var{\xfdist}{\expect{\post}{\beta}}$ coincides asymptotically with
-$N \cov{\post}{\beta}$.  However, if the residuals $\hat\epsilon_n$
-or their variances are correlated with $z_n$, then the frequentist and Bayesian
-covariance will not match, even asymptotically.  The covariance estimate in
-\eqref{regression_robust_cov} is known in the frequentist regression literature
-as a ``robust'' covariance estimate, and it is sometimes recommended when
-there is concern about model misspecification (e.g. \cite[Section
+and $N \var{\xfdist}{\expect{\post}{\beta}}$ coincides asymptotically with $N
+\cov{\post}{\beta}$.  However, if the variances of the residuals are correlated
+with $z_n$, or the mean of $y_n$ is not linear in $z_n$, then the frequentist
+and Bayesian covariance will not match, even asymptotically.  The covariance
+estimate in \eqref{regression_robust_cov} is known in the frequentist regression
+literature as a ``robust'' covariance estimate, and it is sometimes recommended
+when there is concern about model misspecification (e.g. \cite[Section
 5.5]{davidson:2004:econometric}).  In the present context, it is simply the
-regression version of the sandwich covariance matrix $\gcovtrue$.
+regression version of the plug-in sandwich covariance estimate $\gcovhat$ of
+$\gcovtrue$.
 
 The influence function in this case is given by
 %
@@ -94,10 +102,13 @@ The influence function in this case is given by
 %
 \infl(\x_n) ={}&
     N \cov{\post}{\beta,
+    -\log \sigma
     -\frac{1}{2\sigma^2}\left(y_n^2 - 2 \beta^T z_n y_n +
                              \beta^T z_n z_n^T \beta \right)} \\
 ={}& N \cov{\post}{\beta, \sigma^{-2} \beta} z_n y_n -
-\frac{N}{2} \cov{\post}{\beta, \sigma^{-2}} y_n^2 +
+N \cov{\post}{\beta, \log \sigma} -
+\frac{N}{2} \cov{\post}{\beta, \sigma^{-2}} y_n^2 -
+\\&
 \frac{N}{2} \cov{\post}{\beta, \sigma^{-2} \beta^T z_n z_n^T \beta}.
 %
 \end{align*}
@@ -123,17 +134,19 @@ First,
 %
 \end{align*}
 %
-Now, the posterior mean $\expect{\post}{\beta} = \hat\beta$ does not depend on
-$\sigma$, so
+Now, the conditional posterior mean $\expect{p(\beta \vert \x, \sigma)}{\beta} =
+\hat\beta$ does not depend on $\sigma$, so, for any function $f(\sigma)$ with
+finite posterior variance (in particular, for $f(\sigma) = \sigma^{-2}$ and $f(\sigma)
+= \log \sigma$),
 %
 \begin{align*}
 %
-\cov{\post}{\beta, \sigma^{-2}} ={}&
+\cov{\post}{\beta, f(\sigma)} ={}&
 \expect{\post}{\left(\beta - \hat\beta\right)
-               \left( \sigma^{-2} - \expect{\post}{\sigma^{-2}}\right)} \\
+               \left( f(\sigma) - \expect{\post}{f(\sigma)}\right)} \\
 ={}&
 \expect{\post}{\expect{p(\beta \vert \x, \sigma)}{\beta - \hat\beta}
-               \left( \sigma^{-2} - \expect{\post}{\sigma^{-2}}\right)} \\
+               \left( f(\sigma) - \expect{\post}{f(\sigma)}\right)} \\
 ={}& 0.
 %
 \end{align*}
@@ -187,14 +200,17 @@ We thus see that
 %
 \begin{align*}
 %
-\bar{\iota} ={}& \hat{S}_z^{-1} \meann z_n y_n = 0\\
+\bar{\infl} ={}& \hat{S}_z^{-1} \meann z_n \hat\epsilon_n =
+    \frac{\sigma_\beta^2}{N} \hat{S}_z^{-1} \hat\beta = O_p(N^{-1})\\
 \gcovij ={}&
-\meann \left(\iota(\x_n)^2 -  \bar{\iota}^2 \right) =
+\meann \infl(\x_n) \infl(\x_n)^T -  \bar{\infl} \bar{\infl}^T =
     \hat{S}_z^{-1} \left(
         \meann \hat\epsilon_n^2 z_n z_n^T \right)
-    \hat{S}_z^{-1},
+    \hat{S}_z^{-1} + O_p(N^{-2}),
 %
 \end{align*}
 %
-which matches the frequentist covariance estimate given in
-\eqref{regression_robust_cov}.
+where the expression for $\bar{\infl}$ follows from the definition of $\hat\beta$,
+which gives $\meann z_n y_n = \hat{S}_z \hat\beta$.  So $\gcovij$ matches the
+frequentist covariance estimate given in \eqref{regression_robust_cov} up to a
+term of order $O_p(N^{-2})$.

@@ -3,7 +3,7 @@
 
 
 % What is the exchangeable unit?
-As discussed in \secref{arm_experiments}, for the ARM experiments we needed to
+For the ARM experiments of \secref{arm_experiments}, we needed to
 make decisions about what was an exchangeable unit. For models with no random
 effects, we define an exchangeable unit to be a tuple containing a particular
 response and a regressor.  For random effects models, we had to choose an
@@ -21,10 +21,10 @@ Given that most of the models in the ARM textbook are carefully selected by
 highly experienced statisticians, one might expect there to be few instances of
 misspecification.  Since the models are additionally mostly low-dimensional, we
 might expect for the posterior covariance to typically provide a good
-approximation to the frequentist covariance by the Bernstein von-Mises theorem.
+approximation to the frequentist covariance by the Bernstein--von Mises theorem.
 
 To investigate this intuition, in \figref{normerr_post_graph} we reproduce
-\figref{normerr_graph} but comparing the bootdstrap and Bayesian posterior
+\figref{normerr_graph} but comparing the bootstrap and Bayesian posterior
 covariance.  The metric plotted is the posterior version of
 $\normdiffij_{ij}$ in \eqref{arm_metrics}:
 $$

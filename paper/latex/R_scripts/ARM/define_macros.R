@@ -2,7 +2,8 @@
 df <- arm_env$combined_df_wide_labeled
 DefineMacro("armNumModels", length(unique(df$desc)), digits=0)
 DefineMacro("armNumDatasets", length(unique(df$dataset)), digits=0)
-DefineMacro("armNumCovsEstimated", nrow(df), digits=0)  # This is also the total number of distinct parameters
+DefineMacro("armNumCovsEstimated", nrow(df), digits=0)  # This is also the total number of quantities estimated (variances and covariances)
+DefineMacro("armNumParams", sum(df$is_diag), digits=0)  # Number of distinct scalar parameters (variance entries)
 DefineMacro("armNumMCMCSamples", max(df$num_samples), digits=0)
 DefineMacro("armNumBootstraps", max(df$num_boots), digits=0)
 DefineMacro("armMedianNumObs", median(df$num_exchangeable_obs), digits=0)

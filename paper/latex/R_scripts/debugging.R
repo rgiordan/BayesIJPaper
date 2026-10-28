@@ -1,6 +1,7 @@
 # Use this script to debug and edit the knit graphs without re-compiling in latex.
 
-git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
+#git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
+git_repo_loc <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/writing/bayes/"
 base_dir <- file.path(git_repo_loc, "paper/latex")
 
 knitr_debug <- FALSE # Set to true to see error output
@@ -17,5 +18,5 @@ SourceFile("R_scripts/ARM/define_macros.R")
 SourceFile("R_scripts/singular_example/define_macros.R")
 SourceFile("R_scripts/mrp/define_macros.R")
 
-mrp_env$compiled_df[1:5,]
-#source("R_scripts/mrp/result_graph.R", print.eval=TRUE)
+source("R_scripts/ARM/model_table.R", print.eval=TRUE)
+View(arm_env$combined_df_wide_labeled)

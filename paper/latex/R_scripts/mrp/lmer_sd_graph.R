@@ -5,4 +5,7 @@ mcmc_lmer_wide_df %>%
   ggplot() +
   geom_point(aes(x=mcmc_sd, y=lmer_sd, color=par, shape=par)) +
   geom_abline() +
-  expand_limits(y=0, x=0)
+  expand_limits(y=0, x=0) +
+  xlab("MCMC posterior standard deviation") +
+  ylab("GLMER standard error") +
+  labs(color="Parameter", shape="Parameter")

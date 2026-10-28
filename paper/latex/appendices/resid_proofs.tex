@@ -23,14 +23,14 @@ supremum may depend on $\x_n$ in a way that causes the sample mean to diverge.
 
 \begin{lem}\lemlabel{integral_commuting_sums}
 %
-The Gaussian integrals of \defref{bclt_resid} commutes with sums.
+The Gaussian integrals of \defref{bclt_resid} commute with sums.
 %
 For a scalar--valued function $\phi(\theta, \xvec_s)$ and an index set
 $\indexset$,
 %
 \begin{align*}
 %
-\means \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+\means \expect{\normresid{\infoev / 4}{R_1 \bigcup R_2}(\tau)}
               {\phi(\theta, \xvec_s)}^2
 % \means \resid{2}(\xvec_s)
             \le
@@ -42,14 +42,14 @@ $\indexset$,
 %
 \begin{align*}
 %
-\means \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+\means \expect{\normresid{\infoev / 4}{R_1 \bigcup R_2}(\tau)}
               {\phi(\theta, \xvec_s)}^2
 % \means \resid{2}(\xvec_s)
 % ={}&
 % \means \expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
 %             {\phi(\theta, \xvec_s)^2}
 \le{}&
-\expect{\normresid{\infoev / 2}{R_1 \bigcup R_2}(\tau)}
+\expect{\normresid{\infoev / 4}{R_1 \bigcup R_2}(\tau)}
               {\means \phi(\theta, \xvec_s)^2}
 \\\le{}&
 \sup_{\tau \in R_1 \bigcup R_2}

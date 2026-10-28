@@ -12,7 +12,9 @@ library(ggpubr)
 library(ggforce) # For geom_ellipse
 
 # This must be run from within the git repo, obviously.
-git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
+#git_repo_loc <- system("git rev-parse --show-toplevel", intern=TRUE)
+git_repo_loc <- "/home/rgiordan/Documents/git_repos/InfinitesimalJackknifeWorkbench/writing/bayes/"
+
 paper_directory <- file.path(git_repo_loc, "paper/latex/")
 data_path <- file.path(git_repo_loc, "paper/experiment_data")
 

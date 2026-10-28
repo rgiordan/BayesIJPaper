@@ -20,9 +20,9 @@ Throughout, we will use the change of variable
 %
 \begin{align}
 %
-\theta := \thetahat + \sqrt{N} \tau
+\theta := \thetahat + N^{-1/2} \tau
 \quad\Leftrightarrow\quad
-\tau = N^{-1/2} (\theta - \thetahat).
+\tau = \sqrt{N} (\theta - \thetahat).
 \eqlabel{tau_defn}
 %
 \end{align}
@@ -30,9 +30,9 @@ Throughout, we will use the change of variable
 We will switch the domain of integration between $\tau$ and $\theta$ without
 re-writing the arguments.  For example, for some function $\phi(\theta)$, we
 will write the shorthand $\int \phi(\theta) d\tau$ for the more precise $\int
-\phi\left(\sqrt{N} \tau + \thetahat\right) d\tau$. Similarly, we will overload
+\phi\left(N^{-1/2} \tau + \thetahat\right) d\tau$. Similarly, we will overload
 set notation: if $A$ is a set of $\theta$, we will write $\tau \in A$ as a
-shorthand for $\tau \in \left\{\tau: \thetahat + \sqrt{N} \tau \in A \right\}$.
+shorthand for $\tau \in \left\{\tau: \thetahat + N^{-1/2} \tau \in A \right\}$.
 Although slight abuses of notation, these conventions will keep our expressions
 more compact, as well as serve as a reminder of the $\theta$ domain in which the
 integrand is smooth by assumption.

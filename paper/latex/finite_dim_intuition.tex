@@ -19,7 +19,7 @@ following central limit theorem results to hold:
 %
 \begin{align}
 %
-N \cov{\post}{\theta} =&{} \info^{-1} + O_p(N^{-1})
+N \cov{\post}{\theta} =&{} \infohat^{-1} + O_p(N^{-1})
     &\textrm{Bayesian CLT (BCLT)} \nonumber \\
 % \sqrt{N}\left(\expect{\post}{\theta} - \thetahat \right) \plim& 0
 %     &\textrm{(Bayesian CLT)}\\
@@ -77,7 +77,7 @@ implies the asymptotic equivalence of $\gcovij$ and $\gcovtrue$:
 %
 % \bar{\infl} \approx{}& \info^{-1} \meann \ellgrad{1}(\x_n \vert \thetahat) = 0
 % \quad\quad \textrm{and} \nonumber\\
-\infl(\x_n) \approx{}& \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)
+\infl_n \approx{}& \infohat^{-1} \ellgrad{1}(\x_n \vert \thetahat)
 \quad\Rightarrow\quad
 \gcovij ={} \meann \infl_n \infl_n^T - \bar{\infl} \, \bar{\infl}^T
 % \nonumber\\
@@ -97,7 +97,7 @@ and we know that $\infohat^{-1} \scorecovhat \infohat^{-1} = \gcovhat \plim
 
 
 However, in general, the $\ordp{N^{-1}}$ term in \eqref{infl_heuristic}
-depends on $\x_n$, and the IJ covariance depends on {\em every} $\infl(\x_n): n \in
+depends on $\x_n$, and the IJ covariance depends on {\em every} $\infl_n: n \in
 [N]$, some of which may be pathologically behaved, especially under
 misspecification.
 %

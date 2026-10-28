@@ -6,7 +6,7 @@ such a case.
 % A similar example on a real dataset can be found in PUT IN PILOTS
 % can be found in REF APPENDIX.
 
-Consider the following simple random effects model with responses. For the data,
+Consider the following simple random effects model. For the data,
 we assume we have responses $y_n \in \rdom{}$, regressors $r_n \in \rdom{}$, and
 group indicator vectors $z_n \in \{0, 1\}^K$, for $n=1,\ldots,N$ and some fixed
 number of groups $K$.  We assume that all three are conditionally IID, so $\x_n
@@ -64,7 +64,7 @@ including the random effects:
 %
 Optimizing over all parameters including the random effects is prone to
 under-estimate the variance $\sigma_y$, particularly when $K$ is large relative
-to $N$.  A simplified version of this phenomenon is the known as the
+to $N$.  A simplified version of this phenomenon is known as the
 Neyman-Scott paradox \citep{freedman:2005:neymanscott}.  For this reason, one
 does not typically optimize over $\mu$ for such a model.  Rather, one optimizes
 the marginal posterior (or an approximation thereof):
@@ -84,9 +84,9 @@ the marginal posterior (or an approximation thereof):
 where $\xvec_k$ denotes $\{\x_n: z_{nk} = 1\}$, the observations in group $k$.
 For Gaussian models such as this one, the needed integral in
 \eqref{singular_map} can be computed in closed form. In the general case, there
-exist non-MCMC methods such as marginal maximum likelihood estimation (MMLE) use
+exist non-MCMC methods such as marginal maximum likelihood estimation (MMLE) that use
 the Laplace approximation to approximate the integral
-\citep{bates:2015:fitting}. However, it is possible to generate data $\xvec$ so
+\citep{bates:2015:lme4}. However, it is possible to generate data $\xvec$ so
 that even the MAP of \eqref{singular_map} estimates $\hat\sigma_\mu = 0$ for
 sufficiently non-informative priors
 \citep{chung:2012:avoiding,eager:2017:mixedterrible}.
@@ -133,6 +133,6 @@ The results are shown in \figref{simple_sim_result}.  As shown in the left plot,
 the posterior variances of $\log \sigma_y$ and of $\beta$ are dramatically
 less than the frequentist variances of $\expect{\post}{\log \sigma_y}$ and
 $\expect{\post}{\beta}$.  The posterior of the log random effect variance, $\log
-\sigma_\mu$, is extremely non-normal, and the IJ may not expected to perform
+\sigma_\mu$, is extremely non-normal, and the IJ may not be expected to perform
 well, theoretically.  Nevertheless, we show that the IJ covariance is correct
 despite the posterior variance being extremely inflated.

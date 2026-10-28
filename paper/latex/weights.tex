@@ -82,7 +82,7 @@ and delta method gives:
     % =
     \cov{\p(\gamma \vert \xvec)}{
         \gamma,
-        \cov{\p(\lambda \vert \gamma, \xvec)}{\ell_n(\gamma, \lambda)}
+        \cov{\p(\lambda \vert \gamma, \xvec)}{\ell(\x_n \vert \gamma, \lambda)}
     } + \ordlogp{N^{-2}}
     \eqlabel{resid_term}
 \end{align}
@@ -110,20 +110,20 @@ See \appref{weights_higher_order} for details on the derivation of
 
 
 If the function $\gamma \mapsto \cov{\p(\lambda \vert \gamma,
-\xvec)}{\ell_n(\gamma, \lambda)}$ does not vanish as $N \rightarrow \infty$, it
+\xvec)}{\ell(\x_n \vert \gamma, \lambda)}$ does not vanish as $N \rightarrow \infty$, it
 follows from \eqref{resid_term,global_local_first_order} that both the first and
 second derivatives are posterior covariances of non--vanishing functions of
 $\gamma$, and so of the same order as $N \rightarrow \infty$.  Since the second
 derivative is of the same order as the first derivative, the empirical influence
-function's linear approximation to provide a poor approximation even to the
-effect of leaving out a single datapoint.
+function's linear approximation can be expected to provide a poor approximation
+even to the effect of leaving out a single datapoint.
 
 Note that this counterexample
 does not contradict our results from \thmref{ij_consistent}: if a BCLT applies
 to $\lambda$ as well as to $\gamma$, then $\cov{\p(\lambda \vert \xvec,
 \gamma)}{\ell(\x_n \vert \gamma, \lambda)} = \ordlogp{N^{-1}}$ inside the
 covariance of \eqref{resid_term}, and the second derivative is
-$\ordlogp{N^{-2}}$, as suggested by \thmref{bayes_clt_main}.
+of lower order, as suggested by \thmref{bayes_clt_main}.
 %
 This intuition is rigorously developed and supported using von Mises expansions
 in \citet{giordano:2024:oldbayesij}, which at the time of writing is still in

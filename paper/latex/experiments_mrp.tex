@@ -21,7 +21,7 @@ regression'' part of MrP) and then to average the regression's predictions using
 the target population regressors (the ``post--stratification'' part of MrP).
 
 A typical MrP model assumes that the expectation of the response conditional on
-the regressors is given a finitely parameterized regression model.  For example,
+the regressors is given by a finitely parameterized regression model.  For example,
 one might specify a logistic regression model for a binary survey response.  The
 regression model gives an explicit expression for $\expect{}{\y | \z, \theta}$
 which, by assumption, holds in both the survey and target populations.
@@ -40,11 +40,11 @@ our quantity of interest:
 %
 The expression for $\g(\theta)$ is motivated by the observation that if
 $\expect{}{\yn | \z_m, \theta} = \expect{}{\yn | \z_m}$ at our particular
-$\theta$, then $\g(\theta) \approx \expect{\target(\yn)}{\yn}$ by the law of
+$\theta$, then $\g(\theta) \approx \expect{\p_\target(\yn)}{\yn}$ by the law of
 large numbers, since $\z_m$ are drawn marginally from the target distribution of
 regressors.  The Bayesian estimator integrates out our uncertainty in the
 $\theta$, taking $\expect{\post}{\g(\theta)}$ as our posterior estimate of the
-unknown $\expect{\target(\yn)}{\yn}$.  See
+unknown $\expect{\p_\target(\yn)}{\yn}$.  See
 \citet{park:2004:mrp,lopezmartin:2022:mrptutorial} for more details.
 
 To assess our ability to estimate $\gcovtrue$ in MrP models, we replicate a
@@ -72,7 +72,7 @@ measuring age, gender, ethnicity, education, and state.  We use the model given
 by Chapter 1 of \citet{lopezmartin:2022:mrptutorial}, which consisted of a
 hierarchical logistic regression with unknown hyperparameter variances.  We let
 our parameter $\theta$ include both logistic regression coefficients and
-hyperprior variances; in total, the dimension of the parameter space was
+hyperparameter variances; in total, the dimension of the parameter space was
 $\thetadim = \mrpThetaDim$.
 
 The details of our sampling and estimation procedure were as follows.  A draw of
@@ -121,7 +121,7 @@ posterior is concentrated enough in the nuisance parameters to avoid the
 challenges for IJ in the high--dimensional regime we discussed in
 \secref{data_weights}. In \appref{experiments_mrp_appendix}, we also compare
 with marginal maximum likelihood estimates provided by the \texttt{R} function
-\texttt{lmer} \citep{bates:2015:lme4}, noting that \texttt{lmer} does not
+\texttt{glmer} \citep{bates:2015:lme4}, noting that \texttt{glmer} does not
 naturally provide estimates of $\gcovtrue$ for a complicated quantity depending
 jointly on the random and fixed effects.
 

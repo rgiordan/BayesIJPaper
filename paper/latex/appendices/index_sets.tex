@@ -24,20 +24,19 @@ generic index sets as defined in \defref{index_sets}.
 \begin{defn}\deflabel{bclt_okay_index}
 %
 For an index set $\indexset$, a data-dependent function
-$\phi(\theta, \xvec_s)$ is $K$-th order BCLT-okay if,
-for each $k = 1, \ldots, K$,
+$\phi(\theta, \xvec_s)$ is $K$-th order BCLT-okay if
 %
 \begin{enumerate}
 %
 \item\itemlabel{bclt_okay_as_index}
-    $\theta \mapsto \phigrad{k}(\theta, \xvec_s)$ is BCLT-okay
-    $\fdist$-almost surely
+    $\theta \mapsto \phi(\theta, \xvec_s)$
+    is $K$ times continuously differentiable $\fdist$--almost surely.
 %
 \item\itemlabel{prior_op1_index}
     $\means \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}^2_2} = O_p(1)$.
 %
 \item\itemlabel{grad_op1_index}
-For some $\delta > 0$,
+For some $\delta > 0$, and for each $k = 0, \ldots, K$,
 $\sup_{\theta \in \thetaball{\delta}}
     \means \norm{\phigrad{k}(\theta, \xvec_s)}^2_2 = O_p(1)$.
 %
@@ -46,8 +45,8 @@ $\sup_{\theta \in \thetaball{\delta}}
 \end{defn}
 
 
-Note that a function is BCLT--okay according to \defref{bclt_okay} precisely if
-it is BCLT--okay according to \defref{bclt_okay_index} with index set $\indexset
+Note that a function is BCLT-okay according to \defref{bclt_okay} precisely if
+it is BCLT-okay according to \defref{bclt_okay_index} with index set $\indexset
 = [N]$.  Although $\indexset = [N]$ and $\indexset = [N]\times[N]$ will be the
 only examples of $\indexset$ we will use in the present paper, we believe it is
 clearer to keep the notation general.   

@@ -10,7 +10,7 @@ $\epsilon_U < \prior(\thetatrue) / 2$,
 \begin{align*}
 %
 \norm{I_3(\phi)}_2 =
-O(\exp(-N \epsilon_L)) \expect{\prior(\theta)}{\norm{ \phi(\theta, \xvec_s) }_2 }.
+O(N^{\thetadim/2} \exp(-N \epsilon_L)) \expect{\prior(\theta)}{\norm{ \phi(\theta, \xvec_s) }_2 }.
 %
 \end{align*}
 %
@@ -20,12 +20,13 @@ We have
 %
 \begin{align*}
 \norm{I_3(\phi)}_2
-={}& \norm{ \int_{R_3} \phi(\theta, \xvec_s)
+={}& N^{\thetadim/2} \norm{ \int_{R_3} \phi(\theta, \xvec_s)
        \exp\left(
             N \likhat(\theta) - N \likhat(\thetahat)
         \right)
        d \theta }_2 \\
 \le&
+N^{\thetadim/2}
 \sup_{\theta \in R_3}
 \exp\Bigg(
     N \Bigg(
@@ -35,24 +36,26 @@ We have
  \Bigg) \times
  \int_{R_3} \norm{\phi(\theta, \xvec_s)}_2
  \frac{\prior(\theta)}{\prior(\thetahat)} d \theta \\
-={}&
-    \exp(-N \epsilon_L)
+\le{}&
+    N^{\thetadim/2} \exp(-N \epsilon_L)
     \frac{1}{\prior(\thetahat)}
     \expect{\prior(\theta)}{
         \norm{\phi(\theta, \xvec_s)}_2 \mathbb{I}(\theta \in R_3)
     }
     \quad\textrm{(\lemref{regular_event}, \eventref{strict_opt})}\\
 \le&
-    \exp(-N \epsilon_L)
+    N^{\thetadim/2} \exp(-N \epsilon_L)
     \frac{1}{\prior(\thetatrue) - \epsilon_U}
     \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}_2 \mathbb{I}(\theta \in R_3)}
 \quad\textrm{(\lemref{regular_event}, \eventref{prior_close})}\\
 \le&
-\exp(-N \epsilon_L) 2 \prior(\thetatrue)^{-1}
+N^{\thetadim/2} \exp(-N \epsilon_L) 2 \prior(\thetatrue)^{-1}
 \expect{\prior(\theta)}{\norm{\phi(\theta, \xvec_s)}_2 }.
 \end{align*}
 %
-In the last step, we take $\epsilon_U < \prior(\thetatrue) / 2$ in $\regevent$
+The factor $N^{\thetadim/2}$ in the first line is the Jacobian of the change of
+variables \eqref{tau_defn}, since $I_3(\phi)$ is an integral over $\tau$
+(\defref{region_division}). In the last step, we take $\epsilon_U < \prior(\thetatrue) / 2$ in $\regevent$
 (specifically, \lemref{regular_event} \eventref{prior_close}).
 %
 \end{proof}
